@@ -316,8 +316,8 @@ def embed_chunks():
         with open(chunk_file, 'r', encoding='utf-8') as f:
             chunks = json.load(f)
         
-        # Extract texts
-        texts = [chunk['text'] for chunk in chunks]
+        # Extract texts (handle both 'text' and 'content' keys)
+        texts = [chunk.get('text') or chunk.get('content', '') for chunk in chunks]
         
         # Generate embeddings in batches
         embeddings = []
@@ -338,11 +338,14 @@ def embed_chunks():
         
         # Save embeddings
         for chunk, embedding in zip(chunks, embeddings):
+            chunk_text = chunk.get('text') or chunk.get('content', '')
+            chunk_id = chunk.get('id') or chunk.get('chunk_id', f"chunk_{idx}")
+            
             all_embeddings.append({
-                "id": chunk['id'],
-                "text": chunk['text'],
+                "id": chunk_id,
+                "text": chunk_text,
                 "embedding": embedding.tolist(),
-                "metadata": chunk['metadata']
+                "metadata": chunk.get('metadata', {})
             })
         
         print(f"  ✓ Embedded {len(chunks)} chunks" + " " * 20)
