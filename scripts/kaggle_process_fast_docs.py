@@ -278,39 +278,66 @@ def embed_chunks(chunks: List[dict]) -> List[dict]:
     all_embeddings = []
     
     if USE_MODEL_PARALLEL and num_gpus >= 2:
-        print("\n🚀 Loading model with multi-GPU parallelism...")
+        print("\n🚀 Loading model with data parallelism (both GPUs process batches)...")
         
-        model = AutoModel.from_pretrained(
+        # Load model on GPU 0
+        print("   Loading on GPU 0...")
+        model_gpu0 = AutoModel.from_pretrained(
             EMBEDDING_MODEL,
-            device_map="auto",
             torch_dtype=torch.float16,
             trust_remote_code=True
-        )
+        ).to('cuda:0')
+        model_gpu0.eval()
+        
+        # Load model on GPU 1
+        print("   Loading on GPU 1...")
+        model_gpu1 = AutoModel.from_pretrained(
+            EMBEDDING_MODEL,
+            torch_dtype=torch.float16,
+            trust_remote_code=True
+        ).to('cuda:1')
+        model_gpu1.eval()
+        
         tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL, trust_remote_code=True)
         
-        print("✓ Model loaded across 2 GPUs")
+        print(f"✓ Model loaded on BOTH GPUs (data parallelism)")
+        print(f"✓ GPU 0: {torch.cuda.get_device_name(0)}")
+        print(f"✓ GPU 1: {torch.cuda.get_device_name(1)}")
         
-        def encode_batch(texts: List[str]) -> np.ndarray:
-            encoded_input = tokenizer(
-                texts,
-                padding=True,
-                truncation=True,
-                max_length=8192,
-                return_tensors='pt'
-            )
+        def encode_batch_dual_gpu(texts: List[str]) -> np.ndarray:
+            """Encode using both GPUs by splitting the batch"""
+            mid = len(texts) // 2
+            texts_gpu0 = texts[:mid] if mid > 0 else texts
+            texts_gpu1 = texts[mid:] if mid > 0 else []
             
-            encoded_input = {k: v.to('cuda:0') for k, v in encoded_input.items()}
-            
+            # Process on GPU 0
+            encoded_0 = tokenizer(texts_gpu0, padding=True, truncation=True, max_length=8192, return_tensors='pt').to('cuda:0')
             with torch.no_grad():
-                model_output = model(**encoded_input)
+                output_0 = model_gpu0(**encoded_0)
+            mask_0 = encoded_0['attention_mask']
+            tokens_0 = output_0[0]
+            mask_expanded_0 = mask_0.unsqueeze(-1).expand(tokens_0.size()).float()
+            embeddings_0 = torch.sum(tokens_0 * mask_expanded_0, 1) / torch.clamp(mask_expanded_0.sum(1), min=1e-9)
+            embeddings_0 = torch.nn.functional.normalize(embeddings_0, p=2, dim=1).cpu().numpy()
             
-            attention_mask = encoded_input['attention_mask']
-            token_embeddings = model_output[0]
-            input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
-            embeddings = torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
-            embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)
+            # Process on GPU 1 if we have texts
+            if texts_gpu1:
+                encoded_1 = tokenizer(texts_gpu1, padding=True, truncation=True, max_length=8192, return_tensors='pt').to('cuda:1')
+                with torch.no_grad():
+                    output_1 = model_gpu1(**encoded_1)
+                mask_1 = encoded_1['attention_mask']
+                tokens_1 = output_1[0]
+                mask_expanded_1 = mask_1.unsqueeze(-1).expand(tokens_1.size()).float()
+                embeddings_1 = torch.sum(tokens_1 * mask_expanded_1, 1) / torch.clamp(mask_expanded_1.sum(1), min=1e-9)
+                embeddings_1 = torch.nn.functional.normalize(embeddings_1, p=2, dim=1).cpu().numpy()
+                
+                # Combine results
+                return np.vstack([embeddings_0, embeddings_1])
             
-            return embeddings.cpu().numpy()
+            return embeddings_0
+        
+        encode_batch = encode_batch_dual_gpu
+        
     else:
         print("\n🚀 Loading model with SentenceTransformer...")
         model = SentenceTransformer(EMBEDDING_MODEL, trust_remote_code=True)

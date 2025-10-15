@@ -285,18 +285,32 @@ def embed_chunks():
     
     # Load model with automatic device mapping (model parallelism)
     print("📥 Loading nomic-embed-code model (26GB)...")
-    print("   Strategy: Model parallelism across 2 GPUs with FP16 precision")
+    print("   Strategy: Data parallelism - Process batches on BOTH GPUs simultaneously")
     
+    # Load model on BOTH GPUs
     tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL, trust_remote_code=True)
-    model = AutoModel.from_pretrained(
+    
+    # Load model instance on GPU 0
+    print("   Loading model on GPU 0...")
+    model_gpu0 = AutoModel.from_pretrained(
         EMBEDDING_MODEL,
         trust_remote_code=True,
-        device_map="auto",  # Automatically split model across available GPUs
-        torch_dtype=torch.float16  # Use FP16 to reduce memory usage
-    )
-    model.eval()
+        torch_dtype=torch.float16
+    ).to('cuda:0')
+    model_gpu0.eval()
     
-    print("   ✓ Model loaded across 2 GPUs with automatic device mapping")
+    # Load model instance on GPU 1
+    print("   Loading model on GPU 1...")
+    model_gpu1 = AutoModel.from_pretrained(
+        EMBEDDING_MODEL,
+        trust_remote_code=True,
+        torch_dtype=torch.float16
+    ).to('cuda:1')
+    model_gpu1.eval()
+    
+    print(f"   ✓ Model loaded on BOTH GPUs (data parallelism)")
+    print(f"   ✓ GPU 0: {torch.cuda.get_device_name(0)}")
+    print(f"   ✓ GPU 1: {torch.cuda.get_device_name(1)}")
     print()
     
     # Collect all chunks from all subdirectories
@@ -314,38 +328,70 @@ def embed_chunks():
                 all_chunks.extend(chunks)
     
     print(f"📊 Processing {len(all_chunks)} chunks in batches of {BATCH_SIZE}")
+    print(f"   Strategy: Split batches across GPU 0 and GPU 1")
     print()
     
-    # Process in batches
+    # Process in batches using BOTH GPUs
     embedded_chunks = []
-    for i in range(0, len(all_chunks), BATCH_SIZE):
-        batch = all_chunks[i:i + BATCH_SIZE]
-        batch_texts = [chunk['content'] for chunk in batch]
+    
+    for i in range(0, len(all_chunks), BATCH_SIZE * 2):  # Process 2 batches at once
+        # Split into 2 sub-batches for parallel processing
+        batch_gpu0 = all_chunks[i:i + BATCH_SIZE]
+        batch_gpu1 = all_chunks[i + BATCH_SIZE:i + BATCH_SIZE * 2]
         
-        # Tokenize and embed
+        if not batch_gpu0:
+            break
+        
+        # Prepare texts for both GPUs
+        texts_gpu0 = [chunk['content'] for chunk in batch_gpu0]
+        texts_gpu1 = [chunk['content'] for chunk in batch_gpu1] if batch_gpu1 else []
+        
+        # Process on GPU 0
         with torch.no_grad():
-            inputs = tokenizer(
-                batch_texts,
+            inputs_gpu0 = tokenizer(
+                texts_gpu0,
                 padding=True,
                 truncation=True,
                 max_length=512,
                 return_tensors="pt"
-            )
+            ).to('cuda:0')
             
-            # Move inputs to first available device (model will handle distribution)
-            inputs = {k: v.to('cuda:0') for k, v in inputs.items()}
-            
-            # Generate embeddings
-            outputs = model(**inputs)
-            embeddings = outputs.last_hidden_state[:, 0, :].cpu().numpy()
+            outputs_gpu0 = model_gpu0(**inputs_gpu0)
+            embeddings_gpu0 = outputs_gpu0.last_hidden_state[:, 0, :].cpu().numpy()
         
-        # Attach embeddings to chunks
-        for chunk, embedding in zip(batch, embeddings):
+        # Process on GPU 1 (if we have a second batch)
+        if texts_gpu1:
+            with torch.no_grad():
+                inputs_gpu1 = tokenizer(
+                    texts_gpu1,
+                    padding=True,
+                    truncation=True,
+                    max_length=512,
+                    return_tensors="pt"
+                ).to('cuda:1')
+                
+                outputs_gpu1 = model_gpu1(**inputs_gpu1)
+                embeddings_gpu1 = outputs_gpu1.last_hidden_state[:, 0, :].cpu().numpy()
+        else:
+            embeddings_gpu1 = None
+        
+        # Attach embeddings from GPU 0
+        for chunk, embedding in zip(batch_gpu0, embeddings_gpu0):
             chunk['embedding'] = embedding.tolist()
             embedded_chunks.append(chunk)
         
-        if (i + BATCH_SIZE) % 100 == 0 or (i + BATCH_SIZE) >= len(all_chunks):
-            print(f"   ✓ Embedded {min(i + BATCH_SIZE, len(all_chunks))}/{len(all_chunks)} chunks")
+        # Attach embeddings from GPU 1
+        if embeddings_gpu1 is not None:
+            for chunk, embedding in zip(batch_gpu1, embeddings_gpu1):
+                chunk['embedding'] = embedding.tolist()
+                embedded_chunks.append(chunk)
+        
+        if (i + BATCH_SIZE * 2) % 100 == 0 or (i + BATCH_SIZE * 2) >= len(all_chunks):
+            print(f"   ✓ Embedded {min(i + BATCH_SIZE * 2, len(all_chunks))}/{len(all_chunks)} chunks (using both GPUs)")
+        
+        # Clear cache every 10 dual-batches
+        if i % (BATCH_SIZE * 20) == 0 and torch.cuda.is_available():
+            torch.cuda.empty_cache()
     
     # Save consolidated embeddings
     output_path = EMBEDDINGS_DIR / f"{COLLECTION_NAME}_embeddings.jsonl"
