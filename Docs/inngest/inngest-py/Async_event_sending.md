@@ -1,0 +1,1 @@
+await client.send(inngest.Event(name="app/user.created", data={"id": "123"}))

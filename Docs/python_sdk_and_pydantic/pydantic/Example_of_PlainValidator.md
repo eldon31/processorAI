@@ -1,0 +1,1 @@
+MyInt = Annotated[int, PlainValidator(lambda x, _info: x if x != -1 else 0)]

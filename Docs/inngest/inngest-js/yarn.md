@@ -1,0 +1,1 @@
+yarn add @inngest/middleware-sentry

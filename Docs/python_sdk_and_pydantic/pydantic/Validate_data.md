@@ -1,0 +1,1 @@
+validated_list = int_list_validator.validate_python(['1', '2', '3'])

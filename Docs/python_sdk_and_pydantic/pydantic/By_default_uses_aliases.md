@@ -1,0 +1,1 @@
+schema = Model.model_json_schema()  # {"properties": {"fieldName": ...}}

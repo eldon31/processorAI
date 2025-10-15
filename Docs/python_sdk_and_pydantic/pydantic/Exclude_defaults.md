@@ -1,0 +1,1 @@
+data = user.model_dump(exclude_defaults=True)

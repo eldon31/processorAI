@@ -1,0 +1,1 @@
+int_list_validator = TypeAdapter(list[int])

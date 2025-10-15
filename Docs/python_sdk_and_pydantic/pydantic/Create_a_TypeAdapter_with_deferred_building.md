@@ -1,0 +1,1 @@
+adapter = TypeAdapter(SomeType, config=ConfigDict(defer_build=True))

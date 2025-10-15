@@ -1,0 +1,1 @@
+json_str = user.model_dump_json(indent=2, exclude={'settings'})

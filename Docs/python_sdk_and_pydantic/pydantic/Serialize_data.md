@@ -1,0 +1,1 @@
+serialized = int_list_validator.dump_json(validated_list)

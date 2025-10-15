@@ -1,0 +1,1 @@
+from pydantic.env_settings import BaseSettings

@@ -1,0 +1,1 @@
+trigger = inngest.TriggerEvent(event="app/user.created")
