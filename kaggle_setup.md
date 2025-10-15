@@ -19,10 +19,10 @@
 ## Step 3: Install Dependencies
 
 ```python
-# Fix numpy/sklearn compatibility first
-!pip install -q numpy==1.24.3
+# Align numpy & scikit-learn with Kaggle build to avoid binary mismatch
+!pip install -q --force-reinstall "numpy==1.26.4" "scikit-learn==1.4.2"
 
-# Install required packages
+# Install required packages (scikit-learn already handled above)
 !pip install -q docling docling-core transformers sentence-transformers torch
 
 # Optional: Only if uploading to Qdrant from Kaggle
