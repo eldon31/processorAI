@@ -5,13 +5,13 @@ Copy-paste these commands directly into Kaggle notebooks
 """
 
 # ============================================================================
-# COLLECTION 1: VIATOR API (PDF + JSON → Embeddings)
+# COLLECTION 1: VIATOR API (Pre-chunked JSON → Embeddings)
 # ============================================================================
 
-# --- CELL 1: Install Dependencies (Viator - includes Docling for PDF) ---
+# --- CELL 1: Install Dependencies (Viator - NO PDF conversion needed) ---
 """
 !pip install -q --force-reinstall "numpy==1.26.4" "scipy==1.11.4" "scikit-learn==1.4.2"
-!pip install -q docling docling-core transformers accelerate torch sentencepiece
+!pip install -q transformers accelerate torch sentencepiece
 """
 
 # --- CELL 2: Run Processing ---
