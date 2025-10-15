@@ -7,7 +7,8 @@ NOTE: This script SKIPS conversion and chunking - uses pre-chunked files!
 Input: Pre-chunked JSON files from output/viator_api/chunked/
 
 Pipeline: Pre-chunked JSON → Embeddings (JSONL)
-Model: nomic-ai/nomic-embed-code (26GB, 768-dim, distributed across 2 GPUs)
+Model: nomic-ai/nomic-embed-code (26GB, 768-dim)
+Strategy: Model parallelism (layers distributed across 2 GPUs) + optimized batching
 Output: Single consolidated viator_api_embeddings.jsonl file
 """
 
@@ -16,6 +17,8 @@ import os
 # Prevent transformers from attempting to load TensorFlow
 os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
 os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+# Enable PyTorch memory optimization
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 
 import json
 from pathlib import Path
@@ -48,8 +51,9 @@ from transformers import AutoTokenizer, AutoModel
 
 # Configuration
 EMBEDDING_MODEL = "nomic-ai/nomic-embed-code"
-BATCH_SIZE = 8
+BATCH_SIZE = 8  # Conservative for model parallelism
 COLLECTION_NAME = "viator_api"
+MAX_SEQ_LENGTH = 512  # Truncate long texts to save memory
 
 # Paths
 BASE_DIR = Path(__file__).parent.parent
@@ -97,9 +101,9 @@ def load_chunked_files():
 
 
 def embed_chunks():
-    """Generate embeddings using nomic-embed-code with data parallelism."""
+    """Generate embeddings using nomic-embed-code with optimized model parallelism."""
     print(f"\n{'='*60}")
-    print("STEP 2: EMBEDDING GENERATION")
+    print("STEP 2: EMBEDDING GENERATION (OPTIMIZED)")
     print(f"{'='*60}\n")
     
     # Check GPU availability
@@ -112,11 +116,13 @@ def embed_chunks():
             print(f"   GPU {i} Memory: {torch.cuda.get_device_properties(i).total_memory / 1e9:.2f} GB")
     print()
     
-    # Load model with automatic device mapping (model parallelism)
+    # Load model with optimized device mapping
     print("📥 Loading nomic-embed-code model (26GB)...")
-    print("   Strategy: Data parallelism - Process batches on BOTH GPUs simultaneously")
+    print("   Strategy: Optimized model parallelism")
+    print("   - Layers distributed across both GPUs")
+    print("   - Memory limits set to prevent OOM")
+    print("   - Expandable segments enabled")
     
-    # Load model on BOTH GPUs
     tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL, trust_remote_code=True)
     
     # Load model with automatic device mapping (model parallelism - splits layers across GPUs)
@@ -125,12 +131,15 @@ def embed_chunks():
         EMBEDDING_MODEL,
         trust_remote_code=True,
         torch_dtype=torch.float16,
-        device_map="auto"  # Automatically splits model layers across available GPUs
+        device_map="auto",  # Automatically splits model layers across available GPUs
+        low_cpu_mem_usage=True,  # Reduce CPU memory usage during loading
+        max_memory={0: "13GB", 1: "13GB"}  # Limit per-GPU memory (leaves 2-3GB headroom)
     )
     model.eval()
     
-    print(f"   ✓ Model loaded with model parallelism (layers split across GPUs)")
+    print(f"   ✓ Model loaded with optimized model parallelism")
     print(f"   ✓ Available GPUs: {torch.cuda.device_count()}")
+    print(f"   ✓ Memory limits: GPU0=13GB, GPU1=13GB")
     print()
     
     # Collect all chunks from all chunked files
@@ -148,10 +157,10 @@ def embed_chunks():
             all_chunks.extend(chunks)
     
     print(f"📊 Processing {len(all_chunks)} chunks in batches of {BATCH_SIZE}")
-    print(f"   Strategy: Model parallelism (layers distributed across GPUs)")
+    print(f"   Strategy: Sequential batches with aggressive memory clearing")
     print()
     
-    # Process in batches
+    # Process in batches with optimized memory management
     embedded_chunks = []
     
     for i in range(0, len(all_chunks), BATCH_SIZE):
@@ -164,7 +173,7 @@ def embed_chunks():
                 texts,
                 padding=True,
                 truncation=True,
-                max_length=512,
+                max_length=MAX_SEQ_LENGTH,
                 return_tensors="pt"
             )
             
@@ -174,18 +183,29 @@ def embed_chunks():
             
             outputs = model(**inputs)
             embeddings = outputs.last_hidden_state[:, 0, :].cpu().numpy()
+            
+            # Clear intermediate tensors immediately
+            del inputs, outputs
         
         # Attach embeddings
         for chunk, embedding in zip(batch, embeddings):
             chunk['embedding'] = embedding.tolist()
             embedded_chunks.append(chunk)
         
+        # Clear embeddings from GPU memory
+        del embeddings
+        
         if (i + BATCH_SIZE) % 100 == 0 or (i + BATCH_SIZE) >= len(all_chunks):
             print(f"   ✓ Embedded {min(i + BATCH_SIZE, len(all_chunks))}/{len(all_chunks)} chunks")
         
-        # Clear cache periodically
-        if i % (BATCH_SIZE * 10) == 0 and torch.cuda.is_available():
+        # Aggressive cache clearing every 5 batches
+        if i % (BATCH_SIZE * 5) == 0 and torch.cuda.is_available():
             torch.cuda.empty_cache()
+            if i % (BATCH_SIZE * 20) == 0:  # Report memory usage periodically
+                for gpu_id in range(torch.cuda.device_count()):
+                    allocated = torch.cuda.memory_allocated(gpu_id) / 1e9
+                    reserved = torch.cuda.memory_reserved(gpu_id) / 1e9
+                    print(f"      GPU {gpu_id}: {allocated:.2f}GB allocated, {reserved:.2f}GB reserved")
     
     # Save consolidated embeddings
     output_path = EMBEDDINGS_DIR / f"{COLLECTION_NAME}_embeddings.jsonl"
