@@ -42,13 +42,15 @@ if torch.cuda.is_available():
         print(f"  Memory: {torch.cuda.get_device_properties(i).total_memory / 1e9:.2f} GB")
 print(f"{'='*60}\n")
 
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, AutoModel
 from sentence_transformers import SentenceTransformer
+from accelerate import init_empty_weights, load_checkpoint_and_dispatch
 
 # Configuration - Optimized for Kaggle GPU T4 x2
 EMBEDDING_MODEL = "nomic-ai/nomic-embed-code"
 MAX_CHUNK_SIZE = 1024
 BATCH_SIZE = 8  # Reduced for GPU memory safety
+USE_MODEL_PARALLEL = True  # Split model across 2 GPUs
 
 # Paths
 BASE_DIR = Path(__file__).parent.parent
@@ -241,18 +243,68 @@ def _simple_chunk_text(markdown_text: str, min_length: int = 100) -> List[str]:
 
 
 def embed_chunks():
-    """Step 3: Generate embeddings using GPU acceleration."""
+    """Step 3: Generate embeddings using GPU acceleration with model parallelism."""
     print(f"\n{'='*60}")
-    print("STEP 3: GENERATING EMBEDDINGS (GPU)")
+    print("STEP 3: GENERATING EMBEDDINGS (GPU - Model Parallel)")
     print(f"{'='*60}\n")
     
-    # Load embedding model on GPU
+    # Check if we can use multiple GPUs
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Loading embedding model on {device}...")
-    print(f"Model: {EMBEDDING_MODEL}")
+    num_gpus = torch.cuda.device_count() if torch.cuda.is_available() else 0
     
-    model = SentenceTransformer(EMBEDDING_MODEL, device=device)
-    print(f"✓ Model loaded on {device}\n")
+    print(f"Available GPUs: {num_gpus}")
+    print(f"Model: {EMBEDDING_MODEL}")
+    print(f"Using model parallelism: {USE_MODEL_PARALLEL and num_gpus >= 2}\n")
+    
+    # Load model with device_map for multi-GPU support
+    if USE_MODEL_PARALLEL and num_gpus >= 2:
+        print("Loading model across multiple GPUs...")
+        
+        # Load tokenizer
+        tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL, trust_remote_code=True)
+        
+        # Load model with automatic device mapping
+        model = AutoModel.from_pretrained(
+            EMBEDDING_MODEL,
+            trust_remote_code=True,
+            device_map="auto",  # Automatically split across available GPUs
+            torch_dtype=torch.float16,  # Use half precision to save memory
+        )
+        
+        print(f"✓ Model loaded across {num_gpus} GPUs with automatic device mapping\n")
+        
+        # Function to encode with model parallelism
+        def encode_batch(texts):
+            inputs = tokenizer(
+                texts,
+                padding=True,
+                truncation=True,
+                max_length=512,
+                return_tensors="pt"
+            )
+            
+            # Move inputs to first GPU (model will handle the rest)
+            inputs = {k: v.to("cuda:0") for k, v in inputs.items()}
+            
+            with torch.no_grad():
+                outputs = model(**inputs)
+                # Mean pooling
+                embeddings = outputs.last_hidden_state.mean(dim=1)
+            
+            return embeddings.cpu().numpy()
+    
+    else:
+        print("Loading model on single GPU...")
+        model = SentenceTransformer(EMBEDDING_MODEL, device=device)
+        print(f"✓ Model loaded on {device}\n")
+        
+        def encode_batch(texts):
+            return model.encode(
+                texts,
+                show_progress_bar=False,
+                batch_size=BATCH_SIZE,
+                device=device
+            )
     
     chunk_files = list(CHUNKED_DIR.glob("*_chunks.json"))
     all_embeddings = []
@@ -269,14 +321,15 @@ def embed_chunks():
         
         # Generate embeddings in batches
         embeddings = []
+        total_batches = (len(texts) + BATCH_SIZE - 1) // BATCH_SIZE
+        
         for i in range(0, len(texts), BATCH_SIZE):
             batch_texts = texts[i:i + BATCH_SIZE]
-            batch_embeddings = model.encode(
-                batch_texts,
-                show_progress_bar=True,
-                batch_size=BATCH_SIZE,
-                device=device
-            )
+            batch_num = i // BATCH_SIZE + 1
+            
+            print(f"  Processing batch {batch_num}/{total_batches}...", end='\r')
+            
+            batch_embeddings = encode_batch(batch_texts)
             embeddings.extend(batch_embeddings)
             
             # Clear GPU cache periodically
@@ -292,7 +345,7 @@ def embed_chunks():
                 "metadata": chunk['metadata']
             })
         
-        print(f"  ✓ Embedded {len(chunks)} chunks\n")
+        print(f"  ✓ Embedded {len(chunks)} chunks" + " " * 20)
     
     # Save all embeddings
     output_path = EMBEDDINGS_DIR / "viator_api_embeddings.jsonl"
@@ -300,7 +353,7 @@ def embed_chunks():
         for item in all_embeddings:
             f.write(json.dumps(item, ensure_ascii=False) + '\n')
     
-    print(f"✓ Saved {len(all_embeddings)} embeddings → {output_path.name}\n")
+    print(f"\n✓ Saved {len(all_embeddings)} embeddings → {output_path.name}\n")
     
     # Clear GPU memory
     if torch.cuda.is_available():
