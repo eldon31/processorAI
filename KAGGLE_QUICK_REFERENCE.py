@@ -2,6 +2,9 @@
 """
 Quick Reference: Kaggle Processing Scripts
 Copy-paste these commands directly into Kaggle notebooks
+
+NOTE: All embeddings are saved directly to /kaggle/working/ 
+      and will appear in the Output tab automatically!
 """
 
 # ============================================================================
@@ -19,12 +22,7 @@ Copy-paste these commands directly into Kaggle notebooks
 !python scripts/kaggle_process_viator.py
 """
 
-# --- CELL 3: Download Embeddings ---
-"""
-!zip -r viator_api_embeddings.zip output/viator_api/embeddings/
-from IPython.display import FileLink
-FileLink('viator_api_embeddings.zip')
-"""
+# Output: /kaggle/working/viator_api_embeddings.jsonl (appears in Output tab)
 
 # ============================================================================
 # COLLECTION 2: FAST DOCS (Markdown → Embeddings)
@@ -41,12 +39,7 @@ FileLink('viator_api_embeddings.zip')
 !python scripts/kaggle_process_fast_docs.py
 """
 
-# --- CELL 3: Download Embeddings ---
-"""
-!zip -r fast_docs_embeddings.zip output/fast_docs/embeddings/
-from IPython.display import FileLink
-FileLink('fast_docs_embeddings.zip')
-"""
+# Output: /kaggle/working/fast_docs_embeddings.jsonl (appears in Output tab)
 
 # ============================================================================
 # COLLECTION 3: PYDANTIC DOCS (Markdown → Embeddings)
@@ -63,12 +56,7 @@ FileLink('fast_docs_embeddings.zip')
 !python scripts/kaggle_process_pydantic_docs.py
 """
 
-# --- CELL 3: Download Embeddings ---
-"""
-!zip -r pydantic_docs_embeddings.zip output/pydantic_docs/embeddings/
-from IPython.display import FileLink
-FileLink('pydantic_docs_embeddings.zip')
-"""
+# Output: /kaggle/working/pydantic_docs_embeddings.jsonl (appears in Output tab)
 
 # ============================================================================
 # COLLECTION 4: INNGEST ECOSYSTEM (Markdown → Embeddings)
@@ -85,12 +73,7 @@ FileLink('pydantic_docs_embeddings.zip')
 !python scripts/kaggle_process_inngest_ecosystem.py
 """
 
-# --- CELL 3: Download Embeddings ---
-"""
-!zip -r inngest_ecosystem_embeddings.zip output/inngest_ecosystem/embeddings/
-from IPython.display import FileLink
-FileLink('inngest_ecosystem_embeddings.zip')
-"""
+# Output: /kaggle/working/inngest_ecosystem_embeddings.jsonl (appears in Output tab)
 
 # ============================================================================
 # VERIFICATION: Check GPU Usage During Processing
@@ -116,14 +99,27 @@ FileLink('inngest_ecosystem_embeddings.zip')
 # Then restart runtime: Runtime → Restart Runtime
 """
 
-# If CUDA out of memory (unlikely with device_map="auto"):
+# If CUDA out of memory (unlikely with dual-GPU setup):
 """
 # Edit script and change:
 # BATCH_SIZE = 8  →  BATCH_SIZE = 4
 """
 
-# If download not showing in Output tab:
+# ============================================================================
+# MOVE EXISTING EMBEDDINGS TO /kaggle/working/ (if already processed)
+# ============================================================================
+
+# If you already ran scripts and embeddings are in output/ folders:
 """
-from IPython.display import FileLink
-FileLink('your_embeddings.zip')
+!cp output/viator_api/embeddings/viator_api_embeddings.jsonl /kaggle/working/
+!cp output/fast_docs/embeddings/fast_docs_embeddings.jsonl /kaggle/working/
+!cp output/pydantic_docs/embeddings/pydantic_docs_embeddings.jsonl /kaggle/working/
+!cp output/inngest_ecosystem/embeddings/inngest_ecosystem_embeddings.jsonl /kaggle/working/
 """
+
+# Or move all at once:
+"""
+!find output -name "*_embeddings.jsonl" -exec cp {{}} /kaggle/working/ \\;
+"""
+
+# Files will now appear in Output tab for easy download!

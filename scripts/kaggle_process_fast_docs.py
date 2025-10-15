@@ -66,7 +66,13 @@ MIN_CHUNK_SIZE = 100
 # Paths
 DOCS_BASE = Path("Docs/fast_mcp_api_python")
 OUTPUT_CHUNKED_DIR = Path("output/fast_docs/chunked")
-OUTPUT_EMBEDDINGS_DIR = Path("output/fast_docs/embeddings")
+
+# Save to /kaggle/working for easy download (falls back to local output/ if not on Kaggle)
+KAGGLE_WORKING = Path("/kaggle/working")
+if KAGGLE_WORKING.exists():
+    OUTPUT_EMBEDDINGS_DIR = KAGGLE_WORKING
+else:
+    OUTPUT_EMBEDDINGS_DIR = Path("output/fast_docs/embeddings")
 
 # Subdirectories
 SUBDIRS = {
@@ -78,7 +84,8 @@ SUBDIRS = {
 def setup_directories():
     """Create output directories"""
     OUTPUT_CHUNKED_DIR.mkdir(parents=True, exist_ok=True)
-    OUTPUT_EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
+    if not KAGGLE_WORKING.exists():
+        OUTPUT_EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
     print(f"✓ Output directories ready")
     print(f"  Chunked: {OUTPUT_CHUNKED_DIR}")
     print(f"  Embeddings: {OUTPUT_EMBEDDINGS_DIR}")

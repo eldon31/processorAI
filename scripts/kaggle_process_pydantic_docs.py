@@ -55,11 +55,18 @@ MIN_CHUNK_SIZE = 100
 
 INPUT_DIR = Path("Docs/python_sdk_and_pydantic/pydantic")
 OUTPUT_CHUNKED_DIR = Path("output/pydantic_docs/chunked")
-OUTPUT_EMBEDDINGS_DIR = Path("output/pydantic_docs/embeddings")
+
+# Save to /kaggle/working for easy download (falls back to local output/ if not on Kaggle)
+KAGGLE_WORKING = Path("/kaggle/working")
+if KAGGLE_WORKING.exists():
+    OUTPUT_EMBEDDINGS_DIR = KAGGLE_WORKING
+else:
+    OUTPUT_EMBEDDINGS_DIR = Path("output/pydantic_docs/embeddings")
 
 def setup_directories():
     OUTPUT_CHUNKED_DIR.mkdir(parents=True, exist_ok=True)
-    OUTPUT_EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
+    if not KAGGLE_WORKING.exists():
+        OUTPUT_EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
     print(f"✓ Output directories ready")
 
 def chunk_markdown_file(content: str, source_file: str) -> List[Dict]:

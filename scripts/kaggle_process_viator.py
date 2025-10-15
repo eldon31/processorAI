@@ -55,10 +55,14 @@ COLLECTION_NAME = "viator_api"
 BASE_DIR = Path(__file__).parent.parent
 OUTPUT_DIR = BASE_DIR / "output" / "viator_api"
 CHUNKED_DIR = OUTPUT_DIR / "chunked"
-EMBEDDINGS_DIR = OUTPUT_DIR / "embeddings"
 
-# Create output directories
-EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
+# Save to /kaggle/working for easy download (falls back to local output/ if not on Kaggle)
+KAGGLE_WORKING = Path("/kaggle/working")
+if KAGGLE_WORKING.exists():
+    EMBEDDINGS_DIR = KAGGLE_WORKING
+else:
+    EMBEDDINGS_DIR = OUTPUT_DIR / "embeddings"
+    EMBEDDINGS_DIR.mkdir(parents=True, exist_ok=True)
 
 print(f"📁 Input directory (chunked): {CHUNKED_DIR}")
 print(f"📁 Output directory: {EMBEDDINGS_DIR}")
