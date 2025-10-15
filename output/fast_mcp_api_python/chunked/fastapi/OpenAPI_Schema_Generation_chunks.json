@@ -1,0 +1,1472 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:0",
+    "content": "This document covers FastAPI's automatic OpenAPI specification generation system. It explains how FastAPI introspects route definitions, parameters, dependencies, and security requirements to produce a complete OpenAPI 3.1.0 schema. For information about customizing the documentation UI that consumes this schema, see\n[Customizing API Documentation UI](#3.2)\n.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 98,
+      "char_count": 361,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399421"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:1",
+    "content": "FastAPI's OpenAPI generation system operates through a multi-stage pipeline that transforms application route definitions into OpenAPI specification components. The system analyzes route handlers, their parameters, dependencies, response models, and security requirements to generate comprehensive API documentation.\n```\ngraph TD\n    FastAPIApp[\"FastAPI Application\"] --> OpenAPIMethod[\"app.openapi()\"]\n    OpenAPIMethod --> GetOpenAPI[\"get_openapi()\"]\n    \n    GetOpenAPI --> RouteAnalysis[\"Route Analysis\"]\n    GetOpenAPI --> FieldExtraction[\"Field Extraction\"]\n    GetOpenAPI --> SchemaGeneration[\"Schema Generation\"]\n    \n    RouteAnalysis --> PathGeneration[\"get_openapi_path()\"]\n    PathGeneration --> OperationMeta[\"get_openapi_operation_metadata()\"]\n    PathGeneration --> Parameters[\"_get_openapi_operation_parameters()\"]\n    PathGeneration --> RequestBody[\"get_openapi_operation_request_body()\"]\n    PathGeneration --> SecurityDefs[\"get_openapi_security_definitions()\"]\n    \n    FieldExtraction --> ModelFields[\"get_fields_from_routes()\"]\n    ModelFields --> SchemaGeneration\n    \n    SchemaGeneration --> OpenAPISpec[\"OpenAPI 3.1.0 Specification\"]\n```\n**Diagram: OpenAPI Generation Pipeline**\nSources:\n[fastapi/applications.py:773-844](.)\n,\n[fastapi/openapi/utils.py:477-551](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 98,
+      "char_count": 1289,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399437"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:2",
+    "content": "The\n```\nFastAPI\n```\nclass provides the primary interface for OpenAPI generation through its\n```\nopenapi()\n```\nmethod. This method caches the generated schema and delegates the actual generation to utility functions.\n```\ngraph LR\n    FastAPIApp[\"FastAPI\"] --> OpenAPIMethod[\"openapi()\"]\n    OpenAPIMethod --> CacheCheck{\"openapi_schema cached?\"}\n    CacheCheck -->|Yes| ReturnCached[\"Return cached schema\"]\n    CacheCheck -->|No| CallGetOpenAPI[\"get_openapi()\"]\n    CallGetOpenAPI --> CacheResult[\"Cache result\"]\n    CacheResult --> ReturnSchema[\"Return schema\"]\n```\n**Diagram: FastAPI OpenAPI Method Flow**\nSources:\n[fastapi/applications.py:773-844](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 98,
+      "char_count": 652,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399443"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:3",
+    "content": "The\n```\nget_openapi_path()\n```\nfunction processes individual\n```\nAPIRoute\n```\ninstances to generate OpenAPI path objects. It extracts operation metadata, parameters, request bodies, and security definitions.\n```\nget_openapi_operation_metadata()\n```\n```\n_get_openapi_operation_parameters()\n```\n```\nget_openapi_operation_request_body()\n```\n```\nget_openapi_security_definitions()\n```\n, Function = . , Purpose = \nSources:\n[fastapi/openapi/utils.py:254-443](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 98,
+      "char_count": 455,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399449"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:4",
+    "content": "The system leverages FastAPI's dependency injection analysis to generate parameter and security schemas. The\n```\nget_flat_dependant()\n```\nfunction flattens the dependency tree to extract all parameters.\n```\ngraph TD\n    APIRoute[\"APIRoute\"] --> Dependant[\"route.dependant\"]\n    Dependant --> FlatDependant[\"get_flat_dependant()\"]\n    FlatDependant --> PathParams[\"path_params\"]\n    FlatDependant --> QueryParams[\"query_params\"] \n    FlatDependant --> HeaderParams[\"header_params\"]\n    FlatDependant --> CookieParams[\"cookie_params\"]\n    FlatDependant --> SecurityReqs[\"security_requirements\"]\n    \n    PathParams --> ParamSchema[\"Parameter Schemas\"]\n    QueryParams --> ParamSchema\n    HeaderParams --> ParamSchema\n    CookieParams --> ParamSchema\n    SecurityReqs --> SecuritySchema[\"Security Schemas\"]\n```\n**Diagram: Dependency Analysis for Schema Generation**\nSources:\n[fastapi/dependencies/utils.py:177-209](.)\n,\n[fastapi/openapi/utils.py:95-167](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 98,
+      "char_count": 953,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399454"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:5",
+    "content": "The\n```\nget_openapi()\n```\nfunction serves as the primary orchestrator, coordinating field extraction, schema generation, and component assembly into a complete OpenAPI specification.\nKey steps performed:\n1. Extract all model fields from routes and webhooks\n2. Generate JSON schemas for all models\n3. Process each route to create path items\n4. Assemble components, security schemes, and definitions\n5. Build final OpenAPI specification\nSources:\n[fastapi/openapi/utils.py:477-551](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 98,
+      "char_count": 481,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399460"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:6",
+    "content": "The\n```\nget_fields_from_routes()\n```\nfunction extracts all\n```\nModelField\n```\ninstances from application routes, including request bodies, response models, and parameter definitions.\n```\ngraph TD\n    Routes[\"Application Routes\"] --> FieldExtraction[\"get_fields_from_routes()\"]\n    FieldExtraction --> BodyFields[\"Body Fields\"]\n    FieldExtraction --> ResponseFields[\"Response Fields\"] \n    FieldExtraction --> RequestFields[\"Request Parameter Fields\"]\n    FieldExtraction --> CallbackFields[\"Callback Fields\"]\n    \n    BodyFields --> SchemaGen[\"Schema Generation\"]\n    ResponseFields --> SchemaGen\n    RequestFields --> SchemaGen\n    CallbackFields --> SchemaGen\n    \n    SchemaGen --> FieldMapping[\"Field Mapping\"]\n    SchemaGen --> Definitions[\"Schema Definitions\"]\n```\n**Diagram: Field Extraction and Schema Generation**\nSources:\n[fastapi/openapi/utils.py:446-474](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 98,
+      "char_count": 870,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399466"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:7",
+    "content": "The\n```\n_get_openapi_operation_parameters()\n```\nfunction processes route dependencies to generate OpenAPI parameter definitions for path, query, header, and cookie parameters.\nThe function handles:\n- Parameter grouping by type (path, query, header, cookie)\n- Schema generation for each parameter\n- Alias resolution and underscore conversion for headers\n- Example and description extraction\n- Deprecation marking\nSources:\n[fastapi/openapi/utils.py:95-167](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 98,
+      "char_count": 457,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399471"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:8",
+    "content": "The\n```\nget_openapi_operation_request_body()\n```\nfunction generates OpenAPI request body specifications from route body fields, including content-type handling and example extraction.\nSources:\n[fastapi/openapi/utils.py:170-204](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 98,
+      "char_count": 230,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399477"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:9",
+    "content": "FastAPI automatically generates OpenAPI security schemes from security dependencies in route definitions. The\n```\nget_openapi_security_definitions()\n```\nfunction extracts security requirements and converts them to OpenAPI security scheme definitions.\n```\ngraph TD\n    SecurityDeps[\"Security Dependencies\"] --> SecurityReqs[\"SecurityRequirement Objects\"]\n    SecurityReqs --> SecurityScheme[\"security_scheme\"]\n    SecurityReqs --> Scopes[\"scopes\"]\n    \n    SecurityScheme --> OAuth2Model[\"OAuth2 Model\"]\n    SecurityScheme --> HTTPBasicModel[\"HTTPBasic Model\"] \n    SecurityScheme --> APIKeyModel[\"APIKey Model\"]\n    SecurityScheme --> OpenIdConnectModel[\"OpenIdConnect Model\"]\n    \n    OAuth2Model --> SecurityDef[\"Security Definitions\"]\n    HTTPBasicModel --> SecurityDef\n    APIKeyModel --> SecurityDef\n    OpenIdConnectModel --> SecurityDef\n    \n    Scopes --> OperationSecurity[\"Operation Security Requirements\"]\n```\n**Diagram: Security Schema Generation Process**\nSources:\n[fastapi/openapi/utils.py:78-92](.)\n,\n[fastapi/security/oauth2.py:308-377](.)\n,\n[fastapi/security/http.py:69-95](.)\n,\n[fastapi/security/api_key.py:11-21](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 98,
+      "char_count": 1134,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399483"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:10",
+    "content": "The system generates response schemas from route response models and additional response definitions. For routes with response models, it creates schema definitions and links them to appropriate HTTP status codes.\nThe response generation process handles:\n- Default response schemas from route response models\n- Additional responses defined in route configuration\n- HTTP status code validation for body content\n- Media type determination based on response class\nSources:\n[fastapi/openapi/utils.py:354-443](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 98,
+      "char_count": 507,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399488"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:11",
+    "content": "Each OpenAPI operation requires a unique\n```\noperationId\n```\n. FastAPI provides a default generation strategy through the\n```\ngenerate_unique_id()\n```\nfunction, which creates IDs from route names, paths, and HTTP methods.\nThe generation process:\n1. Combines route name and path format\n2. Sanitizes non-word characters\n3. Appends HTTP method\n4. Ensures uniqueness across operations\nSources:\n[fastapi/utils.py:179-184](.)\n,\n[fastapi/openapi/utils.py:228-251](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 98,
+      "char_count": 459,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399494"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:12",
+    "content": "FastAPI automatically includes validation error response schemas for routes with parameters or request bodies. The system adds HTTP 422 responses with standardized error schema definitions.\nThe validation error schema includes:\n- `ValidationError` component definition\n- `HTTPValidationError` wrapper definition\n- Automatic inclusion for routes with parameters\nSources:\n[fastapi/openapi/utils.py:41-66](.)\n,\n[fastapi/openapi/utils.py:419-439](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 98,
+      "char_count": 445,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399500"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:13",
+    "content": "Routes can include additional OpenAPI configuration through the\n```\nopenapi_extra\n```\nparameter, which gets merged into the generated operation definition using deep dictionary updates.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 98,
+      "char_count": 185,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399505"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:14",
+    "content": "The system supports custom JSON schema generation through the\n```\nGenerateJsonSchema\n```\nclass and field mapping systems, allowing fine-grained control over schema generation behavior.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 98,
+      "char_count": 184,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399510"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:15",
+    "content": "Applications can provide custom operation ID generation functions through the\n```\ngenerate_unique_id_function\n```\nparameter on routes and routers.\nSources:\n[fastapi/routing.py:459-462](.)\n,\n[fastapi/routing.py:822-836](.)\n,\n[fastapi/openapi/utils.py:440-442](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 98,
+      "char_count": 261,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399515"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:16",
+    "content": "This document covers the customization of FastAPI's interactive API documentation interfaces, specifically Swagger UI and ReDoc. It explains how to modify asset loading, customize appearance parameters, and implement self-hosted documentation assets.\nFor information about the automatic generation of OpenAPI schemas that power these documentation interfaces, see\n[OpenAPI Schema Generation](#3.1)\n.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 16,
+      "total_chunks": 98,
+      "char_count": 399,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399521"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:17",
+    "content": "FastAPI provides two built-in documentation interfaces that consume OpenAPI schemas to generate interactive API documentation. The system allows flexible customization of both the visual presentation and asset delivery.\n```\ngraph TD\n    subgraph \"FastAPI Application\"\n        A[FastAPI App] --> B[\"openapi_url\"]\n        A --> C[\"docs_url\"]\n        A --> D[\"redoc_url\"]\n    end\n    \n    subgraph \"Documentation Functions\"\n        E[\"get_swagger_ui_html()\"] --> F[\"Swagger UI HTML\"]\n        G[\"get_redoc_html()\"] --> H[\"ReDoc HTML\"]\n        I[\"get_swagger_ui_oauth2_redirect_html()\"] --> J[\"OAuth2 Redirect HTML\"]\n    end\n    \n    subgraph \"Asset Sources\"\n        K[\"CDN URLs\"]\n        L[\"Self-hosted Static Files\"]\n        M[\"Custom CDN\"]\n    end\n    \n    C --> E\n    D --> G\n    B --> E\n    B --> G\n    \n    E --> K\n    E --> L\n    E --> M\n    G --> K\n    G --> L\n    G --> M\n    \n    F --> N[\"Browser Rendering\"]\n    H --> N\n    J --> O[\"OAuth2 Flow\"]\n```\n**Documentation UI Generation Flow**\nSources:\n[fastapi/openapi/docs.py:26-158](.)\n,\n[fastapi/openapi/docs.py:161-253](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 17,
+      "total_chunks": 98,
+      "char_count": 1077,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399527"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:18",
+    "content": "The documentation system centers around three primary functions that generate HTML responses for different documentation interfaces.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 18,
+      "total_chunks": 98,
+      "char_count": 132,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399532"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:19",
+    "content": "The\n```\nget_swagger_ui_html()\n```\nfunction creates the complete HTML page for Swagger UI documentation. It accepts multiple customization parameters and generates a self-contained HTML response.\n```\ngraph LR\n    A[\"get_swagger_ui_html()\"] --> B[\"swagger_ui_default_parameters\"]\n    A --> C[\"swagger_js_url\"]\n    A --> D[\"swagger_css_url\"]\n    A --> E[\"swagger_favicon_url\"]\n    A --> F[\"oauth2_redirect_url\"]\n    A --> G[\"init_oauth\"]\n    A --> H[\"swagger_ui_parameters\"]\n    \n    B --> I[\"HTML Template Generation\"]\n    C --> I\n    D --> I\n    E --> I\n    F --> I\n    G --> I\n    H --> I\n    \n    I --> J[\"HTMLResponse\"]\n```\n**Swagger UI Parameter Flow**\nSources:\n[fastapi/openapi/docs.py:26-158](.)\n,\n[fastapi/openapi/docs.py:8-23](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 19,
+      "total_chunks": 98,
+      "char_count": 736,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399538"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:20",
+    "content": "The\n```\nget_redoc_html()\n```\nfunction provides an alternative documentation interface with different styling and layout characteristics.\n```\nopenapi_url\n```\n```\nstr\n```\n```\ntitle\n```\n```\nstr\n```\n```\nredoc_js_url\n```\n```\nstr\n```\n```\nredoc_favicon_url\n```\n```\nstr\n```\n```\nwith_google_fonts\n```\n```\nbool\n```\n```\nTrue\n```\n, Type = . , Default = . , Purpose = \nSources:\n[fastapi/openapi/docs.py:161-253](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 20,
+      "total_chunks": 98,
+      "char_count": 401,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399543"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:21",
+    "content": "FastAPI supports three primary approaches for delivering documentation assets: default CDN, custom CDN, and self-hosting.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 21,
+      "total_chunks": 98,
+      "char_count": 121,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399549"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:22",
+    "content": "By default, FastAPI loads documentation assets from public CDNs:\n- Swagger UI JavaScript: `https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js`\n- Swagger UI CSS: `https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css`\n- ReDoc JavaScript: `https://cdn.jsdelivr.net/npm/redoc@2/bundles/redoc.standalone.js`\nSources:\n[fastapi/openapi/docs.py:56](.)\n,\n[fastapi/openapi/docs.py:66](.)\n,\n[fastapi/openapi/docs.py:191](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 22,
+      "total_chunks": 98,
+      "char_count": 438,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399554"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:23",
+    "content": "To use alternative CDNs, applications must disable default documentation endpoints and create custom path operations.\n```\ngraph TD\n    A[\"FastAPI(docs_url=None, redoc_url=None)\"] --> B[\"Disable Default Docs\"]\n    B --> C[\"Create Custom Path Operations\"]\n    \n    C --> D[\"@app.get('/docs')\"]\n    C --> E[\"@app.get('/redoc')\"]\n    C --> F[\"@app.get('/docs/oauth2-redirect')\"]\n    \n    D --> G[\"get_swagger_ui_html()\"]\n    E --> H[\"get_redoc_html()\"]\n    F --> I[\"get_swagger_ui_oauth2_redirect_html()\"]\n    \n    G --> J[\"Custom swagger_js_url\"]\n    G --> K[\"Custom swagger_css_url\"]\n    H --> L[\"Custom redoc_js_url\"]\n```\n**Custom CDN Setup Flow**\nSources:\n[docs_src/custom_docs_ui/tutorial001.py:8](.)\n,\n[docs_src/custom_docs_ui/tutorial001.py:11-19](.)\n,\n[docs_src/custom_docs_ui/tutorial001.py:27-33](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 23,
+      "total_chunks": 98,
+      "char_count": 805,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399559"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:24",
+    "content": "Self-hosting involves serving documentation assets directly from the FastAPI application using\n```\nStaticFiles\n```\nmounting.\nRequired static files:\n```\nswagger-ui-bundle.js\n```\n```\nswagger-ui.css\n```\n```\nredoc.standalone.js\n```\n- Sources:\n- Sources:\n- Sources:\n[docs/en/docs/how-to/custom-docs-ui-assets.md:94-101](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 24,
+      "total_chunks": 98,
+      "char_count": 317,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399565"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:25",
+    "content": "The\n```\nswagger_ui_default_parameters\n```\ndictionary defines the base configuration for Swagger UI behavior and appearance.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 25,
+      "total_chunks": 98,
+      "char_count": 123,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399570"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:26",
+    "content": "```\ngraph LR\n    A[\"swagger_ui_default_parameters\"] --> B[\"dom_id: '#swagger-ui'\"]\n    A --> C[\"layout: 'BaseLayout'\"]\n    A --> D[\"deepLinking: true\"]\n    A --> E[\"showExtensions: true\"]\n    A --> F[\"showCommonExtensions: true\"]\n    \n    G[\"Custom Parameters\"] --> H[\"swagger_ui_parameters\"]\n    H --> I[\"Merged with Defaults\"]\n    \n    B --> I\n    C --> I\n    D --> I\n    E --> I\n    F --> I\n```\n**Swagger UI Parameter Merging**\nSources:\n[fastapi/openapi/docs.py:17-23](.)\n,\n[fastapi/openapi/docs.py:113-115](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 26,
+      "total_chunks": 98,
+      "char_count": 513,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399576"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:27",
+    "content": "OAuth2 authentication requires special handling through the redirect mechanism and initialization parameters.\n```\noauth2_redirect_url\n```\n```\ninit_oauth\n```\n```\nget_swagger_ui_oauth2_redirect_html()\n```\n, Function = . , Purpose = \nSources:\n[fastapi/openapi/docs.py:75-82](.)\n,\n[fastapi/openapi/docs.py:84-90](.)\n,\n[fastapi/openapi/docs.py:256-344](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 27,
+      "total_chunks": 98,
+      "char_count": 350,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399582"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:28",
+    "content": "To implement custom documentation, applications must first disable the default endpoints by setting them to\n```\nNone\n```\nduring FastAPI instantiation.\nSources:\n[docs_src/custom_docs_ui/tutorial001.py:8](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 28,
+      "total_chunks": 98,
+      "char_count": 205,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399587"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:29",
+    "content": "Custom documentation requires creating new path operations that call the documentation generation functions with custom parameters.\nThe standard pattern includes three endpoints:\n- Main documentation endpoint ( `/docs` )\n- Alternative documentation endpoint ( `/redoc` )\n- OAuth2 redirect endpoint ( `/docs/oauth2-redirect` )\nSources:\n[docs_src/custom_docs_ui/tutorial001.py:11-24](.)\n,\n[docs_src/custom_docs_ui/tutorial001.py:27-33](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 29,
+      "total_chunks": 98,
+      "char_count": 436,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399593"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:30",
+    "content": "The test infrastructure validates that custom URLs appear in the generated HTML responses and that OAuth2 redirect functionality operates correctly.\nKey test validations:\n- Custom asset URLs in HTML content\n- OAuth2 redirect JavaScript presence\n- API endpoint functionality\nSources:\n[tests/test_tutorial/test_custom_docs_ui/test_tutorial001.py:20-42](.)\n,\n[tests/test_local_docs.py:18-32](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 30,
+      "total_chunks": 98,
+      "char_count": 391,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399598"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:31",
+    "content": "This document covers advanced FastAPI capabilities designed for complex, production-ready applications. These features enable sophisticated request processing, database integration, asynchronous operations, and advanced response handling patterns that go beyond basic CRUD operations.\nFor core framework concepts like routing and dependency injection, see\n[Core Architecture](#2)\n. For API documentation features, see\n[API Documentation System](#3)\n.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 31,
+      "total_chunks": 98,
+      "char_count": 450,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399604"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:32",
+    "content": "FastAPI provides comprehensive asynchronous programming support through Python's coroutine system, leveraging Starlette's ASGI foundation and AnyIO compatibility for high-concurrency applications.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 32,
+      "total_chunks": 98,
+      "char_count": 196,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399609"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:33",
+    "content": "FastAPI automatically detects whether path operation functions are defined with\n```\ndef\n```\nor\n```\nasync def\n```\nand handles execution appropriately. Functions defined with\n```\ndef\n```\nare executed in external threadpool to avoid blocking the event loop, while\n```\nasync def\n```\nfunctions execute directly in the main event loop.\n```\ngraph TB\n    subgraph \"FastAPI Request Processing\"\n        REQ[request] --> ROUTE_MATCH[route_matching]\n        ROUTE_MATCH --> FUNC_TYPE_CHECK[function_type_detection]\n        FUNC_TYPE_CHECK --> DEF_HANDLER[def_function_handler]\n        FUNC_TYPE_CHECK --> ASYNC_DEF_HANDLER[async_def_function_handler]\n    end\n    \n    subgraph \"Execution Contexts\"\n        DEF_HANDLER --> THREADPOOL[external_threadpool]\n        THREADPOOL --> AWAIT_RESULT[await_threadpool_result]\n        ASYNC_DEF_HANDLER --> DIRECT_AWAIT[direct_coroutine_await]\n    end\n    \n    subgraph \"Response Generation\"\n        AWAIT_RESULT --> RESPONSE[response]\n        DIRECT_AWAIT --> RESPONSE\n    end\n```\n**FastAPI Path Operation Execution Flow**\n```\ndef\n```\n```\nasync def\n```\n```\nasync def\n```\nwith\n```\nawait\n```\n, Execution Context = . , Use Case = . , Performance Impact = \nSources:\n[docs/en/docs/async.md:416-439](.)\n,\n[docs/en/docs/async.md:418-422](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 33,
+      "total_chunks": 98,
+      "char_count": 1260,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399615"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:34",
+    "content": "FastAPI distinguishes between concurrency (handling multiple I/O operations simultaneously) and parallelism (utilizing multiple CPU cores). The framework optimizes for web application patterns where requests spend most time waiting for I/O operations.\n```\ngraph TB\n    subgraph \"Concurrency Pattern - I/O Bound\"\n        ASYNC_PATH[async_def_path_operation] --> AWAIT_DB[await_database_query]\n        AWAIT_DB --> AWAIT_API[await_external_api]\n        AWAIT_API --> AWAIT_FILE[await_file_read]\n        AWAIT_FILE --> EVENT_LOOP[event_loop_scheduling]\n    end\n    \n    subgraph \"Parallelism Pattern - CPU Bound\"\n        DEF_PATH[def_path_operation] --> CPU_WORK[cpu_intensive_computation]\n        CPU_WORK --> THREADPOOL_EXEC[threadpool_execution]\n        THREADPOOL_EXEC --> THREAD_ISOLATION[thread_isolation]\n    end\n    \n    subgraph \"Hybrid Pattern\"\n        MIXED_APP[fastapi_application] --> CONCURRENT_IO[concurrent_io_operations]\n        MIXED_APP --> PARALLEL_CPU[parallel_cpu_operations]\n        CONCURRENT_IO --> HIGH_THROUGHPUT[high_request_throughput]\n        PARALLEL_CPU --> MULTICORE_USAGE[multicore_cpu_usage]\n    end\n```\n**Concurrency and Parallelism in FastAPI Applications**\nSources:\n[docs/en/docs/async.md:96-255](.)\n,\n[docs/en/docs/async.md:293-301](.)\n,\n[docs/en/docs/async.md:238-254](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 34,
+      "total_chunks": 98,
+      "char_count": 1308,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399620"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:35",
+    "content": "FastAPI's dependency injection system seamlessly handles mixed\n```\ndef\n```\nand\n```\nasync def\n```\ndependencies, automatically managing execution contexts and dependency resolution order.\n```\ngraph TB\n    subgraph \"Dependency Resolution\"\n        PATH_OP[path_operation] --> DEP_RESOLVER[dependency_resolver]\n        DEP_RESOLVER --> DEP_TREE[dependency_tree_construction]\n    end\n    \n    subgraph \"Mixed Dependency Types\"\n        DEP_TREE --> ASYNC_DEP[async_def_dependency]\n        DEP_TREE --> SYNC_DEP[def_dependency]\n        DEP_TREE --> SUB_DEP[sub_dependencies]\n    end\n    \n    subgraph \"Execution Strategy\"\n        ASYNC_DEP --> AWAIT_EXEC[await_execution]\n        SYNC_DEP --> THREADPOOL_EXEC[threadpool_execution]\n        SUB_DEP --> MIXED_EXEC[mixed_execution_context]\n    end\n    \n    subgraph \"Resolution Order\"\n        AWAIT_EXEC --> DEP_RESULT[dependency_result]\n        THREADPOOL_EXEC --> DEP_RESULT\n        MIXED_EXEC --> DEP_RESULT\n        DEP_RESULT --> PATH_EXEC[path_operation_execution]\n    end\n```\n**Dependency System Async Execution**\nSources:\n[docs/en/docs/async.md:424-430](.)\n,\n[docs/en/docs/async.md:432-438](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 35,
+      "total_chunks": 98,
+      "char_count": 1139,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399626"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:36",
+    "content": "FastAPI and Starlette are built on AnyIO, providing compatibility with both Python's standard\n```\nasyncio\n```\nand\n```\ntrio\n```\nasync libraries. This enables advanced concurrency patterns and structured concurrency approaches.\n```\ngraph LR\n    subgraph \"Async Library Compatibility\"\n        FASTAPI[fastapi] --> STARLETTE[starlette]\n        STARLETTE --> ANYIO[anyio]\n        ANYIO --> ASYNCIO[asyncio]\n        ANYIO --> TRIO[trio]\n    end\n    \n    subgraph \"Advanced Patterns\"\n        ANYIO --> STRUCTURED_CONCURRENCY[structured_concurrency]\n        ANYIO --> ADVANCED_PATTERNS[advanced_concurrency_patterns]\n        ANYIO --> ASYNCER[asyncer_library]\n    end\n    \n    subgraph \"Custom Async Code\"\n        ADVANCED_PATTERNS --> CUSTOM_COROUTINES[custom_coroutines]\n        ASYNCER --> MIXED_SYNC_ASYNC[mixed_sync_async_code]\n        STRUCTURED_CONCURRENCY --> SAFE_CONCURRENCY[safe_concurrency_patterns]\n    end\n```\n**AnyIO-Based Async Architecture**\nSources:\n[docs/en/docs/async.md:364-372](.)\n,\n[docs/en/docs/async.md:366-370](.)\n</old_str>\n<old_str>",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 36,
+      "total_chunks": 98,
+      "char_count": 1052,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399632"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:37",
+    "content": "FastAPI applications require specific configuration and architectural decisions for production deployment, including ASGI server selection, proxy configuration, and performance optimization strategies.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 37,
+      "total_chunks": 98,
+      "char_count": 201,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399637"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:38",
+    "content": "FastAPI applications run on ASGI servers that handle the interface between the web server and Python application. The choice of ASGI server and configuration impacts performance, scalability, and feature availability.\n```\ngraph TB\n    subgraph \"Production ASGI Stack\"\n        REVERSE_PROXY[reverse_proxy_nginx_apache] --> ASGI_SERVER[asgi_server]\n        ASGI_SERVER --> FASTAPI_APP[fastapi_application]\n    end\n    \n    subgraph \"ASGI Server Options\"\n        UVICORN[uvicorn] --> WORKER_PROCESSES[uvicorn_workers]\n        GUNICORN[gunicorn_uvicorn_workers] --> PROCESS_MANAGEMENT[process_management]\n        HYPERCORN[hypercorn] --> HTTP2_SUPPORT[http2_websockets]\n    end\n    \n    subgraph \"Configuration Layers\"\n        SERVER_CONFIG[server_configuration]\n        APP_SETTINGS[application_settings]\n        ENV_VARIABLES[environment_variables]\n        \n        SERVER_CONFIG --> PERFORMANCE_TUNING[performance_tuning]\n        APP_SETTINGS --> SECURITY_HEADERS[security_headers]\n        ENV_VARIABLES --> RUNTIME_CONFIG[runtime_configuration]\n    end\n```\n**ASGI Deployment Architecture**",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 38,
+      "total_chunks": 98,
+      "char_count": 1089,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399643"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:39",
+    "content": "FastAPI supports various deployment strategies depending on application requirements, from single-instance containers to multi-process, load-balanced configurations.\n```\ngraph TB\n    subgraph \"Container Deployment\"\n        DOCKER_IMAGE[dockerfile] --> FASTAPI_CONTAINER[fastapi_container]\n        FASTAPI_CONTAINER --> KUBERNETES_POD[kubernetes_pod]\n        KUBERNETES_POD --> LOAD_BALANCER[kubernetes_service]\n    end\n    \n    subgraph \"Process Management\"\n        SINGLE_PROCESS[single_uvicorn_process]\n        MULTI_PROCESS[gunicorn_multiple_workers]\n        PROCESS_SUPERVISOR[systemd_supervisor]\n    end\n    \n    subgraph \"Scaling Strategies\"\n        VERTICAL_SCALING[increase_worker_count]\n        HORIZONTAL_SCALING[multiple_application_instances]\n        AUTO_SCALING[kubernetes_hpa]\n    end\n    \n    subgraph \"Production Optimizations\"\n        STATIC_FILES[static_file_serving]\n        DATABASE_POOLING[connection_pooling]\n        CACHING_LAYER[redis_memcached]\n        MONITORING[prometheus_metrics]\n    end\n```\n**Production Deployment and Scaling Patterns**",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 39,
+      "total_chunks": 98,
+      "char_count": 1068,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399648"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:40",
+    "content": "Production FastAPI applications benefit from specific optimizations including connection pooling, static file serving, caching strategies, and monitoring integration.\nDatabase Connections, Implementation = SQLAlchemy engine with connection pooling. Database Connections, Performance Impact = Reduced connection overhead. Static File Serving, Implementation = Nginx/CDN for static assets. Static File Serving, Performance Impact = Faster asset delivery. Response Caching, Implementation = Redis/Memcached integration. Response Caching, Performance Impact = Reduced computation load. Process Management, Implementation = Gunicorn with uvicorn workers. Process Management, Performance Impact = Better resource utilization. Monitoring, Implementation = Prometheus metrics collection. Monitoring, Performance Impact = Performance visibility\n```\ngraph LR\n    subgraph \"Performance Monitoring\"\n        METRICS_COLLECTION[prometheus_metrics]\n        REQUEST_TRACING[request_tracing]\n        ERROR_TRACKING[error_tracking]\n        PERFORMANCE_PROFILING[performance_profiling]\n    end\n    \n    subgraph \"Optimization Layers\"\n        APPLICATION_LAYER[fastapi_optimization]\n        DATABASE_LAYER[sqlalchemy_optimization] \n        INFRASTRUCTURE_LAYER[server_optimization]\n        NETWORK_LAYER[cdn_optimization]\n    end\n    \n    subgraph \"Monitoring Integration\"\n        METRICS_COLLECTION --> GRAFANA_DASHBOARDS[grafana_visualization]\n        REQUEST_TRACING --> APM_TOOLS[apm_integration]\n        ERROR_TRACKING --> ALERTING[alert_systems]\n    end\n```\n**Production Performance Monitoring and Optimization**\nSources:\n[docs/en/docs/async.md:250-254](.)\n,\n[docs/en/docs/async.md:418-422](.)\nThe advanced capabilities of FastAPI enable sophisticated production applications with high-performance async processing, robust database integration, flexible background task handling, and comprehensive deployment options for scalable web API development.\n</old_str>\n<new_str>",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 40,
+      "total_chunks": 98,
+      "char_count": 1957,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399654"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:41",
+    "content": "FastAPI's\n```\nBackgroundTasks\n```\nclass enables post-response processing through task queuing that executes after the HTTP response is sent to the client, preventing response delays while ensuring important side-effects are handled.\n```\ngraph TB\n    subgraph \"Request Lifecycle\"\n        CLIENT_REQ[client_request] --> PATH_OPERATION[path_operation_execution]\n        PATH_OPERATION --> ADD_BACKGROUND_TASK[background_tasks_add_task]\n        ADD_BACKGROUND_TASK --> SEND_RESPONSE[send_http_response]\n        SEND_RESPONSE --> EXECUTE_TASKS[execute_background_tasks]\n    end\n    \n    subgraph \"BackgroundTasks API\"\n        ADD_BACKGROUND_TASK --> TASK_FUNC[task_function]\n        ADD_BACKGROUND_TASK --> TASK_ARGS[args_kwargs]\n        TASK_FUNC --> TASK_QUEUE[internal_task_queue]\n        TASK_ARGS --> TASK_QUEUE\n    end\n    \n    subgraph \"Execution Context\"\n        EXECUTE_TASKS --> WRITE_LOG[write_log_file]\n        EXECUTE_TASKS --> SEND_EMAIL[send_email_notification]\n        EXECUTE_TASKS --> UPDATE_CACHE[update_cache_data]\n        EXECUTE_TASKS --> ERROR_ISOLATION[error_handling_isolation]\n    end\n```\n**BackgroundTasks Processing Pipeline**\nThe\n```\nBackgroundTasks\n```\nclass integrates with dependency injection, allowing tasks to be added from path operations, dependencies, and sub-dependencies. Tasks are collected and executed after response completion.\n```\ngraph LR\n    subgraph \"Dependency Integration Points\"\n        PATH_OP_TASKS[path_operation_background_tasks]\n        DEP_TASKS[dependency_background_tasks] \n        SUBDEP_TASKS[subdependency_background_tasks]\n    end\n    \n    subgraph \"Task Collection\"\n        PATH_OP_TASKS --> TASK_MERGER[background_tasks_merger]\n        DEP_TASKS --> TASK_MERGER\n        SUBDEP_TASKS --> TASK_MERGER\n        TASK_MERGER --> UNIFIED_QUEUE[unified_task_queue]\n    end\n    \n    subgraph \"Post-Response Execution\"\n        UNIFIED_QUEUE --> SEQUENTIAL_EXEC[sequential_task_execution]\n        SEQUENTIAL_EXEC --> TASK_CLEANUP[task_cleanup_handling]\n    end\n```\n**Background Tasks Dependency Integration Pattern**\nSources:\n[docs/en/docs/tutorial/background-tasks.md:14-46](.)\n,\n[docs/en/docs/tutorial/background-tasks.md:48-63](.)\n,\n[docs/en/docs/tutorial/background-tasks.md:76-83](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 41,
+      "total_chunks": 98,
+      "char_count": 2237,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399659"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:42",
+    "content": "FastAPI integrates seamlessly with SQL databases through SQLModel, providing type-safe database operations with automatic validation and serialization.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 42,
+      "total_chunks": 98,
+      "char_count": 151,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399666"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:43",
+    "content": "```\ngraph TB\n    subgraph \"Model Layer\"\n        BASE_MODEL[\"HeroBase\"]\n        TABLE_MODEL[\"Hero (table=True)\"]\n        DATA_MODELS[\"HeroPublic, HeroCreate, HeroUpdate\"]\n    end\n    \n    subgraph \"Database Layer\"\n        ENGINE[\"SQLModel Engine\"]\n        SESSION[\"Session\"]\n        CONNECTION[\"Database Connection\"]\n    end\n    \n    subgraph \"FastAPI Integration\"\n        SESSION_DEP[\"SessionDep: Annotated[Session, Depends(get_session)]\"]\n        PATH_OPS[\"Path Operations\"]\n        RESPONSE_MODEL[\"response_model=HeroPublic\"]\n    end\n    \n    BASE_MODEL --> TABLE_MODEL\n    BASE_MODEL --> DATA_MODELS\n    \n    ENGINE --> SESSION\n    SESSION --> CONNECTION\n    \n    SESSION_DEP --> SESSION\n    PATH_OPS --> SESSION_DEP\n    DATA_MODELS --> PATH_OPS\n    PATH_OPS --> RESPONSE_MODEL\n    TABLE_MODEL --> SESSION\n```\n**SQLModel Integration Architecture**\nThe database integration follows a multi-model pattern where different Pydantic models serve specific purposes:\n```\nHeroBase\n```\n```\nHero(table=True)\n```\n```\nid\n```\nand\n```\nsecret_name\n```\n```\nHeroPublic\n```\n```\nHeroCreate\n```\n```\nid\n```\n```\nHeroUpdate\n```\nBase Model, Purpose = Shared fields. Base Model, Example = . Base Model, Usage = \nSources:\n[docs/en/docs/tutorial/sql-databases.md:180-283](.)\n,\n[docs/en/docs/tutorial/sql-databases.md:74-101](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 43,
+      "total_chunks": 98,
+      "char_count": 1303,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399671"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:44",
+    "content": "FastAPI employs a session-per-request pattern using dependency injection to ensure database connections are properly managed.\n```\ngraph TB\n    subgraph \"Session Lifecycle\"\n        REQ_START[\"Request Start\"]\n        GET_SESSION[\"get_session() dependency\"]\n        SESSION_CREATE[\"Session() creation\"]\n        PATH_EXEC[\"Path operation execution\"]\n        SESSION_CLOSE[\"Session cleanup\"]\n        REQ_END[\"Request End\"]\n    end\n    \n    subgraph \"Database Operations\"\n        ADD[\"session.add(hero)\"]\n        COMMIT[\"session.commit()\"]\n        REFRESH[\"session.refresh(hero)\"]\n        SELECT[\"session.exec(select())\"]\n        DELETE[\"session.delete(hero)\"]\n    end\n    \n    REQ_START --> GET_SESSION\n    GET_SESSION --> SESSION_CREATE\n    SESSION_CREATE --> PATH_EXEC\n    PATH_EXEC --> SESSION_CLOSE\n    SESSION_CLOSE --> REQ_END\n    \n    PATH_EXEC --> ADD\n    PATH_EXEC --> COMMIT\n    PATH_EXEC --> REFRESH\n    PATH_EXEC --> SELECT\n    PATH_EXEC --> DELETE\n```\n**Database Session Management**\nSources:\n[docs/en/docs/tutorial/sql-databases.md:92-101](.)\n,\n[docs/en/docs/tutorial/sql-databases.md:118-149](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 44,
+      "total_chunks": 98,
+      "char_count": 1105,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399676"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:45",
+    "content": "FastAPI provides built-in support for background task execution through the\n```\nBackgroundTasks\n```\nclass, enabling post-response processing without blocking the client.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 45,
+      "total_chunks": 98,
+      "char_count": 169,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399682"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:46",
+    "content": "```\ngraph LR\n    subgraph \"Request Flow\"\n        CLIENT_REQ[\"Client Request\"]\n        PATH_OP[\"Path Operation\"]\n        RESPONSE[\"Immediate Response\"]\n        CLIENT_RECV[\"Client Receives Response\"]\n    end\n    \n    subgraph \"Background Processing\"\n        BG_TASKS[\"BackgroundTasks\"]\n        ADD_TASK[\"add_task(func, *args, **kwargs)\"]\n        TASK_QUEUE[\"Task Queue\"]\n        TASK_EXEC[\"Task Execution\"]\n    end\n    \n    subgraph \"Task Functions\"\n        WRITE_FILE[\"write_notification()\"]\n        SEND_EMAIL[\"send_email()\"]\n        LOG_EVENT[\"log_event()\"]\n    end\n    \n    CLIENT_REQ --> PATH_OP\n    PATH_OP --> BG_TASKS\n    BG_TASKS --> ADD_TASK\n    PATH_OP --> RESPONSE\n    RESPONSE --> CLIENT_RECV\n    \n    ADD_TASK --> TASK_QUEUE\n    TASK_QUEUE --> TASK_EXEC\n    \n    TASK_EXEC --> WRITE_FILE\n    TASK_EXEC --> SEND_EMAIL\n    TASK_EXEC --> LOG_EVENT\n```\n**Background Task Execution Flow**\nBackground tasks integrate with FastAPI's dependency injection system, allowing tasks to be added at multiple levels of the application hierarchy.\nSources:\n[docs/en/docs/tutorial/background-tasks.md:14-46](.)\n,\n[docs/en/docs/tutorial/background-tasks.md:48-63](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 46,
+      "total_chunks": 98,
+      "char_count": 1160,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399688"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:47",
+    "content": "```\ngraph TB\n    subgraph \"Dependency Hierarchy\"\n        PATH_LEVEL[\"Path Operation Level\"]\n        DEP_LEVEL[\"Dependency Level\"]\n        SUB_DEP_LEVEL[\"Sub-dependency Level\"]\n    end\n    \n    subgraph \"BackgroundTasks Object\"\n        BG_INSTANCE[\"BackgroundTasks instance\"]\n        TASK_LIST[\"Internal task list\"]\n        MERGE_TASKS[\"Task merging\"]\n    end\n    \n    subgraph \"Execution Context\"\n        AFTER_RESPONSE[\"After response sent\"]\n        TASK_RUNNER[\"Task execution\"]\n        ERROR_HANDLING[\"Error isolation\"]\n    end\n    \n    PATH_LEVEL --> BG_INSTANCE\n    DEP_LEVEL --> BG_INSTANCE\n    SUB_DEP_LEVEL --> BG_INSTANCE\n    \n    BG_INSTANCE --> TASK_LIST\n    TASK_LIST --> MERGE_TASKS\n    \n    MERGE_TASKS --> AFTER_RESPONSE\n    AFTER_RESPONSE --> TASK_RUNNER\n    TASK_RUNNER --> ERROR_HANDLING\n```\n**Background Tasks Dependency Integration**\nSources:\n[docs/en/docs/tutorial/background-tasks.md:48-63](.)\n,\n[docs/en/docs/tutorial/background-tasks.md:76-83](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 47,
+      "total_chunks": 98,
+      "char_count": 970,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399694"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:48",
+    "content": "FastAPI provides sophisticated response handling capabilities and middleware integration for complex application requirements.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 48,
+      "total_chunks": 98,
+      "char_count": 126,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399699"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:49",
+    "content": "```\ngraph TB\n    subgraph \"Response Generation\"\n        RETURN_VALUE[\"Function return value\"]\n        RESPONSE_MODEL[\"response_model validation\"]\n        JSON_ENCODER[\"jsonable_encoder()\"]\n        JSON_RESPONSE[\"JSONResponse\"]\n        DIRECT_RESPONSE[\"Direct Response return\"]\n    end\n    \n    subgraph \"Response Customization\"\n        STATUS_CODE[\"Custom status codes\"]\n        HEADERS[\"Custom headers\"]\n        COOKIES[\"Cookie management\"]\n        MEDIA_TYPE[\"Content-Type handling\"]\n    end\n    \n    subgraph \"Response Types\"\n        JSON_RESP[\"JSONResponse\"]\n        HTML_RESP[\"HTMLResponse\"]\n        XML_RESP[\"Response with XML\"]\n        FILE_RESP[\"FileResponse\"]\n        STREAM_RESP[\"StreamingResponse\"]\n    end\n    \n    RETURN_VALUE --> RESPONSE_MODEL\n    RESPONSE_MODEL --> JSON_ENCODER\n    JSON_ENCODER --> JSON_RESPONSE\n    RETURN_VALUE --> DIRECT_RESPONSE\n    \n    JSON_RESPONSE --> STATUS_CODE\n    JSON_RESPONSE --> HEADERS\n    JSON_RESPONSE --> COOKIES\n    JSON_RESPONSE --> MEDIA_TYPE\n    \n    DIRECT_RESPONSE --> JSON_RESP\n    DIRECT_RESPONSE --> HTML_RESP\n    DIRECT_RESPONSE --> XML_RESP\n    DIRECT_RESPONSE --> FILE_RESP\n    DIRECT_RESPONSE --> STREAM_RESP\n```\n**Advanced Response Processing**\nFastAPI supports multiple response patterns including automatic JSON serialization, direct response objects, and custom response classes for different content types.\nSources:\n[docs/es/docs/advanced/response-directly.md:13-28](.)\n,\n[docs/es/docs/advanced/additional-status-codes.md:8-16](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 49,
+      "total_chunks": 98,
+      "char_count": 1501,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399705"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:50",
+    "content": "```\ngraph TB\n    subgraph \"Middleware Stack\"\n        CORS_MW[\"CORSMiddleware\"]\n        TRUSTED_HOST[\"TrustedHostMiddleware\"]\n        GZIP_MW[\"GZipMiddleware\"]\n        CUSTOM_MW[\"Custom Middleware\"]\n    end\n    \n    subgraph \"Request Processing\"\n        INCOMING[\"Incoming Request\"]\n        MW_PROCESS[\"Middleware Processing\"]\n        ROUTE_MATCH[\"Route Matching\"]\n        PATH_OP[\"Path Operation\"]\n    end\n    \n    subgraph \"Response Processing\"\n        RESPONSE_GEN[\"Response Generation\"]\n        MW_RESPONSE[\"Middleware Response Processing\"]\n        OUTGOING[\"Outgoing Response\"]\n    end\n    \n    INCOMING --> CORS_MW\n    CORS_MW --> TRUSTED_HOST\n    TRUSTED_HOST --> GZIP_MW\n    GZIP_MW --> CUSTOM_MW\n    CUSTOM_MW --> MW_PROCESS\n    \n    MW_PROCESS --> ROUTE_MATCH\n    ROUTE_MATCH --> PATH_OP\n    PATH_OP --> RESPONSE_GEN\n    \n    RESPONSE_GEN --> MW_RESPONSE\n    MW_RESPONSE --> OUTGOING\n```\n**Middleware Processing Pipeline**\nSources:\n[docs/es/docs/advanced/response-headers.md:37-41](.)\n,\n[docs/es/docs/tutorial/cors.md](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 50,
+      "total_chunks": 98,
+      "char_count": 1030,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399710"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:51",
+    "content": "FastAPI's advanced features are designed with performance in mind, leveraging Starlette's ASGI foundation and Pydantic's validation system.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 51,
+      "total_chunks": 98,
+      "char_count": 139,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399716"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:52",
+    "content": "```\nasync def\n```\nwith\n```\nawait\n```\n```\ndef\n```\n, Use Case = . , Performance Impact = \nDependency caching, Thread pool execution = Expensive operations",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 52,
+      "total_chunks": 98,
+      "char_count": 152,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399721"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:53",
+    "content": "```\ngraph LR\n    subgraph \"Connection Management\"\n        ENGINE_POOL[\"Engine connection pool\"]\n        SESSION_SCOPE[\"Session per request\"]\n        CONNECTION_REUSE[\"Connection reusing\"]\n    end\n    \n    subgraph \"Query Optimization\"\n        SELECT_OPT[\"Optimized select() queries\"]\n        LIMIT_OFFSET[\"Pagination with limit/offset\"]\n        EAGER_LOADING[\"Relationship loading\"]\n    end\n    \n    subgraph \"Data Serialization\"\n        PYDANTIC_PERF[\"Pydantic validation\"]\n        JSON_ENCODING[\"Fast JSON encoding\"]\n        RESPONSE_CACHE[\"Response model caching\"]\n    end\n    \n    ENGINE_POOL --> SESSION_SCOPE\n    SESSION_SCOPE --> CONNECTION_REUSE\n    \n    SELECT_OPT --> LIMIT_OFFSET\n    LIMIT_OFFSET --> EAGER_LOADING\n    \n    PYDANTIC_PERF --> JSON_ENCODING\n    JSON_ENCODING --> RESPONSE_CACHE\n```\n**Database Performance Optimization**\nSources:\n[docs/en/docs/tutorial/sql-databases.md:80-85](.)\n,\n[docs/en/docs/async.md:250-254](.)\nThe advanced features in FastAPI work together to provide a robust foundation for building high-performance, scalable web APIs with sophisticated data handling, asynchronous processing, and flexible response management capabilities.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 53,
+      "total_chunks": 98,
+      "char_count": 1174,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399727"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:54",
+    "content": "This document explains how FastAPI handles asynchronous code execution, including the use of\n```\nasync def\n```\nfunctions, concurrency patterns, and the differences between synchronous and asynchronous path operation functions.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 54,
+      "total_chunks": 98,
+      "char_count": 226,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399733"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:55",
+    "content": "This page covers:\n- How FastAPI supports both synchronous and asynchronous code\n- When to use `async def` vs regular `def` functions\n- How FastAPI handles different function types internally\n- Performance considerations for I/O-bound vs CPU-bound operations",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 55,
+      "total_chunks": 98,
+      "char_count": 257,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399738"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:56",
+    "content": "FastAPI provides native asynchronous support through Python's\n```\nasync\n```\n/\n```\nawait\n```\nsyntax, built on top of Starlette's ASGI foundation. This architecture enables efficient handling of concurrent requests, particularly for I/O-bound operations such as database queries, API calls, and file operations.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 56,
+      "total_chunks": 98,
+      "char_count": 309,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399744"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:57",
+    "content": "```\nflowchart TB\n    subgraph ASGI[\"ASGI Server Interface\"]\n        ASGIServer[\"ASGI Server\"]\n    end\n    \n    subgraph FastAPICore[\"FastAPI Core\"]\n        FastAPIApp[\"FastAPI() instance\"]\n        StarletteBase[\"Starlette Foundation\"]\n        AnyIOCompat[\"AnyIO Compatibility Layer\"]\n    end\n    \n    subgraph ExecutionLayer[\"Execution Layer\"]\n        AsyncPath[\"async def path_operation()\"]\n        SyncPath[\"def path_operation()\"]\n        ThreadPool[\"External ThreadPool\"]\n    end\n    \n    subgraph Resources[\"External Resources\"]\n        AsyncDB[\"await db.fetch()\"]\n        SyncDB[\"db.execute()\"]\n        FileIO[\"file.read()\"]\n    end\n    \n    ASGIServer --> FastAPIApp\n    FastAPIApp --> StarletteBase\n    StarletteBase --> AnyIOCompat\n    AnyIOCompat --> AsyncPath\n    AnyIOCompat --> SyncPath\n    SyncPath --> ThreadPool\n    AsyncPath --> AsyncDB\n    ThreadPool --> SyncDB\n    ThreadPool --> FileIO\n```",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 57,
+      "total_chunks": 98,
+      "char_count": 908,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399749"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:58",
+    "content": "```\nsequenceDiagram\n    participant Client\n    participant ASGI as \"ASGI Server\"\n    participant FastAPI as \"FastAPI App\"\n    participant PathOp as \"Path Operation\"\n    participant ThreadPool as \"ThreadPool\"\n    participant Resource as \"External Resource\"\n\n    Client->>ASGI: HTTP Request\n    ASGI->>FastAPI: ASGI scope/receive/send\n    \n    alt async def path operation\n        FastAPI->>PathOp: await path_operation()\n        PathOp->>Resource: await external_call()\n        Resource-->>PathOp: response\n        PathOp-->>FastAPI: result\n    else def path operation  \n        FastAPI->>ThreadPool: run_in_threadpool(path_operation)\n        ThreadPool->>PathOp: path_operation()\n        PathOp->>Resource: blocking_call()\n        Resource-->>PathOp: response\n        PathOp-->>ThreadPool: result\n        ThreadPool-->>FastAPI: result\n    end\n    \n    FastAPI->>ASGI: ASGI response\n    ASGI->>Client: HTTP Response\n```\nSources: [docs/en/docs/async.md:1-55], [docs/en/docs/async.md:366-372], [docs/en/docs/async.md:415-423]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 58,
+      "total_chunks": 98,
+      "char_count": 1022,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399755"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:59",
+    "content": "The decision to use\n```\nasync def\n```\nor regular\n```\ndef\n```\nfor your path operation functions depends on what your function does:\n```\nasync def\n```\n```\ndef\n```\n```\nawait\n```\nFastAPI will handle both types correctly, but following these guidelines allows for performance optimizations.\n```\nflowchart TD\n    Start[\"Need to define a\\npath operation function\"]\n    AsyncLib{\"Using libraries\\nthat use await?\"}\n    CPUBound{\"Performing CPU\\nintensive work?\"}\n    IOWait{\"Waiting for external\\nresources (I/O)?\"}\n    UseAsync[\"Use async def\"]\n    UseSync[\"Use def\"]\n    \n    Start --> AsyncLib\n    AsyncLib -->|\"Yes\"| UseAsync\n    AsyncLib -->|\"No\"| CPUBound\n    CPUBound -->|\"Yes\"| UseSync\n    CPUBound -->|\"No\"| IOWait\n    IOWait -->|\"Yes\"| UseAsync\n    IOWait -->|\"No\"| UseSync\n```\nSources: [docs/en/docs/async.md:5-55]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 59,
+      "total_chunks": 98,
+      "char_count": 817,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399760"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:60",
+    "content": "FastAPI's handling of path operation functions depends on their declaration:\n```\nflowchart TD\n    Request[\"Incoming Request\"] --> Router[\"FastAPI Router\"]\n    Router --> FuncType{\"Function Type?\"}\n    \n    FuncType -->|\"async def\"| AsyncExec[\"Direct Execution\"]\n    FuncType -->|\"def\"| SyncExec[\"ThreadPool Execution\"]\n    \n    AsyncExec --> AsyncFunc[\"await path_operation_function()\"]\n    SyncExec --> ThreadPool[\"run_in_threadpool()\"]\n    ThreadPool --> SyncFunc[\"path_operation_function()\"]\n    \n    AsyncFunc --> AsyncReturn[\"Return awaited result\"]\n    SyncFunc --> SyncReturn[\"Return from thread\"]\n    \n    AsyncReturn --> Response[\"HTTP Response\"]\n    SyncReturn --> Response\n```\n**For**\n**```\nasync def\n```**\n**path operations:**\n- FastAPI calls the function directly using `await`\n- Execution remains in the main event loop\n- Can use `await` for other async operations\n- Example: [docs/en/docs/async.md:17-22](.)\n**For**\n**```\ndef\n```**\n**path operations:**\n- FastAPI wraps the call in `run_in_threadpool()`\n- Execution moves to an external thread\n- Cannot use `await` inside the function\n- Example: [docs/en/docs/async.md:34-39](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 60,
+      "total_chunks": 98,
+      "char_count": 1142,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399765"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:61",
+    "content": "The same execution model applies to the dependency injection system:\n```\nawait\n```\n```\nasync def get_db()\n```\n```\ndef get_db()\n```\nDependencies can be mixed freely - FastAPI handles each according to its type. Sub-dependencies follow the same pattern, allowing complex dependency trees with mixed execution models.\nSources: [docs/en/docs/async.md:415-423], [docs/en/docs/async.md:424-431]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 61,
+      "total_chunks": 98,
+      "char_count": 388,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399770"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:62",
+    "content": "FastAPI's asynchronous support is based on concurrency, which is different from parallelism:\n```\nflowchart LR\n    subgraph \"Concurrency (Async)\"\n        C1[\"Task 1\"] --> CW1[\"Wait for I/O\"]\n        CW1 --> C2[\"Task 2\"]\n        C2 --> CW2[\"Wait for I/O\"]\n        CW2 --> C3[\"Back to Task 1\"]\n        C3 --> C4[\"Complete Task 1\"]\n        C4 --> C5[\"Complete Task 2\"]\n    end\n    \n    subgraph \"Parallelism (Multiple Processors)\"\n        P1[\"Processor 1: Task 1\"] --> P3[\"Processor 1: Complete Task 1\"]\n        P2[\"Processor 2: Task 2\"] --> P4[\"Processor 2: Complete Task 2\"]\n    end\n```\n- **Concurrency** : Handling multiple tasks by switching between them when waiting occurs\n- **Parallelism** : Executing multiple tasks simultaneously on different processors\nFastAPI excels at concurrency, which is ideal for web applications that spend most of their time waiting for I/O operations.\nSources: [docs/en/docs/async.md:96-261]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 62,
+      "total_chunks": 98,
+      "char_count": 923,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399776"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:63",
+    "content": "Understanding the difference between I/O-bound and CPU-bound operations helps in choosing the right approach:\nNetwork requests, CPU-Bound Operations = Complex calculations. Database queries, CPU-Bound Operations = Image/audio processing. File system operations, CPU-Bound Operations = Machine learning. API calls, CPU-Bound Operations = Data transformations. Best with: Async/concurrency, CPU-Bound Operations = Best with: Parallelism\nFor web APIs, most operations are I/O-bound, making async a good default choice.\nSources: [docs/en/docs/async.md:77-89], [docs/en/docs/async.md:262-301]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 63,
+      "total_chunks": 98,
+      "char_count": 587,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399781"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:64",
+    "content": "FastAPI's asynchronous capabilities are built on a carefully designed stack that provides compatibility and performance:",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 64,
+      "total_chunks": 98,
+      "char_count": 120,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399786"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:65",
+    "content": "```\nflowchart TB\n    subgraph Application[\"Application Layer\"]\n        FastAPIApp[\"FastAPI()\"]\n        PathOps[\"@app.get() decorators\"]\n        Dependencies[\"Depends() functions\"]\n    end\n    \n    subgraph Framework[\"Framework Layer\"]\n        Starlette[\"Starlette ASGI Framework\"]\n        Routing[\"StarletteRoute\"]\n        Middleware[\"StarletteMiddleware\"]\n    end\n    \n    subgraph AsyncFoundation[\"Async Foundation\"]\n        AnyIO[\"AnyIO Library\"]\n        AsyncIO[\"asyncio (default)\"]\n        Trio[\"trio (optional)\"]\n    end\n    \n    subgraph Threading[\"Threading Layer\"]\n        ThreadPoolExecutor[\"ThreadPoolExecutor\"]\n        SyncFunctions[\"def functions\"]\n    end\n    \n    FastAPIApp --> Starlette\n    PathOps --> Routing\n    Dependencies --> Routing\n    Starlette --> AnyIO\n    AnyIO --> AsyncIO\n    AnyIO --> Trio\n    Routing --> ThreadPoolExecutor\n    ThreadPoolExecutor --> SyncFunctions\n```",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 65,
+      "total_chunks": 98,
+      "char_count": 901,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399792"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:66",
+    "content": "FastAPI uses different execution strategies based on function signatures:\n```\nstateDiagram-v2\n    [*] --> FunctionCall\n    FunctionCall --> CheckType: Analyze function signature\n    \n    state CheckType {\n        [*] --> AsyncDef: if async def\n        [*] --> SyncDef: if def\n    }\n    \n    AsyncDef --> CreateCoroutine: create coroutine object\n    CreateCoroutine --> AwaitCoroutine: await coroutine\n    AwaitCoroutine --> Return: return result\n    \n    SyncDef --> SubmitToThreadPool: submit to ThreadPoolExecutor\n    SubmitToThreadPool --> RunInThread: execute in separate thread\n    RunInThread --> AwaitThreadResult: await thread completion\n    AwaitThreadResult --> Return\n    \n    Return --> [*]\n```",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 66,
+      "total_chunks": 98,
+      "char_count": 706,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399798"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:67",
+    "content": "FastAPI leverages AnyIO's structured concurrency features:\n- Compatible with both `asyncio` and `trio` backends\n- Provides unified async abstraction layer\n- Enables advanced concurrency patterns\n- Supports context managers and cancellation\nThe\n```\nrun_in_threadpool()\n```\nfunction prevents blocking the main event loop when executing synchronous code, ensuring the server remains responsive to other requests.\nSources: [docs/en/docs/async.md:366-372], [docs/en/docs/async.md:415-423], [docs/en/docs/async.md:418-420]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 67,
+      "total_chunks": 98,
+      "char_count": 516,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399803"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:68",
+    "content": "Choosing the right function type directly impacts FastAPI application performance:",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 68,
+      "total_chunks": 98,
+      "char_count": 82,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399809"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:69",
+    "content": "```\nasyncpg\n```\n,\n```\nmotor\n```\n```\nasync def\n```\n```\npsycopg2\n```\n,\n```\npymongo\n```\n```\ndef\n```\n```\nhttpx\n```\n,\n```\naiohttp\n```\n```\nasync def\n```\n```\nrequests\n```\n```\ndef\n```\n```\naiofiles\n```\n```\nasync def\n```\n```\nopen()\n```\n```\ndef\n```\n```\ndef\n```\n```\nasync def\n```\nDatabase queries, Library Support = . Database queries, Recommended Function Type = . Database queries, Execution Method = . Database queries, Performance Impact = ",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 69,
+      "total_chunks": 98,
+      "char_count": 432,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399814"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:70",
+    "content": "When FastAPI encounters a\n```\ndef\n```\nfunction, it automatically:\n```\nsequenceDiagram\n    participant EventLoop as \"Main Event Loop\"\n    participant Router as \"FastAPI Router\"  \n    participant ThreadPool as \"ThreadPoolExecutor\"\n    participant SyncFunc as \"def path_operation()\"\n\n    EventLoop->>Router: Process request\n    Router->>ThreadPool: run_in_threadpool(path_operation)\n    Note over ThreadPool: Function runs in separate thread\n    ThreadPool->>SyncFunc: Execute synchronously\n    SyncFunc-->>ThreadPool: Return result\n    ThreadPool-->>Router: Future result\n    Router-->>EventLoop: awaited result\n```",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 70,
+      "total_chunks": 98,
+      "char_count": 613,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399820"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:71",
+    "content": "Unlike some other async frameworks, FastAPI optimizations include:\n- **Automatic threadpool management** : No need to manually configure thread pools\n- **Smart function detection** : Analyzes function signatures at startup\n- **Mixed execution support** : Seamlessly combines async and sync dependencies\n- **Zero-copy where possible** : Minimal overhead for async operations\nFor compute-only operations (no I/O),\n```\nasync def\n```\nperforms better in FastAPI due to reduced threadpool overhead - approximately 100 nanoseconds saved per call compared to other frameworks.\nSources: [docs/en/docs/async.md:415-423], [docs/en/docs/async.md:418-420]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 71,
+      "total_chunks": 98,
+      "char_count": 642,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399826"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:72",
+    "content": "If you need to write custom asynchronous code beyond FastAPI's built-in functionality, you can use:\n1. **AnyIO** : The library that powers Starlette and FastAPI\n2. **Asyncer** : A thin layer on top of AnyIO with improved type annotations\n3. **Standard asyncio** : Python's built-in asynchronous library\nThese tools can help you implement more advanced concurrency patterns in your FastAPI applications.\nSources: [docs/en/docs/async.md:366-372]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 72,
+      "total_chunks": 98,
+      "char_count": 443,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399831"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:73",
+    "content": "FastAPI's support for both synchronous and asynchronous code provides flexibility while maintaining high performance. By understanding when to use each approach, you can optimize your application for different types of operations.\nRemember:\n- Use `async def` when working with other async code or I/O-bound operations\n- Use regular `def` when working with synchronous libraries or CPU-bound tasks\n- FastAPI will handle both correctly, but following these guidelines allows for better performance\nThe asynchronous capabilities of FastAPI, powered by Starlette and AnyIO, contribute significantly to its impressive performance compared to other Python web frameworks.\nSources: [docs/en/docs/async.md:394-403]",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 73,
+      "total_chunks": 98,
+      "char_count": 706,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399837"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:74",
+    "content": "This document covers FastAPI's database integration capabilities, focusing primarily on SQLModel as the recommended approach for SQL database integration. It includes session management, model patterns, CRUD operations, and security considerations for database-backed applications.\nFor background task integration with databases, see\n[Background Tasks](#4.3)\n. For general error handling patterns including database errors, see\n[Error Handling](#2.7)\n.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 74,
+      "total_chunks": 98,
+      "char_count": 452,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399842"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:75",
+    "content": "FastAPI provides flexible database integration through SQLModel, which combines SQLAlchemy's database capabilities with Pydantic's validation features. The integration supports both simple single-model approaches and sophisticated multi-model patterns for production applications.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 75,
+      "total_chunks": 98,
+      "char_count": 280,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399848"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:76",
+    "content": "```\ngraph TD\n    subgraph \"FastAPI Application Layer\"\n        A[\"FastAPI app instance\"]\n        B[\"Path operation functions\"]\n        C[\"Dependency injection system\"]\n    end\n    \n    subgraph \"SQLModel Integration Layer\"\n        D[\"SQLModel table models\"]\n        E[\"SQLModel data models\"]\n        F[\"Session dependency\"]\n        G[\"Engine instance\"]\n    end\n    \n    subgraph \"Database Layer\"\n        H[\"SQLAlchemy Engine\"]\n        I[\"Database connection pool\"]\n        J[\"SQL Database (SQLite/PostgreSQL/MySQL)\"]\n    end\n    \n    A --> B\n    B --> C\n    C --> F\n    F --> D\n    F --> E\n    D --> G\n    G --> H\n    H --> I\n    I --> J\n    \n    B --> D\n    B --> E\n```\n**Database Integration Flow in FastAPI**\nThis architecture shows how FastAPI integrates with databases through SQLModel, which serves as an abstraction layer over SQLAlchemy while providing Pydantic validation capabilities.\nSources:\n[docs/en/docs/tutorial/sql-databases.md:1-358](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 76,
+      "total_chunks": 98,
+      "char_count": 952,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399853"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:77",
+    "content": "SQLModel serves as the primary database integration tool, combining SQLAlchemy's ORM capabilities with Pydantic's data validation. The framework distinguishes between table models and data models.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 77,
+      "total_chunks": 98,
+      "char_count": 196,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399859"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:78",
+    "content": "```\ngraph LR\n    subgraph \"SQLModel Model Types\"\n        A[\"SQLModel base class\"]\n        B[\"Table models (table=True)\"]\n        C[\"Data models (table=False)\"]\n    end\n    \n    subgraph \"Table Model Examples\"\n        D[\"Hero class\"]\n        E[\"User class\"]\n    end\n    \n    subgraph \"Data Model Examples\"  \n        F[\"HeroCreate class\"]\n        G[\"HeroPublic class\"]\n        H[\"HeroUpdate class\"]\n    end\n    \n    A --> B\n    A --> C\n    B --> D\n    B --> E\n    C --> F\n    C --> G\n    C --> H\n```\n**SQLModel Model Hierarchy**\nTable models represent actual database tables with\n```\ntable=True\n```\n, while data models handle API serialization and validation without direct database mapping.\nSources:\n[docs/en/docs/tutorial/sql-databases.md:182-187](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 78,
+      "total_chunks": 98,
+      "char_count": 750,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399864"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:79",
+    "content": "The database engine manages connections to the database. FastAPI applications typically create a single engine instance shared across the application.\n```\ngraph TD\n    A[\"create_engine()\"] --> B[\"SQLModel engine instance\"]\n    B --> C[\"Connection pool\"]\n    C --> D[\"Database connections\"]\n    \n    E[\"check_same_thread=False\"] --> B\n    F[\"Database URL\"] --> A\n    \n    G[\"Session class\"] --> H[\"Session instances\"]\n    B --> G\n```\n**Engine and Session Creation Flow**\nThe engine configuration includes thread safety settings for SQLite and connection pooling for production databases.\nSources:\n[docs/en/docs/tutorial/sql-databases.md:74-84](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 79,
+      "total_chunks": 98,
+      "char_count": 645,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399870"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:80",
+    "content": "FastAPI uses dependency injection to provide database sessions to path operations:\n```\ngraph LR\n    A[\"get_session() dependency\"] --> B[\"Session instance\"]\n    B --> C[\"Path operation function\"]\n    C --> D[\"Database operations\"]\n    D --> E[\"session.commit()\"]\n    D --> F[\"session.refresh()\"]\n    \n    G[\"SessionDep = Annotated[Session, Depends(get_session)]\"] --> C\n```\n**Session Dependency Lifecycle**\nEach request receives its own session instance through the dependency injection system, ensuring proper transaction isolation.\nSources:\n[docs/en/docs/tutorial/sql-databases.md:92-100](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 80,
+      "total_chunks": 98,
+      "char_count": 592,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399875"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:81",
+    "content": "The simplest pattern uses one model class for both database representation and API serialization:\n- Direct model usage in path operations\n- Simple CRUD operations\n- Minimal security separation\nSources:\n[docs/en/docs/tutorial/sql-databases.md:48-167](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 81,
+      "total_chunks": 98,
+      "char_count": 252,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399880"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:82",
+    "content": "Production applications typically use separate models for different purposes:\n```\ngraph TD\n    subgraph \"Model Inheritance Hierarchy\"\n        A[\"HeroBase\"] --> B[\"Hero (table model)\"]\n        A --> C[\"HeroPublic (data model)\"]\n        A --> D[\"HeroCreate (data model)\"]\n        A --> E[\"HeroUpdate (data model)\"]\n    end\n    \n    subgraph \"Field Distribution\"\n        F[\"Shared fields: name, age\"] --> A\n        G[\"Database fields: id, secret_name\"] --> B\n        H[\"Public fields: id, name, age\"] --> C\n        I[\"Creation fields: name, age, secret_name\"] --> D\n        J[\"Update fields: all optional\"] --> E\n    end\n```\n**Multi-Model Pattern Structure**\nThis pattern provides security by controlling which fields are exposed in different contexts while avoiding code duplication through inheritance.\nSources:\n[docs/en/docs/tutorial/sql-databases.md:180-283](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 82,
+      "total_chunks": 98,
+      "char_count": 862,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399886"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:83",
+    "content": "Create operations receive data models and convert them to table models:\n```\nsequenceDiagram\n    participant C as \"Client\"\n    participant P as \"Path Operation\"\n    participant S as \"Session\"\n    participant D as \"Database\"\n    \n    C->>P: \"HeroCreate data\"\n    P->>P: \"Create Hero table model\"\n    P->>S: \"session.add(hero)\"\n    P->>S: \"session.commit()\"\n    P->>S: \"session.refresh(hero)\"\n    S->>D: \"INSERT statement\"\n    P->>C: \"HeroPublic response\"\n```\n**Create Operation Flow**\nThe create flow demonstrates the conversion from input data model to table model and back to response data model.\nSources:\n[docs/en/docs/tutorial/sql-databases.md:281-291](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 83,
+      "total_chunks": 98,
+      "char_count": 657,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399891"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:84",
+    "content": "Read operations use SQLModel's\n```\nselect()\n```\nfunction with session execution:\n- List operations with pagination support\n- Single item retrieval by ID\n- Automatic conversion to response models\nSources:\n[docs/en/docs/tutorial/sql-databases.md:130-140](.)\n,\n[docs/en/docs/tutorial/sql-databases.md:303-316](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 84,
+      "total_chunks": 98,
+      "char_count": 309,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399896"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:85",
+    "content": "Update operations use partial data models with\n```\nexclude_unset=True\n```\n:\n```\ngraph LR\n    A[\"PATCH request\"] --> B[\"HeroUpdate model\"]\n    B --> C[\"exclude_unset=True\"]\n    C --> D[\"dict with only sent fields\"]\n    D --> E[\"sqlmodel_update()\"]\n    E --> F[\"Database update\"]\n```\n**Update Operation Pattern**\nThe update pattern ensures only explicitly provided fields are modified, avoiding accidental overwrites of unspecified fields.\nSources:\n[docs/en/docs/tutorial/sql-databases.md:315-326](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 85,
+      "total_chunks": 98,
+      "char_count": 498,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399902"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:86",
+    "content": "Delete operations retrieve the entity, verify existence, and remove it from the session:\nSources:\n[docs/en/docs/tutorial/sql-databases.md:325-334](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 86,
+      "total_chunks": 98,
+      "char_count": 149,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399907"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:87",
+    "content": "The multiple model pattern provides security by controlling field visibility:\n- `secret_name` fields excluded from public responses\n- `id` fields prevented from client input during creation\n- Response models ensure consistent data contracts\nSources:\n[docs/en/docs/tutorial/sql-databases.md:168-180](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 87,
+      "total_chunks": 98,
+      "char_count": 301,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399926"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:88",
+    "content": "Table creation typically occurs during application startup rather than on-demand:\n```\ngraph LR\n    A[\"Application startup\"] --> B[\"create_tables()\"]\n    B --> C[\"SQLModel.metadata.create_all()\"]\n    C --> D[\"Database tables created\"]\n    \n    E[\"Production deployment\"] --> F[\"Migration scripts\"]\n    F --> G[\"Alembic/similar tools\"]\n```\n**Database Initialization Patterns**\nDevelopment uses automatic table creation while production relies on migration scripts for controlled schema changes.\nSources:\n[docs/en/docs/tutorial/sql-databases.md:102-116](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 88,
+      "total_chunks": 98,
+      "char_count": 553,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399932"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:89",
+    "content": "Database operations integrate with FastAPI's error handling through\n```\nHTTPException\n```\n:\n- 404 errors for missing entities\n- Validation errors for invalid data\n- Database constraint violations\nFor comprehensive error handling patterns, see\n[Error Handling](#2.7)\n.\nSources:\n[docs/en/docs/tutorial/handling-errors.md:22-43](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 89,
+      "total_chunks": 98,
+      "char_count": 328,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399938"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:90",
+    "content": "SQLModel supports multiple database backends through SQLAlchemy:\n- SQLite for development and simple deployments\n- PostgreSQL for production applications\n- MySQL, Oracle, SQL Server for enterprise environments\nSources:\n[docs/en/docs/tutorial/sql-databases.md:15-26](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 90,
+      "total_chunks": 98,
+      "char_count": 268,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399943"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:91",
+    "content": "Production deployments require proper migration handling:\n- Alembic integration for schema changes\n- Version control for database schemas\n- Automated deployment pipelines\nSources:\n[docs/en/docs/tutorial/sql-databases.md:110-116](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 91,
+      "total_chunks": 98,
+      "char_count": 231,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399948"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:92",
+    "content": "This document covers FastAPI's background task system, which allows executing functions after an HTTP response has been sent to the client. This system is useful for operations like sending emails, processing files, or logging that don't need to block the response.\nFor information about asynchronous programming concepts in FastAPI, see\n[4.1](#4.1)\n. For dependency injection patterns, see\n[2.2](#2.2)\n.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 92,
+      "total_chunks": 98,
+      "char_count": 404,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399954"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:93",
+    "content": "Background tasks in FastAPI enable deferred execution of functions after the HTTP response has been sent to the client. This pattern allows for better user experience by avoiding blocking operations while ensuring important side effects still occur.\nThe system is built on top of Starlette's background task implementation and integrates seamlessly with FastAPI's dependency injection system.",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 93,
+      "total_chunks": 98,
+      "char_count": 392,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399960"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:94",
+    "content": "```\nsequenceDiagram\n    participant Client\n    participant FastAPI as \"FastAPI Application\"\n    participant BgTasks as \"BackgroundTasks\"\n    participant TaskFunc as \"Task Functions\"\n\n    Client->>FastAPI: \"HTTP Request\"\n    FastAPI->>BgTasks: \"Create BackgroundTasks instance\"\n    FastAPI->>BgTasks: \"Add tasks via .add_task()\"\n    FastAPI->>Client: \"HTTP Response (immediate)\"\n    \n    Note over BgTasks,TaskFunc: After response sent\n    BgTasks->>TaskFunc: \"Execute task 1\"\n    BgTasks->>TaskFunc: \"Execute task 2\"\n    BgTasks->>TaskFunc: \"Execute task N\"\n```\nSources:\n[docs/en/docs/tutorial/background-tasks.md:1-87](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 94,
+      "total_chunks": 98,
+      "char_count": 622,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399965"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:95",
+    "content": "```\ngraph TD\n    FastAPIApp[\"FastAPI Application\"] --> PathOp[\"Path Operation Function\"]\n    PathOp --> BGParam[\"BackgroundTasks Parameter\"]\n    BGParam --> BGInstance[\"BackgroundTasks Instance\"]\n    BGInstance --> AddTask[\".add_task() Method\"]\n    AddTask --> TaskQueue[\"Task Queue\"]\n    \n    Response[\"HTTP Response\"] --> Sent[\"Response Sent\"]\n    Sent --> Execute[\"Execute Tasks\"]\n    TaskQueue --> Execute\n    \n    StarletteBG[\"starlette.background.BackgroundTasks\"] --> BGInstance\n```\nThe\n```\nBackgroundTasks\n```\nclass is imported directly from Starlette but re-exported through FastAPI's main module for convenience. This design allows FastAPI to leverage Starlette's proven implementation while providing a unified import interface.\nSources:\n[fastapi/](.)\n[**init**](.)\n[.py:8](.)\n,\n[docs/en/docs/tutorial/background-tasks.md:66-74](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 95,
+      "total_chunks": 98,
+      "char_count": 842,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399970"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:96",
+    "content": "FastAPI's background task system supports both synchronous and asynchronous task functions:\n```\ndef task_func()\n```\n```\nasync def task_func()\n```\nSynchronous, Declaration = . Synchronous, Execution Context = \n```\ngraph LR\n    TaskAdd[\"task_function\"] --> TypeCheck{\"Function Type?\"}\n    TypeCheck -->|\"def\"| SyncExec[\"Thread Pool Execution\"]\n    TypeCheck -->|\"async def\"| AsyncExec[\"Event Loop Execution\"]\n    \n    SyncExec --> Complete[\"Task Complete\"]\n    AsyncExec --> Complete\n```\nSources:\n[docs/en/docs/tutorial/background-tasks.md:28-34](.)",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 96,
+      "total_chunks": 98,
+      "char_count": 547,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399976"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:OpenAPI_Schema_Generation:chunk:97",
+    "content": "The most common pattern involves three steps:\n1. **Import and declare** : Import `BackgroundTasks` and declare it as a parameter\n2. **Create task function** : Define the function to execute in the background\n3. **Add task** : Use `.add_task()` to queue the function",
+    "metadata": {
+      "source": "fastapi\\OpenAPI_Schema_Generation.md",
+      "file_name": "OpenAPI_Schema_Generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 97,
+      "total_chunks": 98,
+      "char_count": 265,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.399981"
+    }
+  }
+]

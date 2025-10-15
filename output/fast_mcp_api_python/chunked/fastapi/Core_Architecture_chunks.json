@@ -1,0 +1,482 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:0",
+    "content": "FastAPI's core architecture consists of several interconnected systems that work together to process HTTP requests, validate data, inject dependencies, and generate responses. This page provides an overview of these core components and their relationships. For detailed information about specific subsystems, see the dedicated pages:\n[Application and Routing System](#2.1)\n,\n[Dependency Injection](#2.2)\n,\n[Parameter Validation and Handling](#2.3)\n,\n[Response Handling](#2.4)\n,\n[Security Components](#2.5)\n,\n[Settings Management](#2.6)\n, and\n[Error Handling](#2.7)\n.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 32,
+      "char_count": 566,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913548"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:1",
+    "content": "FastAPI's architecture is built in layers, with each layer providing specific functionality while building upon Starlette's ASGI foundation and Pydantic's validation capabilities.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 32,
+      "char_count": 179,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913564"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:2",
+    "content": "```\ngraph TD\n    subgraph \"Application Layer\"\n        FastAPIApp[\"FastAPI\"]\n        APIRouterInst[\"APIRouter\"]\n        PublicAPI[\"fastapi.__init__\"]\n    end\n    \n    subgraph \"Request Processing\"\n        APIRoute[\"APIRoute\"]\n        get_request_handler[\"get_request_handler()\"]\n        solve_dependencies[\"solve_dependencies()\"]\n        serialize_response[\"serialize_response()\"]\n    end\n    \n    subgraph \"Data Validation\"\n        analyze_param[\"analyze_param()\"]\n        Dependant[\"Dependant\"]\n        ModelField[\"ModelField\"]\n        jsonable_encoder[\"jsonable_encoder()\"]\n    end\n    \n    subgraph \"Foundation\"\n        StarletteApp[\"Starlette\"]\n        ASGIApp[\"ASGI\"]\n        PydanticBase[\"BaseModel\"]\n    end\n    \n    PublicAPI --> FastAPIApp\n    PublicAPI --> APIRouterInst\n    FastAPIApp --> APIRoute\n    APIRouterInst --> APIRoute\n    APIRoute --> get_request_handler\n    get_request_handler --> solve_dependencies\n    get_request_handler --> serialize_response\n    solve_dependencies --> analyze_param\n    solve_dependencies --> Dependant\n    analyze_param --> ModelField\n    serialize_response --> jsonable_encoder\n    FastAPIApp --> StarletteApp\n    StarletteApp --> ASGIApp\n    ModelField --> PydanticBase\n    jsonable_encoder --> PydanticBase\n```",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 32,
+      "char_count": 1260,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913571"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:3",
+    "content": "```\nsequenceDiagram\n    participant Client\n    participant FastAPIApp as \"FastAPI\"\n    participant APIRoute as \"APIRoute\"\n    participant RequestHandler as \"get_request_handler()\"\n    participant Dependencies as \"solve_dependencies()\"\n    participant Endpoint as \"User Endpoint\"\n    participant ResponseHandler as \"serialize_response()\"\n\n    Client->>FastAPIApp: \"HTTP Request\"\n    FastAPIApp->>APIRoute: \"Route Matching\"\n    APIRoute->>RequestHandler: \"Execute Handler\"\n    RequestHandler->>Dependencies: \"Resolve Dependencies\"\n    Dependencies->>RequestHandler: \"Resolved Values\"\n    RequestHandler->>Endpoint: \"Call with Args\"\n    Endpoint->>RequestHandler: \"Return Value\"\n    RequestHandler->>ResponseHandler: \"Serialize Response\"\n    ResponseHandler->>Client: \"HTTP Response\"\n```\n**Sources:**\n[fastapi/](.)\n[**init**](.)\n[.py:1-26](.)\n,\n[fastapi/applications.py:48](.)\n,\n[fastapi/routing.py:596](.)\n,\n[fastapi/routing.py:218](.)\n,\n[fastapi/dependencies/utils.py:572](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 32,
+      "char_count": 974,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913577"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:4",
+    "content": "The\n```\nFastAPI\n```\nclass in\n[fastapi/applications.py:48](.)\nserves as the main entry point and inherits from Starlette's\n```\nStarlette\n```\nclass. It aggregates all core functionality including routing, dependency injection, security, and OpenAPI generation.\nKey responsibilities:\n- Route registration and management via `add_api_route()` and HTTP method decorators\n- Global dependency management\n- OpenAPI schema generation and documentation endpoints\n- Exception handling and middleware configuration\n- Application lifecycle management\n**Sources:**\n[fastapi/applications.py:48-770](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 32,
+      "char_count": 586,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913582"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:5",
+    "content": "The\n```\nAPIRouter\n```\nclass in\n[fastapi/routing.py:596](.)\nprovides modular route organization. It mirrors the\n```\nFastAPI\n```\nclass interface but operates as a sub-application that can be included in the main app or other routers.\n```\ngraph LR\n    FastAPIApp[\"FastAPI\"] --> include_router[\"include_router()\"]\n    include_router --> APIRouterInstance[\"APIRouter\"]\n    APIRouterInstance --> APIRoute1[\"APIRoute\"]\n    APIRouterInstance --> APIRoute2[\"APIRoute\"]\n    APIRouterInstance --> APIWebSocketRoute[\"APIWebSocketRoute\"]\n    \n    APIRoute1 --> get_route_handler[\"get_route_handler()\"]\n    APIRoute2 --> get_route_handler\n    get_route_handler --> RequestHandler[\"get_request_handler()\"]\n```\n**Sources:**\n[fastapi/routing.py:596-861](.)\n,\n[fastapi/routing.py:429-570](.)\n,\n[fastapi/routing.py:389-427](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 32,
+      "char_count": 807,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913588"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:6",
+    "content": "The request processing pipeline is implemented primarily in\n```\nget_request_handler()\n```\nin\n[fastapi/routing.py:218](.)\nand handles the complete lifecycle of an HTTP request.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 32,
+      "char_count": 175,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913594"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:7",
+    "content": "Each API endpoint is represented by an\n```\nAPIRoute\n```\ninstance that contains:\n- Path pattern and HTTP methods\n- Endpoint function reference\n- Response model and serialization configuration\n- Dependency tree ( `Dependant` object)\n- Security requirements\n- OpenAPI metadata\nThe\n```\nget_request_handler()\n```\nfunction creates an async handler that:\n1. **Body Parsing** : Extracts JSON, form data, or file uploads from the request body\n2. **Dependency Resolution** : Calls `solve_dependencies()` to resolve all parameter and dependency values\n3. **Endpoint Execution** : Runs the user's endpoint function with resolved dependencies\n4. **Response Processing** : Serializes the response using `serialize_response()`\n**Sources:**\n[fastapi/routing.py:429-570](.)\n,\n[fastapi/routing.py:218-359](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 32,
+      "char_count": 790,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913600"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:8",
+    "content": "The dependency injection system is built around the\n```\nDependant\n```\ndataclass in\n[fastapi/dependencies/models.py:15](.)\nand the\n```\nsolve_dependencies()\n```\nfunction in\n[fastapi/dependencies/utils.py:572](.)\n.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 32,
+      "char_count": 211,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913606"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:9",
+    "content": "The\n```\nDependant\n```\nclass represents a complete dependency tree:\n```\n@dataclass\nclass Dependant:\n    path_params: List[ModelField]\n    query_params: List[ModelField] \n    header_params: List[ModelField]\n    cookie_params: List[ModelField]\n    body_params: List[ModelField]\n    dependencies: List[\"Dependant\"]\n    security_requirements: List[SecurityRequirement]\n    # ... other fields\n```",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 32,
+      "char_count": 390,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913612"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:10",
+    "content": "```\ngraph TD\n    solve_dependencies[\"solve_dependencies()\"] --> resolve_sub_deps[\"Resolve Sub-dependencies\"]\n    resolve_sub_deps --> extract_params[\"Extract Parameters\"]\n    extract_params --> path_params[\"request_params_to_args()\"]\n    extract_params --> query_params[\"request_params_to_args()\"]\n    extract_params --> header_params[\"request_params_to_args()\"]\n    extract_params --> cookie_params[\"request_params_to_args()\"]\n    extract_params --> body_params[\"request_body_to_args()\"]\n    \n    path_params --> validation[\"Validate with ModelField\"]\n    query_params --> validation\n    header_params --> validation\n    cookie_params --> validation\n    body_params --> validation\n    \n    validation --> SolvedDependency[\"SolvedDependency\"]\n```\n**Sources:**\n[fastapi/dependencies/utils.py:572-695](.)\n,\n[fastapi/dependencies/models.py:8-38](.)\n,\n[fastapi/dependencies/utils.py:740-816](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 32,
+      "char_count": 890,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913618"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:11",
+    "content": "Parameter validation is handled through Pydantic\n```\nModelField\n```\nobjects created by\n```\nanalyze_param()\n```\nin\n[fastapi/dependencies/utils.py:348](.)\n.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 32,
+      "char_count": 154,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913624"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:12",
+    "content": "The\n```\nanalyze_param()\n```\nfunction processes function signature parameters and:\n1. **Annotation Processing** : Extracts type information and `Annotated` metadata\n2. **Parameter Classification** : Determines if parameter is path, query, header, cookie, or body\n3. **FieldInfo Creation** : Creates appropriate `FieldInfo` objects ( `Path` , `Query` , `Header` , etc.)\n4. **ModelField Generation** : Converts to Pydantic `ModelField` for validation\nParameter types are defined in\n[fastapi/params.py:18](.)\n:\n```\nclass ParamTypes(Enum):\n    query = \"query\"\n    header = \"header\" \n    path = \"path\"\n    cookie = \"cookie\"\n```\n**Sources:**\n[fastapi/dependencies/utils.py:348-511](.)\n,\n[fastapi/params.py:18-23](.)\n,\n[fastapi/param_functions.py:1-68207](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 32,
+      "char_count": 750,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913630"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:13",
+    "content": "Response processing is handled by\n```\nserialize_response()\n```\nin\n[fastapi/routing.py:144](.)\nand the\n```\njsonable_encoder()\n```\nfunction in\n[fastapi/encoders.py:102](.)\n.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 32,
+      "char_count": 171,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913635"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:14",
+    "content": "```\ngraph TD\n    serialize_response[\"serialize_response()\"] --> field_validation[\"ModelField.validate()\"]\n    field_validation --> jsonable_encoder[\"jsonable_encoder()\"]\n    jsonable_encoder --> check_types[\"Check Built-in Types\"]\n    jsonable_encoder --> check_pydantic[\"Process BaseModel\"]\n    jsonable_encoder --> check_custom[\"Apply Custom Encoders\"]\n    \n    check_pydantic --> model_dump[\"_model_dump()\"]\n    check_custom --> ENCODERS_BY_TYPE[\"ENCODERS_BY_TYPE\"]\n    \n    model_dump --> final_json[\"JSON-serializable output\"]\n    check_types --> final_json\n    ENCODERS_BY_TYPE --> final_json\n```\nThe\n```\njsonable_encoder()\n```\nhandles conversion of complex Python objects to JSON-serializable formats using a registry of type encoders defined in\n```\nENCODERS_BY_TYPE\n```\n.\n**Sources:**\n[fastapi/routing.py:144-203](.)\n,\n[fastapi/encoders.py:102-343](.)\n,\n[fastapi/encoders.py:58-85](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 32,
+      "char_count": 892,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913641"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:15",
+    "content": "Security is integrated through the security classes in the\n```\nfastapi.security\n```\nmodule and processed during dependency resolution.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 32,
+      "char_count": 134,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913646"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:16",
+    "content": "Security schemes inherit from\n```\nSecurityBase\n```\nand are processed as special dependencies:\n1. **Security Scheme Definition** : Classes like `OAuth2` , `HTTPBearer` , `APIKeyHeader` define authentication schemes\n2. **Dependency Integration** : Security schemes are treated as dependencies in the `Dependant` tree\n3. **OpenAPI Integration** : Security requirements are automatically added to OpenAPI schema\n4. **Request Processing** : Security validation occurs during dependency resolution\n**Sources:**\n[fastapi/security/oauth2.py:308-319](.)\n,\n[fastapi/security/http.py:69-95](.)\n,\n[fastapi/security/api_key.py:11-21](.)\n,\n[fastapi/dependencies/models.py:8-12](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 16,
+      "total_chunks": 32,
+      "char_count": 666,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913652"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:17",
+    "content": "FastAPI provides structured exception handling through custom exception classes that extend Starlette's base exceptions.\nKey exception types:\n- `HTTPException` : For client errors with HTTP status codes\n- `RequestValidationError` : For request parameter validation failures\n- `ResponseValidationError` : For response model validation failures\n- `WebSocketRequestValidationError` : For WebSocket parameter validation\n- `FastAPIError` : Generic FastAPI-specific errors\n**Sources:**\n[fastapi/exceptions.py:9-177](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 17,
+      "total_chunks": 32,
+      "char_count": 512,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913657"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:18",
+    "content": "FastAPI builds on Starlette's ASGI foundation, inheriting:\n- ASGI application protocol implementation\n- Basic routing and middleware support\n- Request/Response objects\n- Exception handling framework\n- WebSocket support\nThe\n```\nFastAPI\n```\nclass extends\n```\nStarlette\n```\nwhile the\n```\nAPIRouter\n```\nclass extends\n```\nstarlette.routing.Router\n```\n.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 18,
+      "total_chunks": 32,
+      "char_count": 347,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913663"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:19",
+    "content": "Pydantic provides:\n- Data validation through `BaseModel` and `ModelField`\n- Type coercion and serialization\n- JSON Schema generation for OpenAPI\n- Field-level validation and constraints\nFastAPI creates\n```\nModelField\n```\ninstances for all parameters and uses Pydantic's validation engine throughout the request processing pipeline.\n**Sources:**\n[fastapi/applications.py:34](.)\n,\n[fastapi/routing.py:61-76](.)\n,\n[fastapi/utils.py:63-107](.)\n,\n[fastapi/_compat.py](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 19,
+      "total_chunks": 32,
+      "char_count": 465,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913669"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:20",
+    "content": "This document covers the fundamental architectural components that make up the FastAPI framework itself. This includes the core classes, the request processing pipeline, dependency injection system, parameter validation, response handling, and the integration points with Pydantic and Starlette. For information about API documentation generation, see\n[API Documentation System](#3)\n. For advanced features like async support and middleware, see\n[Advanced Features](#4)\n.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 20,
+      "total_chunks": 32,
+      "char_count": 471,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913675"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:21",
+    "content": "FastAPI's core architecture is built in layers, with each layer providing specific functionality while building upon the foundation provided by Starlette and Pydantic.\n```\ngraph TD\n    subgraph \"Public API Layer\"\n        FastAPIApp[\"FastAPI\"]\n        APIRouterClass[\"APIRouter\"]\n        PublicAPI[\"fastapi/__init__.py\"]\n    end\n    \n    subgraph \"Request Processing Pipeline\"\n        RequestHandler[\"get_request_handler()\"]\n        ParamValidation[\"analyze_param()\"]\n        DependencyResolution[\"solve_dependencies()\"]\n        SecurityHandling[\"get_openapi_security_definitions()\"]\n        ResponseSerialization[\"serialize_response()\"]\n    end\n    \n    subgraph \"Data & Validation Layer\"\n        PydanticModels[\"BaseModel\"]\n        JSONEncoders[\"jsonable_encoder()\"]\n        ModelFields[\"ModelField\"]\n        Dependant[\"Dependant\"]\n    end\n    \n    subgraph \"Foundation Layer\"\n        StarletteApp[\"Starlette\"]\n        StarletteRoute[\"starlette.routing.Route\"]\n        ASGIApp[\"ASGIApp\"]\n    end\n    \n    PublicAPI --> FastAPIApp\n    PublicAPI --> APIRouterClass\n    FastAPIApp --> RequestHandler\n    APIRouterClass --> RequestHandler\n    RequestHandler --> ParamValidation\n    RequestHandler --> DependencyResolution\n    RequestHandler --> SecurityHandling\n    RequestHandler --> ResponseSerialization\n    \n    ParamValidation --> ModelFields\n    DependencyResolution --> Dependant\n    ResponseSerialization --> JSONEncoders\n    JSONEncoders --> PydanticModels\n    \n    FastAPIApp --> StarletteApp\n    APIRouterClass --> StarletteRoute\n    StarletteApp --> ASGIApp\n```\n**Sources:**\n[fastapi/](.)\n[**init**](.)\n[.py:1-26](.)\n,\n[fastapi/applications.py:48-62](.)\n,\n[fastapi/routing.py:596-621](.)\n,\n[fastapi/routing.py:218-359](.)\n,\n[fastapi/dependencies/utils.py:572-695](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 21,
+      "total_chunks": 32,
+      "char_count": 1775,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913680"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:22",
+    "content": "The\n```\nFastAPI\n```\nclass serves as the primary entry point and orchestrates all framework functionality. It inherits from Starlette's\n```\nStarlette\n```\nclass and provides the main application interface. The\n```\nAPIRouter\n```\nclass enables modular organization of routes and can be included in applications or other routers.\n```\nFastAPI\n```\n```\nadd_api_route()\n```\n,\n```\nget()\n```\n,\n```\npost()\n```\n,\n```\ninclude_router()\n```\n```\nAPIRouter\n```\n```\nadd_api_route()\n```\n,\n```\nget()\n```\n,\n```\npost()\n```\n,\n```\ninclude_router()\n```\n, Purpose = . , Key Methods = \nBoth classes provide identical interfaces for route registration, dependency management, and middleware configuration. See\n[Application and Routing System](#2.1)\nfor detailed coverage.\n**Sources:**\n[fastapi/applications.py:48](.)\n,\n[fastapi/routing.py:596](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 22,
+      "total_chunks": 32,
+      "char_count": 817,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913686"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:23",
+    "content": "Each HTTP request flows through a standardized pipeline implemented by the\n```\nAPIRoute\n```\nclass and the\n```\nget_request_handler()\n```\nfunction. This pipeline handles parameter extraction, dependency resolution, endpoint execution, and response serialization.\nThe core processing steps are:\n1. **Route Matching** : `FastAPI` matches the incoming request to an `APIRoute`\n2. **Handler Execution** : `get_request_handler()` processes the request\n3. **Parameter Parsing** : Request data is extracted and classified\n4. **Dependency Resolution** : `solve_dependencies()` resolves all dependencies\n5. **Endpoint Execution** : User-defined endpoint function is called\n6. **Response Serialization** : `serialize_response()` converts the return value\n**Sources:**\n[fastapi/routing.py:218](.)\n,\n[fastapi/routing.py:429](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 23,
+      "total_chunks": 32,
+      "char_count": 813,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913692"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:24",
+    "content": "FastAPI's dependency injection is built around the\n```\nDependant\n```\ndataclass and the\n```\nsolve_dependencies()\n```\nfunction. The\n```\nDependant\n```\nrepresents a complete dependency tree containing all parameters, sub-dependencies, and security requirements for an endpoint.\nDependencies are resolved recursively, with each dependency type handled by specific parameter extraction functions. The system supports caching, scoping, and hierarchical dependency resolution. See\n[Dependency Injection](#2.2)\nfor complete details.\n**Sources:**\n[fastapi/dependencies/models.py:15](.)\n,\n[fastapi/dependencies/utils.py:572](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 24,
+      "total_chunks": 32,
+      "char_count": 616,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913698"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:25",
+    "content": "Parameter processing uses Pydantic's\n```\nModelField\n```\nobjects created by the\n```\nanalyze_param()\n```\nfunction. Parameters are classified by location (path, query, header, cookie, body) and validated according to their type annotations and\n```\nFieldInfo\n```\nconstraints.\nThe parameter functions\n```\nPath()\n```\n,\n```\nQuery()\n```\n,\n```\nHeader()\n```\n,\n```\nCookie()\n```\n,\n```\nBody()\n```\n, and\n```\nForm()\n```\nprovide configuration options for validation, documentation, and processing behavior. See\n[Parameter Validation and Handling](#2.3)\nfor comprehensive coverage.\n**Sources:**\n[fastapi/dependencies/utils.py:348](.)\n,\n[fastapi/param_functions.py:1](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 25,
+      "total_chunks": 32,
+      "char_count": 652,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913704"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:26",
+    "content": "Response processing converts endpoint return values into HTTP responses through the\n```\nserialize_response()\n```\nfunction and\n```\njsonable_encoder()\n```\n. The system handles Pydantic models, built-in Python types, and custom objects using a registry of type encoders.\nResponse classes like\n```\nJSONResponse\n```\n,\n```\nHTMLResponse\n```\n, and\n```\nFileResponse\n```\nprovide control over content types, headers, and status codes. See\n[Response Handling](#2.4)\nfor detailed information.\n**Sources:**\n[fastapi/routing.py:144](.)\n,\n[fastapi/encoders.py:102](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 26,
+      "total_chunks": 32,
+      "char_count": 551,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913710"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:27",
+    "content": "Security schemes are implemented as special dependency classes that inherit from\n```\nSecurityBase\n```\n. Classes like\n```\nOAuth2\n```\n,\n```\nHTTPBearer\n```\n, and\n```\nAPIKeyHeader\n```\ndefine authentication mechanisms that integrate with the dependency injection system.\nSecurity requirements are automatically added to OpenAPI schemas and processed during dependency resolution. See\n[Security Components](#2.5)\nfor complete coverage of authentication and authorization.\n**Sources:**\n[fastapi/security/oauth2.py:308](.)\n,\n[fastapi/security/http.py:69](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 27,
+      "total_chunks": 32,
+      "char_count": 549,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913715"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:28",
+    "content": "FastAPI integrates with Pydantic Settings for configuration management through environment variables and configuration files. The\n```\nBaseSettings\n```\nclass provides validation and type conversion for application settings.\nSettings can be used as dependencies, enabling easy testing and configuration management. See\n[Settings Management](#2.6)\nfor detailed implementation patterns.\n**Sources:**\n[docs/en/docs/advanced/settings.md:55](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 28,
+      "total_chunks": 32,
+      "char_count": 437,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913721"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:29",
+    "content": "FastAPI provides structured exception handling through custom exception classes that extend Starlette's base exceptions. Key exception types include\n```\nHTTPException\n```\n,\n```\nRequestValidationError\n```\n, and\n```\nWebSocketRequestValidationError\n```\n.\nException handlers can be customized globally or per-route to control error responses and logging. See\n[Error Handling](#2.7)\nfor comprehensive error management strategies.\n**Sources:**\n[fastapi/exceptions.py:9](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 29,
+      "total_chunks": 32,
+      "char_count": 466,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913726"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:30",
+    "content": "FastAPI builds on Starlette's ASGI foundation, inheriting:\n- ASGI application protocol implementation\n- Basic routing and middleware support\n- Request/Response objects\n- Exception handling framework\n- WebSocket support\nThe\n```\nFastAPI\n```\nclass extends\n```\nStarlette\n```\nwhile the\n```\nAPIRouter\n```\nclass extends\n```\nstarlette.routing.Router\n```\n.",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 30,
+      "total_chunks": 32,
+      "char_count": 347,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913732"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Core_Architecture:chunk:31",
+    "content": "Pydantic provides:\n- Data validation through `BaseModel` and `ModelField`\n- Type coercion and serialization\n- JSON Schema generation for OpenAPI\n- Field-level validation and constraints\nFastAPI creates\n```\nModelField\n```\ninstances for all parameters and uses Pydantic's validation engine throughout the request processing pipeline.\n**Sources:**\n[fastapi/applications.py:34](.)\n,\n[fastapi/routing.py:61-76](.)\n,\n[fastapi/utils.py:63-107](.)",
+    "metadata": {
+      "source": "fastapi\\Core_Architecture.md",
+      "file_name": "Core_Architecture.md",
+      "subfolder": "fastapi",
+      "chunk_index": 31,
+      "total_chunks": 32,
+      "char_count": 439,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:36.913737"
+    }
+  }
+]

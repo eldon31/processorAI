@@ -1,0 +1,227 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:0",
+    "content": "```\nSources: [docs/en/docs/tutorial/query-params-str-validations.md:273-304]()\n\n## Path Parameter Validation\n\nPath parameters use the `Path()` function and support the same validation features as query parameters, plus numeric constraints for integer and float values.\n\n### Numeric Validation Constraints\n\nPath parameters support numeric validation rules:\n\n- `gt` - Greater than\n- `ge` - Greater than or equal\n- `lt` - Less than  \n- `le` - Less than or equal\n\n```python\nfrom typing import Annotated\nfrom fastapi import Path\n\nitem_id: Annotated[int, Path(ge=1)]  # Must be >= 1\nsize: Annotated[float, Path(gt=0, lt=1000)]  # Between 0 and 1000\n```\nSources:\n[docs/en/docs/tutorial/path-params-numeric-validations.md:104-132](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 15,
+      "char_count": 725,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049184"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:1",
+    "content": "Request body validation primarily uses Pydantic models, which provide comprehensive validation, type conversion, and documentation generation.",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 15,
+      "char_count": 142,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049201"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:2",
+    "content": "FastAPI automatically converts JSON request bodies to Pydantic model instances:\n```\nfrom pydantic import BaseModel\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float | None = None\n```\nThe validation system automatically:\n- Validates data types\n- Converts compatible types\n- Generates clear error messages\n- Creates OpenAPI schema documentation\nSources:\n[docs/en/docs/tutorial/body.md:21-78](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 15,
+      "char_count": 447,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049207"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:3",
+    "content": "```\ngraph TD\n    RequestBody[\"JSON Request Body\"] --> PydanticParsing[\"Pydantic Model Parsing\"]\n    PydanticParsing --> ValidationSuccess[\"Validation Success\"]\n    PydanticParsing --> ValidationError[\"Pydantic ValidationError\"]\n    \n    ValidationError --> RequestValidationError[\"FastAPI RequestValidationError\"]\n    RequestValidationError --> ErrorResponseGeneration[\"Error Response Generation\"]\n    ErrorResponseGeneration --> HTTP422[\"HTTP 422 Unprocessable Entity\"]\n    \n    ValidationSuccess --> ModelInstance[\"Pydantic Model Instance\"]\n    ModelInstance --> PathOperationFunction[\"Path Operation Function\"]\n```\nSources:\n[docs/en/docs/tutorial/handling-errors.md:120-173](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 15,
+      "char_count": 680,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049214"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:4",
+    "content": "The system supports custom validation through Pydantic's validator functions, enabling complex business logic validation beyond basic type and constraint checking.",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 15,
+      "char_count": 163,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049220"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:5",
+    "content": "Custom validators can be applied using Pydantic's\n```\nAfterValidator\n```\n:\n```\nfrom typing import Annotated\nfrom pydantic import AfterValidator\n\ndef validate_item_id(v: str) -> str:\n    if not v.startswith((\"isbn-\", \"imdb-\")):\n        raise ValueError(\"Item ID must start with 'isbn-' or 'imdb-'\")\n    return v\n\nitem_id: Annotated[str, AfterValidator(validate_item_id)]\n```\nSources:\n[docs/en/docs/tutorial/query-params-str-validations.md:409-440](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 15,
+      "char_count": 449,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049226"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:6",
+    "content": "```\ngraph TD\n    ParamFunctions[\"Parameter Functions\"] --> Query[\"Query()\"]\n    ParamFunctions --> Path[\"Path()\"]\n    ParamFunctions --> Body[\"Body()\"]\n    ParamFunctions --> Form[\"Form()\"]\n    ParamFunctions --> File[\"File()\"]\n    ParamFunctions --> Header[\"Header()\"]\n    ParamFunctions --> Cookie[\"Cookie()\"]\n    \n    Query --> CommonParam[\"Common Param Class\"]\n    Path --> CommonParam\n    Body --> CommonParam\n    Form --> CommonParam\n    File --> CommonParam\n    Header --> CommonParam\n    Cookie --> CommonParam\n    \n    CommonParam --> ValidationRules[\"Validation Rules\"]\n    CommonParam --> TypeConversion[\"Type Conversion\"]\n    CommonParam --> OpenAPISchema[\"OpenAPI Schema Generation\"]\n    \n    ValidationRules --> StringValidation[\"String Constraints\"]\n    ValidationRules --> NumericValidation[\"Numeric Constraints\"]\n    ValidationRules --> CustomValidation[\"Custom Validators\"]\n```\nSources:\n[docs/en/docs/tutorial/path-params-numeric-validations.md:144-164](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 15,
+      "char_count": 974,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049232"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:7",
+    "content": "FastAPI automatically handles type conversion between HTTP string values and Python types, supporting complex data types beyond basic primitives.",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 15,
+      "char_count": 145,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049238"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:8",
+    "content": "The system supports conversion for:\n- Basic types: `int` , `float` , `str` , `bool`\n- Date/time types: `datetime` , `date` , `time` , `timedelta`\n- Complex types: `UUID` , `bytes` , `Decimal`\n- Collections: `list` , `set` , `frozenset`\nSources:\n[docs/en/docs/tutorial/extra-data-types.md:20-52](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 15,
+      "char_count": 297,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049243"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:9",
+    "content": "All parameter validation rules are automatically reflected in the generated OpenAPI schema, providing accurate API documentation that matches the actual validation behavior.",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 15,
+      "char_count": 173,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049249"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:10",
+    "content": "```\ngraph TD\n    ParameterDeclaration[\"Parameter Declaration\"] --> ValidationExtraction[\"Validation Rule Extraction\"]\n    ValidationExtraction --> OpenAPIGeneration[\"OpenAPI Schema Generation\"]\n    OpenAPIGeneration --> SwaggerUI[\"Swagger UI Documentation\"]\n    OpenAPIGeneration --> ReDoc[\"ReDoc Documentation\"]\n    \n    ValidationExtraction --> StringConstraints[\"String Constraints\"]\n    ValidationExtraction --> NumericConstraints[\"Numeric Constraints\"]\n    ValidationExtraction --> TypeInformation[\"Type Information\"]\n    ValidationExtraction --> ExampleValues[\"Example Values\"]\n    \n    StringConstraints --> OpenAPIProperties[\"OpenAPI Properties\"]\n    NumericConstraints --> OpenAPIProperties\n    TypeInformation --> OpenAPIProperties\n    ExampleValues --> OpenAPIProperties\n```\nSources:\n[docs/en/docs/tutorial/query-params-str-validations.md:104-109](.)\n,\n[docs/en/docs/tutorial/path-params-numeric-validations.md:21-33](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 15,
+      "char_count": 931,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049255"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:11",
+    "content": "Validation failures result in standardized HTTP 422 responses with detailed error information including field locations, error messages, and error types.",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 15,
+      "char_count": 153,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049261"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:12",
+    "content": "The error response contains:\n- `detail` - Array of validation errors\n- `loc` - Location of the error (path, query, body, etc.)\n- `msg` - Human-readable error message\n- `type` - Error type identifier\nSources:\n[docs/en/docs/tutorial/handling-errors.md:122-156](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 15,
+      "char_count": 261,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049268"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:13",
+    "content": "Parameters can be excluded from OpenAPI documentation while maintaining validation:\n```\n# Exclude from OpenAPI schema\nq: Annotated[str, Query(include_in_schema=False)]\n\n# Mark as deprecated\nq: Annotated[str, Query(deprecated=True)]\n```\nSources:\n[docs/en/docs/tutorial/query-params-str-validations.md:403-407](.)\n,\n[docs/en/docs/tutorial/query-params-str-validations.md:389-401](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 15,
+      "char_count": 380,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049273"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Handles_URLs_like_itemsqfooqbar:chunk:14",
+    "content": "Parameters support rich metadata for enhanced documentation:\n- `title` - Parameter title in documentation\n- `description` - Detailed parameter description\n- `example` - Example value for documentation\nSources:\n[docs/en/docs/tutorial/query-params-str-validations.md:347-367](.)",
+    "metadata": {
+      "source": "fastapi\\Handles_URLs_like_itemsqfooqbar.md",
+      "file_name": "Handles_URLs_like_itemsqfooqbar.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 15,
+      "char_count": 276,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:46.049279"
+    }
+  }
+]

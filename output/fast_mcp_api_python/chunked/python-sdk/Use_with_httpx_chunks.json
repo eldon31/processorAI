@@ -1,0 +1,107 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Use_with_httpx:chunk:0",
+    "content": "async with httpx.AsyncClient(auth=auth_provider) as client:\nresponse = await client.get(\"https://api.example.com/v1/mcp/tools/list\")\n```\n### Transport Integration\n\nThe authentication provider integrates seamlessly with all MCP transports:\n\n- **StreamableHTTP**: Built-in OAuth support via `httpx.AsyncClient`\n- **SSE**: Authentication headers added to SSE connections  \n- **WebSocket**: OAuth tokens passed in connection headers\n- **stdio**: Not applicable (local process communication)\n\nSources: [examples/clients/simple-auth-client/](), [src/mcp/client/auth.py:485-552]()\n\n# Protocol & Message System\n\n\n\n\nThis page documents the core Model Context Protocol (MCP) message system, JSON-RPC foundation, and type system that enables communication between MCP clients and servers. This covers the fundamental protocol layer that underlies all MCP interactions.\n\nFor high-level server development using decorators and simplified APIs, see [FastMCP Server Framework](#2). For transport-specific implementations like stdio, SSE, and StreamableHTTP, see [Transport Layer](#5). For client-side message handling, see [Client Framework](#3).\n\n## JSON-RPC Foundation\n\nMCP is built on JSON-RPC 2.0, providing a standardized request-response and notification messaging pattern. The protocol defines four core message types that form the foundation of all MCP communication.\n\n```mermaid\ngraph TB\n    subgraph \"JSON-RPC Message Types\"\n        JSONRPCRequest[\"JSONRPCRequest<br/>id + method + params\"]\n        JSONRPCResponse[\"JSONRPCResponse<br/>id + result\"]\n        JSONRPCError[\"JSONRPCError<br/>id + error\"]\n        JSONRPCNotification[\"JSONRPCNotification<br/>method + params\"]\n    end\n    \n    subgraph \"MCP Protocol Layer\"\n        ClientRequest[\"ClientRequest<br/>Union of all client requests\"]\n        ServerRequest[\"ServerRequest<br/>Union of all server requests\"]\n        ClientNotification[\"ClientNotification<br/>Union of all client notifications\"]\n        ServerNotification[\"ServerNotification<br/>Union of all server notifications\"]\n    end\n    \n    subgraph \"Message Processing\"\n        RequestResponder[\"RequestResponder<br/>Handles request-response lifecycle\"]\n        SessionMessage[\"SessionMessage<br/>Transport-agnostic message wrapper\"]\n    end\n    \n    JSONRPCRequest --> ClientRequest\n    JSONRPCRequest --> ServerRequest\n    JSONRPCNotification --> ClientNotification\n    JSONRPCNotification --> ServerNotification\n    \n    ClientRequest --> RequestResponder\n    ServerRequest --> RequestResponder\n    RequestResponder --> SessionMessage\n```\n**Sources:**\n[src/mcp/types.py:124-193](.)\n,\n[src/mcp/shared/message.py](.)\nThe base JSON-RPC types define the message structure:\n- `JSONRPCRequest` : Request expecting a response, includes `id` , `method` , and `params`\n- `JSONRPCResponse` : Successful response with `id` and `result`\n- `JSONRPCError` : Error response with `id` and `error` containing code, message, and optional data\n- `JSONRPCNotification` : One-way message with `method` and `params` , no response expected",
+    "metadata": {
+      "source": "python-sdk\\Use_with_httpx.md",
+      "file_name": "Use_with_httpx.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 7,
+      "char_count": 3029,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:35.943618"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Use_with_httpx:chunk:1",
+    "content": "MCP defines a structured hierarchy of message types that inherit from the JSON-RPC foundation, creating type-safe request and response patterns.\n```\ngraph TB\n    subgraph \"Base Protocol Types\"\n        Request[\"Request[ParamsT, MethodT]<br/>Generic request base\"]\n        Notification[\"Notification[ParamsT, MethodT]<br/>Generic notification base\"]\n        Result[\"Result<br/>Generic result base\"]\n        RequestParams[\"RequestParams<br/>Base for all request parameters\"]\n        NotificationParams[\"NotificationParams<br/>Base for all notification parameters\"]\n    end\n    \n    subgraph \"Specialized Request Types\"\n        PaginatedRequest[\"PaginatedRequest<br/>cursor-based pagination\"]\n        InitializeRequest[\"InitializeRequest<br/>initialize method\"]\n        ListToolsRequest[\"ListToolsRequest<br/>tools/list method\"]\n        CallToolRequest[\"CallToolRequest<br/>tools/call method\"]\n        ReadResourceRequest[\"ReadResourceRequest<br/>resources/read method\"]\n    end\n    \n    subgraph \"Specialized Result Types\"\n        PaginatedResult[\"PaginatedResult<br/>nextCursor support\"]\n        InitializeResult[\"InitializeResult<br/>capabilities exchange\"]\n        ListToolsResult[\"ListToolsResult<br/>tools array\"]\n        CallToolResult[\"CallToolResult<br/>content + structuredContent\"]\n        ReadResourceResult[\"ReadResourceResult<br/>resource contents\"]\n    end\n    \n    Request --> InitializeRequest\n    Request --> ListToolsRequest\n    Request --> CallToolRequest\n    Request --> ReadResourceRequest\n    \n    PaginatedRequest --> ListToolsRequest\n    \n    Result --> InitializeResult\n    Result --> ListToolsResult\n    Result --> CallToolResult\n    Result --> ReadResourceResult\n    \n    PaginatedResult --> ListToolsResult\n```\n**Sources:**\n[src/mcp/types.py:82-122](.)\n,\n[src/mcp/types.py:335-365](.)\n,\n[src/mcp/types.py:815-922](.)\nEach protocol operation follows this pattern:\n1. **Request class** : Defines the method name and parameter structure\n2. **Parameter class** : Strongly-typed parameters extending `RequestParams`\n3. **Result class** : Response structure extending `Result`\n4. **Specialized handling** : Pagination, metadata, and protocol-specific features",
+    "metadata": {
+      "source": "python-sdk\\Use_with_httpx.md",
+      "file_name": "Use_with_httpx.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 7,
+      "char_count": 2178,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:35.943635"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Use_with_httpx:chunk:2",
+    "content": "MCP defines several categories of protocol operations, each with specific request-response patterns and capabilities.\n```\ngraph LR\n    subgraph \"Initialization\"\n        initialize[\"initialize<br/>InitializeRequest → InitializeResult\"]\n        initialized[\"initialized<br/>InitializedNotification\"]\n        ping[\"ping<br/>PingRequest → EmptyResult\"]\n    end\n    \n    subgraph \"Resource Operations\"\n        list_resources[\"resources/list<br/>ListResourcesRequest → ListResourcesResult\"]\n        read_resource[\"resources/read<br/>ReadResourceRequest → ReadResourceResult\"]\n        list_templates[\"resources/templates/list<br/>ListResourceTemplatesRequest → ListResourceTemplatesResult\"]\n        subscribe[\"resources/subscribe<br/>SubscribeRequest → EmptyResult\"]\n    end\n    \n    subgraph \"Tool Operations\"\n        list_tools[\"tools/list<br/>ListToolsRequest → ListToolsResult\"]\n        call_tool[\"tools/call<br/>CallToolRequest → CallToolResult\"]\n    end\n    \n    subgraph \"Prompt Operations\"\n        list_prompts[\"prompts/list<br/>ListPromptsRequest → ListPromptsResult\"]\n        get_prompt[\"prompts/get<br/>GetPromptRequest → GetPromptResult\"]\n    end\n    \n    subgraph \"Server-Initiated\"\n        create_message[\"sampling/createMessage<br/>CreateMessageRequest → CreateMessageResult\"]\n        elicit[\"elicitation/create<br/>ElicitRequest → ElicitResult\"]\n        list_roots[\"roots/list<br/>ListRootsRequest → ListRootsResult\"]\n    end\n```\n**Sources:**\n[src/mcp/types.py:345-365](.)\n,\n[src/mcp/types.py:419-554](.)\n,\n[src/mcp/types.py:815-922](.)\n,\n[src/mcp/types.py:630-802](.)\n,\n[src/mcp/types.py:1061-1081](.)",
+    "metadata": {
+      "source": "python-sdk\\Use_with_httpx.md",
+      "file_name": "Use_with_httpx.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 7,
+      "char_count": 1611,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:35.943641"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Use_with_httpx:chunk:3",
+    "content": "The server processes incoming messages through a structured handler system that maps message types to handler functions and manages the request lifecycle.\n```\ngraph TB\n    subgraph \"Message Reception\"\n        SessionMessage[\"SessionMessage<br/>from transport\"]\n        RequestResponder_msg[\"RequestResponder<br/>wraps client requests\"]\n        ClientNotification_msg[\"ClientNotification<br/>one-way messages\"]\n    end\n    \n    subgraph \"Server Message Handling\"\n        Server[\"Server<br/>lowlevel server instance\"]\n        request_handlers[\"request_handlers<br/>dict[type, handler]\"]\n        notification_handlers[\"notification_handlers<br/>dict[type, handler]\"]\n        _handle_message[\"_handle_message<br/>message dispatcher\"]\n        _handle_request[\"_handle_request<br/>request processor\"]\n        _handle_notification[\"_handle_notification<br/>notification processor\"]\n    end\n    \n    subgraph \"Handler Registration\"\n        list_tools_decorator[\"@server.list_tools()<br/>decorator registration\"]\n        call_tool_decorator[\"@server.call_tool()<br/>decorator registration\"]\n        list_resources_decorator[\"@server.list_resources()<br/>decorator registration\"]\n    end\n    \n    subgraph \"Response Generation\"\n        ServerResult[\"ServerResult<br/>union of all server results\"]\n        ErrorData[\"ErrorData<br/>JSON-RPC error response\"]\n    end\n    \n    SessionMessage --> RequestResponder_msg\n    SessionMessage --> ClientNotification_msg\n    \n    RequestResponder_msg --> _handle_message\n    ClientNotification_msg --> _handle_message\n    \n    _handle_message --> _handle_request\n    _handle_message --> _handle_notification\n    \n    _handle_request --> request_handlers\n    _handle_notification --> notification_handlers\n    \n    list_tools_decorator --> request_handlers\n    call_tool_decorator --> request_handlers\n    list_resources_decorator --> request_handlers\n    \n    _handle_request --> ServerResult\n    _handle_request --> ErrorData\n```\n**Sources:**\n[src/mcp/server/lowlevel/server.py:625-723](.)\n,\n[src/mcp/server/lowlevel/server.py:152-155](.)\n,\n[src/mcp/server/lowlevel/server.py:238-259](.)\nThe\n```\nServer\n```\nclass maintains handler registries that map message types to handler functions:\n- `request_handlers` : Maps request types to async handler functions\n- `notification_handlers` : Maps notification types to async handler functions\n- Decorator pattern for handler registration (e.g., `@server.list_tools()` )",
+    "metadata": {
+      "source": "python-sdk\\Use_with_httpx.md",
+      "file_name": "Use_with_httpx.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 7,
+      "char_count": 2440,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:35.943647"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Use_with_httpx:chunk:4",
+    "content": "MCP supports both unstructured content and structured data in responses, enabling rich tool outputs and backward compatibility.\n```\ngraph TB\n    subgraph \"Content Types\"\n        TextContent[\"TextContent<br/>type: 'text', text: str\"]\n        ImageContent[\"ImageContent<br/>type: 'image', data: str, mimeType: str\"]\n        AudioContent[\"AudioContent<br/>type: 'audio', data: str, mimeType: str\"]\n        EmbeddedResource[\"EmbeddedResource<br/>type: 'resource', resource: ResourceContents\"]\n        ResourceLink[\"ResourceLink<br/>type: 'resource_link', uri: AnyUrl\"]\n    end\n    \n    subgraph \"ContentBlock Union\"\n        ContentBlock[\"ContentBlock<br/>Union of all content types\"]\n    end\n    \n    subgraph \"Tool Output Structure\"\n        CallToolResult_content[\"CallToolResult<br/>content: list[ContentBlock]<br/>structuredContent: dict | None<br/>isError: bool\"]\n    end\n    \n    subgraph \"Structured Output Processing\"\n        StructuredContent_type[\"StructuredContent<br/>dict[str, Any]\"]\n        UnstructuredContent_type[\"UnstructuredContent<br/>Iterable[ContentBlock]\"]\n        CombinationContent_type[\"CombinationContent<br/>tuple[Unstructured, Structured]\"]\n    end\n    \n    TextContent --> ContentBlock\n    ImageContent --> ContentBlock\n    AudioContent --> ContentBlock\n    EmbeddedResource --> ContentBlock\n    ResourceLink --> ContentBlock\n    \n    ContentBlock --> CallToolResult_content\n    StructuredContent_type --> CallToolResult_content\n    \n    UnstructuredContent_type --> CombinationContent_type\n    StructuredContent_type --> CombinationContent_type\n```\n**Sources:**\n[src/mcp/types.py:688-782](.)\n,\n[src/mcp/types.py:914-922](.)\n,\n[src/mcp/server/lowlevel/server.py:100-102](.)\nThe content system supports:\n- **Unstructured content** : Human-readable content blocks (text, images, audio, resources)\n- **Structured content** : Machine-readable JSON data with optional schema validation\n- **Combination output** : Both structured and unstructured content in the same response\n- **Schema validation** : Optional `outputSchema` validation for structured content",
+    "metadata": {
+      "source": "python-sdk\\Use_with_httpx.md",
+      "file_name": "Use_with_httpx.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 7,
+      "char_count": 2078,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:35.943653"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Use_with_httpx:chunk:5",
+    "content": "MCP uses semantic versioning and capability negotiation to ensure compatibility between clients and servers with different feature sets.\n```\ngraph TB\n    subgraph \"Version Constants\"\n        LATEST_PROTOCOL_VERSION[\"LATEST_PROTOCOL_VERSION<br/>'2025-06-18'\"]\n        DEFAULT_NEGOTIATED_VERSION[\"DEFAULT_NEGOTIATED_VERSION<br/>'2025-03-26'\"]\n    end\n    \n    subgraph \"Capability Exchange\"\n        ClientCapabilities[\"ClientCapabilities<br/>sampling, elicitation, roots\"]\n        ServerCapabilities[\"ServerCapabilities<br/>prompts, resources, tools, logging, completions\"]\n        InitializeRequest_caps[\"InitializeRequest<br/>protocolVersion + clientInfo + capabilities\"]\n        InitializeResult_caps[\"InitializeResult<br/>protocolVersion + serverInfo + capabilities\"]\n    end\n    \n    subgraph \"Individual Capabilities\"\n        PromptsCapability[\"PromptsCapability<br/>listChanged: bool\"]\n        ResourcesCapability[\"ResourcesCapability<br/>subscribe: bool, listChanged: bool\"]\n        ToolsCapability[\"ToolsCapability<br/>listChanged: bool\"]\n        SamplingCapability[\"SamplingCapability<br/>create message support\"]\n        LoggingCapability[\"LoggingCapability<br/>log message support\"]\n    end\n    \n    LATEST_PROTOCOL_VERSION --> InitializeRequest_caps\n    DEFAULT_NEGOTIATED_VERSION --> InitializeRequest_caps\n    \n    ClientCapabilities --> InitializeRequest_caps\n    ServerCapabilities --> InitializeResult_caps\n    \n    PromptsCapability --> ServerCapabilities\n    ResourcesCapability --> ServerCapabilities\n    ToolsCapability --> ServerCapabilities\n    LoggingCapability --> ServerCapabilities\n    \n    SamplingCapability --> ClientCapabilities\n```\n**Sources:**\n[src/mcp/types.py:26-34](.)\n,\n[src/mcp/types.py:265-332](.)\n,\n[src/mcp/types.py:335-365](.)\nCapability negotiation enables:\n- **Protocol versioning** : Semantic version strings for compatibility checking\n- **Feature detection** : Clients and servers declare supported capabilities\n- **Graceful degradation** : Optional features can be disabled if not supported\n- **Extension points** : Experimental capabilities for new features",
+    "metadata": {
+      "source": "python-sdk\\Use_with_httpx.md",
+      "file_name": "Use_with_httpx.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 7,
+      "char_count": 2104,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:35.943659"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Use_with_httpx:chunk:6",
+    "content": "MCP defines standardized error codes and error handling patterns based on JSON-RPC 2.0 specifications.\n```\ngraph TB\n    subgraph \"Error Code Constants\"\n        CONNECTION_CLOSED[\"-32000: CONNECTION_CLOSED\"]\n        PARSE_ERROR[\"-32700: PARSE_ERROR\"]\n        INVALID_REQUEST[\"-32600: INVALID_REQUEST\"]\n        METHOD_NOT_FOUND[\"-32601: METHOD_NOT_FOUND\"]\n        INVALID_PARAMS[\"-32602: INVALID_PARAMS\"]\n        INTERNAL_ERROR[\"-32603: INTERNAL_ERROR\"]\n    end\n    \n    subgraph \"Error Structure\"\n        ErrorData_struct[\"ErrorData<br/>code: int<br/>message: str<br/>data: Any | None\"]\n        JSONRPCError_struct[\"JSONRPCError<br/>jsonrpc: '2.0'<br/>id: RequestId<br/>error: ErrorData\"]\n    end\n    \n    subgraph \"Error Response Generation\"\n        McpError[\"McpError<br/>exception with error data\"]\n        _make_error_result[\"Server._make_error_result<br/>creates error CallToolResult\"]\n    end\n    \n    CONNECTION_CLOSED --> ErrorData_struct\n    PARSE_ERROR --> ErrorData_struct\n    METHOD_NOT_FOUND --> ErrorData_struct\n    \n    ErrorData_struct --> JSONRPCError_struct\n    ErrorData_struct --> McpError\n    \n    McpError --> _make_error_result\n```\n**Sources:**\n[src/mcp/types.py:149-179](.)\n,\n[src/mcp/server/lowlevel/server.py:440-447](.)\n,\n[src/mcp/shared/exceptions.py](.)\nError handling includes:\n- **Standard JSON-RPC codes** : Parse, request, method, and parameter errors\n- **MCP-specific codes** : Connection and transport-related errors\n- **Structured error data** : Code, message, and optional additional data\n- **Exception mapping** : Python exceptions converted to MCP error responses",
+    "metadata": {
+      "source": "python-sdk\\Use_with_httpx.md",
+      "file_name": "Use_with_httpx.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 7,
+      "char_count": 1601,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:35.943664"
+    }
+  }
+]

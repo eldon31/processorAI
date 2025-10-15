@@ -1,0 +1,64 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\guides_scheduled-functions.md",
+  "title": "Crons (Scheduled Functions)",
+  "num_chunks": 2,
+  "total_chars": 2847,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Crons (Scheduled Functions)](\\docs\\guides\\scheduled-functions#crons-scheduled-functions)\nFeatures\n[Events & Triggers](\\docs\\features\\events-triggers)",
+      "char_count": 165,
+      "token_count": 43,
+      "metadata": {
+        "title": "Crons (Scheduled Functions)",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\guides_scheduled-functions.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\guides_scheduled-functions.md",
+        "file_name": "guides_scheduled-functions.md",
+        "file_size": 2978,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "2b1b1dcf060695e59b552afd07bbf8df3624705ed7e76d3eee0c7acccb299249",
+        "author": null,
+        "created_at": "2025-10-12T23:59:44.832224",
+        "modified_at": "2025-10-12T23:59:44.832952",
+        "page_count": null,
+        "word_count": 491,
+        "extracted_at": "2025-10-13T20:03:53.974722",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 43,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Crons (Scheduled Functions)\nYou can create scheduled jobs using cron schedules within Inngest natively.  Inngest's cron schedules also support timezones, allowing you to schedule work in whatever timezone you need work to run in.\nTypeScript Go Python\nYou can create scheduled functions that run in any timezone using the SDK's\n[```\ncreateFunction()\n```](\\docs\\reference\\functions\\create)\n:\nCopy Copied\n```\nimport { Inngest } from \"inngest\" ;\n\nconst inngest = new Inngest ({ id : \"signup-flow\" });\n\n// This weekly digest function will run at 12:00pm on Friday in the Paris timezone\nexport const prepareWeeklyDigest = inngest .createFunction (\n{ id : \"prepare-weekly-digest\" } ,\n{ cron : \"TZ=Europe/Paris 0 12 * * 5\" } ,\nasync ({ step }) => {\n// Load all the users from your database:\nconst users = await step .run (\n\"load-users\" ,\nasync () => await db .load ( \"SELECT * FROM users\" )\n);\n\n// 💡 Since we want to send a weekly digest to each one of these users\n// it may take a long time to iterate through each user and send an email.\n\n// Instead, we'll use this scheduled function to send an event to Inngest\n// for each user then handle the actual sending of the email in a separate\n// function triggered by that event.\n\n// ✨ This is known as a \"fan-out\" pattern ✨\n\n// 1️⃣ First, we'll create an event object for every user return in the query:\nconst events = users .map ((user) => {\nreturn {\nname : \"app/send.weekly.digest\" ,\ndata : {\nuser_id : user .id ,\nemail : user .email ,\n} ,\n};\n});\n\n// 2️⃣ Now, we'll send all events in a single batch:\nawait step .sendEvent ( \"send-digest-events\" , events);\n\n// This function can now quickly finish and the rest of the logic will\n// be handled in the function below ⬇️\n}\n);\n\n// This is a regular Inngest function that will send the actual email for\n// every event that is received (see the above function's inngest.send())\n\n// Since we are \"fanning out\" with events, these functions can all run in parallel\nexport const sendWeeklyDigest = inngest .createFunction (\n{ id : \"send-weekly-digest-email\" } ,\n{ event : \"app/send.weekly.digest\" } ,\nasync ({ event }) => {\n// 3️⃣ We can now grab the email and user id from the event payload\nconst { email , user_id } = event .data;\n\n// 4️⃣ Finally, we send the email itself:\nawait email .send ( \"weekly_digest\" , email , user_id);\n\n// 🎇 That's it! - We've used two functions to reliably perform a scheduled\n// task for a large list of users!\n}\n);\n```\n👉 Note: You'll need to\n[serve these functions in your Inngest API](\\docs\\learn\\serving-inngest-functions)\nfor the functions to be available to Inngest.\nOn the free plan, if your function fails 20 times consecutively it will automatically be paused.",
+      "char_count": 2682,
+      "token_count": 712,
+      "metadata": {
+        "title": "Crons (Scheduled Functions)",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\guides_scheduled-functions.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\guides_scheduled-functions.md",
+        "file_name": "guides_scheduled-functions.md",
+        "file_size": 2978,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "2b1b1dcf060695e59b552afd07bbf8df3624705ed7e76d3eee0c7acccb299249",
+        "author": null,
+        "created_at": "2025-10-12T23:59:44.832224",
+        "modified_at": "2025-10-12T23:59:44.832952",
+        "page_count": null,
+        "word_count": 491,
+        "extracted_at": "2025-10-13T20:03:53.974722",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 712,
+        "has_context": true
+      }
+    }
+  ]
+}

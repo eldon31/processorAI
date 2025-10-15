@@ -1,0 +1,302 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:0",
+    "content": "This document explains the fundamental concepts of the Model Context Protocol (MCP) Python SDK. It covers the core entities, protocol mechanics, and architectural patterns that developers need to understand when building MCP servers and clients. For specific implementation guidance on building servers, see\n[FastMCP Server Framework](#2)\n. For client-side development, see\n[Client Framework](#3)\n.",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 20,
+      "char_count": 398,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637218"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:1",
+    "content": "The Model Context Protocol enables standardized communication between Large Language Models and external systems. The protocol defines how clients (typically LLM applications) can discover and interact with servers that expose tools, data, and interaction patterns.\n```\ngraph TB\n    subgraph \"MCP Ecosystem\"\n        Client[\"MCP Client<br/>(ClientSession)\"]\n        Server[\"MCP Server<br/>(FastMCP/Server)\"]\n        LLM[\"Large Language Model\"]\n    end\n    \n    subgraph \"Core Entities\"\n        Tools[\"Tools<br/>@tool decorator\"]\n        Resources[\"Resources<br/>@resource decorator\"] \n        Prompts[\"Prompts<br/>@prompt decorator\"]\n    end\n    \n    subgraph \"Protocol Messages\"\n        Initialize[\"InitializeRequest<br/>InitializeResult\"]\n        List[\"ListToolsRequest<br/>ListResourcesRequest<br/>ListPromptsRequest\"]\n        Execute[\"CallToolRequest<br/>ReadResourceRequest<br/>GetPromptRequest\"]\n    end\n    \n    Client <--> Server\n    Client <--> LLM\n    Server --> Tools\n    Server --> Resources\n    Server --> Prompts\n    Client --> Initialize\n    Client --> List\n    Client --> Execute\n```\n**MCP Core Architecture**\nSources:\n[README.md:84-194](.)\n,\n[src/mcp/types.py:8-34](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 20,
+      "char_count": 1184,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637237"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:2",
+    "content": "Servers expose functionality and data to LLM applications. The MCP Python SDK provides two server implementation approaches:\n- **FastMCP** : High-level decorator-based framework using `FastMCP` class\n- **Low-level Server** : Direct protocol implementation using `Server` class\n```\ngraph TB\n    subgraph \"Server Implementation Layers\"\n        FastMCP[\"FastMCP<br/>High-level Framework\"]\n        LowLevel[\"Server<br/>Low-level Implementation\"]\n        Session[\"ServerSession<br/>Connection Management\"]\n        Protocol[\"Protocol Types<br/>types.py\"]\n    end\n    \n    subgraph \"Developer Interface\"\n        ToolDecorator[\"@mcp.tool()\"]\n        ResourceDecorator[\"@mcp.resource()\"]\n        PromptDecorator[\"@mcp.prompt()\"]\n    end\n    \n    subgraph \"Protocol Handlers\"\n        CallTool[\"call_tool()\"]\n        ReadResource[\"read_resource()\"]\n        GetPrompt[\"get_prompt()\"]\n    end\n    \n    ToolDecorator --> FastMCP\n    ResourceDecorator --> FastMCP\n    PromptDecorator --> FastMCP\n    \n    FastMCP --> LowLevel\n    CallTool --> LowLevel\n    ReadResource --> LowLevel\n    GetPrompt --> LowLevel\n    \n    LowLevel --> Session\n    Session --> Protocol\n```\n**Server Implementation Architecture**\nSources:\n[src/mcp/server/lowlevel/server.py:1-66](.)\n,\n[README.md:198-265](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 20,
+      "char_count": 1269,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637245"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:3",
+    "content": "Clients connect to servers and facilitate communication with LLMs. The primary client implementation is\n```\nClientSession\n```\n, which handles protocol negotiation, message routing, and connection management.\nSources:\n[README.md:84-92](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 20,
+      "char_count": 237,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637253"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:4",
+    "content": "Tools are executable functions that LLMs can call to perform actions or computations. They are defined using the\n```\n@tool\n```\ndecorator in FastMCP or the\n```\ncall_tool()\n```\nhandler in low-level servers.\n```\ngraph LR\n    subgraph \"Tool Definition\"\n        Decorator[\"@mcp.tool()\"]\n        Function[\"Python Function\"]\n        Schema[\"Input Schema<br/>JSON Schema\"]\n        Output[\"Output Schema<br/>Optional\"]\n    end\n    \n    subgraph \"Protocol Messages\"\n        ListTools[\"ListToolsRequest<br/>ListToolsResult\"]\n        CallTool[\"CallToolRequest<br/>CallToolResult\"]\n    end\n    \n    subgraph \"Tool Execution\"\n        Validation[\"Input Validation<br/>jsonschema.validate()\"]\n        Handler[\"Tool Function Call\"]\n        Result[\"Structured/Unstructured Output\"]\n    end\n    \n    Decorator --> Function\n    Function --> Schema\n    Schema --> ListTools\n    ListTools --> CallTool\n    CallTool --> Validation\n    Validation --> Handler\n    Handler --> Result\n```\n**Tool Lifecycle and Processing**\nTools support both structured and unstructured output. The\n```\nCallToolResult\n```\ntype includes both\n```\ncontent\n```\n(unstructured) and\n```\nstructuredContent\n```\n(structured) fields for maximum compatibility.\nSources:\n[README.md:297-384](.)\n,\n[src/mcp/server/lowlevel/server.py:465-547](.)\n,\n[src/mcp/types.py:869-922](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 20,
+      "char_count": 1317,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637260"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:5",
+    "content": "Resources provide read-only access to data that LLMs can consume. They are identified by URIs and can return text, binary data, or multiple content blocks.\n```\ngraph TB\n    subgraph \"Resource Types\"\n        Static[\"Static Resources<br/>@resource(uri)\"]\n        Template[\"Resource Templates<br/>@resource(uri_template)\"]\n        Dynamic[\"Dynamic Resources<br/>URI Parameters\"]\n    end\n    \n    subgraph \"Resource Content\"\n        Text[\"TextResourceContents\"]\n        Blob[\"BlobResourceContents\"]\n        Multiple[\"Multiple Contents\"]\n    end\n    \n    subgraph \"Protocol Flow\"\n        List[\"ListResourcesRequest<br/>ListResourceTemplatesRequest\"]\n        Read[\"ReadResourceRequest<br/>ReadResourceResult\"]\n        Subscribe[\"SubscribeRequest<br/>ResourceUpdatedNotification\"]\n    end\n    \n    Static --> Text\n    Template --> Text\n    Dynamic --> Multiple\n    Text --> Read\n    Blob --> Read\n    Multiple --> Read\n    List --> Read\n    Read --> Subscribe\n```\n**Resource Architecture and Content Types**\nSources:\n[README.md:266-296](.)\n,\n[src/mcp/types.py:431-554](.)\n,\n[src/mcp/server/lowlevel/server.py:311-367](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 20,
+      "char_count": 1113,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637266"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:6",
+    "content": "Prompts are reusable templates that help structure LLM interactions. They can include parameters and return formatted message sequences.\n```\ngraph LR\n    subgraph \"Prompt Definition\"\n        PromptDecorator[\"@mcp.prompt()\"]\n        Template[\"Template Function\"]\n        Args[\"PromptArgument[]\"]\n    end\n    \n    subgraph \"Prompt Content\"\n        Messages[\"PromptMessage[]\"]\n        UserMsg[\"UserMessage\"]\n        AssistantMsg[\"AssistantMessage\"]\n    end\n    \n    subgraph \"Protocol Messages\"\n        ListPrompts[\"ListPromptsRequest\"]\n        GetPrompt[\"GetPromptRequest<br/>GetPromptResult\"]\n    end\n    \n    PromptDecorator --> Template\n    Template --> Args\n    Args --> Messages\n    Messages --> UserMsg\n    Messages --> AssistantMsg\n    ListPrompts --> GetPrompt\n    GetPrompt --> Messages\n```\n**Prompt Template System**\nSources:\n[README.md:490-517](.)\n,\n[src/mcp/types.py:630-812](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 20,
+      "char_count": 888,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637272"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:7",
+    "content": "The MCP protocol uses JSON-RPC 2.0 for message exchange. Communication follows a request-response pattern with support for notifications.\n```\nsequenceDiagram\n    participant Client as \"ClientSession\"\n    participant Server as \"ServerSession\"\n    participant Handler as \"Request Handler\"\n    \n    Note over Client,Server: \"Initialization Phase\"\n    Client->>Server: \"InitializeRequest\"\n    Server->>Client: \"InitializeResult\"\n    Client->>Server: \"InitializedNotification\"\n    \n    Note over Client,Server: \"Discovery Phase\"\n    Client->>Server: \"ListToolsRequest\"\n    Server->>Handler: \"list_tools()\"\n    Handler->>Server: \"list[Tool]\"\n    Server->>Client: \"ListToolsResult\"\n    \n    Note over Client,Server: \"Execution Phase\"\n    Client->>Server: \"CallToolRequest\"\n    Server->>Handler: \"call_tool(name, args)\"\n    Handler->>Server: \"CallToolResult\"\n    Server->>Client: \"CallToolResult\"\n    \n    Note over Client,Server: \"Notifications\"\n    Server->>Client: \"ProgressNotification\"\n    Server->>Client: \"LoggingMessageNotification\"\n```\n**MCP Protocol Message Flow**\nThe protocol supports several core message types defined in\n```\ntypes.py\n```\n:\n- **Requests** : `ClientRequest` , `ServerRequest` - expect responses\n- **Notifications** : `ClientNotification` , `ServerNotification` - no response expected\n- **Results** : `ClientResult` , `ServerResult` - responses to requests\nSources:\n[src/mcp/types.py:82-348](.)\n,\n[README.md:25-194](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 20,
+      "char_count": 1438,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637278"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:8",
+    "content": "MCP supports multiple transport mechanisms for client-server communication:\n```\ngraph TB\n    subgraph \"Transport Types\"\n        Stdio[\"Standard I/O<br/>stdio_client/stdio_server\"]\n        SSE[\"Server-Sent Events<br/>SseServerTransport\"]\n        StreamableHTTP[\"StreamableHTTP<br/>StreamableHTTPServerTransport\"]\n    end\n    \n    subgraph \"Connection Management\"\n        ClientSession[\"ClientSession\"]\n        ServerSession[\"ServerSession\"]\n        MessageStream[\"SessionMessage Stream\"]\n    end\n    \n    subgraph \"Message Processing\"\n        JSONRPCRequest[\"JSONRPCRequest\"]\n        JSONRPCResponse[\"JSONRPCResponse\"]\n        JSONRPCNotification[\"JSONRPCNotification\"]\n    end\n    \n    Stdio --> ClientSession\n    SSE --> ClientSession\n    StreamableHTTP --> ClientSession\n    ClientSession --> MessageStream\n    ServerSession --> MessageStream\n    MessageStream --> JSONRPCRequest\n    MessageStream --> JSONRPCResponse\n    MessageStream --> JSONRPCNotification\n```\n**Transport Layer Architecture**\nEach transport provides bidirectional communication with different characteristics:\n- **stdio** : Process-based communication via stdin/stdout\n- **SSE** : HTTP-based with server-sent events for real-time updates\n- **StreamableHTTP** : Advanced HTTP transport with session management and resumability\nSources:\n[src/mcp/types.py:124-193](.)\n, Transport architecture from overview diagrams",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 20,
+      "char_count": 1385,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637283"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:9",
+    "content": "```\nFastMCP\n```\nprovides a decorator-based approach for rapid server development. It automatically handles protocol compliance, schema generation, and message routing.\n```\ngraph TB\n    subgraph \"FastMCP Components\"\n        FastMCPClass[\"FastMCP\"]\n        ToolManager[\"ToolManager\"]\n        ResourceManager[\"ResourceManager\"]\n        PromptManager[\"PromptManager\"]\n    end\n    \n    subgraph \"Function Processing\"\n        FuncMetadata[\"func_metadata<br/>Introspection\"]\n        Validation[\"Argument Validation\"]\n        ContextInjection[\"Context Injection\"]\n    end\n    \n    subgraph \"Generated Components\"\n        JSONSchema[\"JSON Schema Generation\"]\n        RequestHandlers[\"Request Handlers\"]\n        TransportApps[\"Transport Applications\"]\n    end\n    \n    FastMCPClass --> ToolManager\n    FastMCPClass --> ResourceManager\n    FastMCPClass --> PromptManager\n    ToolManager --> FuncMetadata\n    ResourceManager --> FuncMetadata\n    PromptManager --> FuncMetadata\n    FuncMetadata --> Validation\n    FuncMetadata --> ContextInjection\n    FuncMetadata --> JSONSchema\n    JSONSchema --> RequestHandlers\n    RequestHandlers --> TransportApps\n```\n**FastMCP Internal Architecture**",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 20,
+      "char_count": 1177,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637289"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:10",
+    "content": "The\n```\nServer\n```\nclass provides direct access to the MCP protocol with explicit handler registration using decorators like\n```\nlist_tools()\n```\n,\n```\ncall_tool()\n```\n, etc.\nSources:\n[src/mcp/server/lowlevel/server.py:133-158](.)\n, FastMCP concepts from overview diagrams",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 20,
+      "char_count": 272,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637295"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:11",
+    "content": "The\n```\nContext\n```\nobject provides access to MCP capabilities and request metadata within tool and resource functions.\n```\ngraph LR\n    subgraph \"Context Components\"\n        Context[\"Context[SessionT, LifespanT]\"]\n        RequestContext[\"RequestContext\"]\n        Session[\"ServerSession\"]\n        Lifespan[\"LifespanContext\"]\n    end\n    \n    subgraph \"Context Capabilities\"\n        Logging[\"debug(), info(), warning(), error()\"]\n        Progress[\"report_progress()\"]\n        Resources[\"read_resource()\"]\n        Elicitation[\"elicit()\"]\n    end\n    \n    subgraph \"Session Access\"\n        ClientParams[\"client_params\"]\n        Notifications[\"send_*_notification()\"]\n        Sampling[\"create_message()\"]\n    end\n    \n    Context --> RequestContext\n    Context --> Session\n    Context --> Lifespan\n    Context --> Logging\n    Context --> Progress\n    Context --> Resources\n    Context --> Elicitation\n    Session --> ClientParams\n    Session --> Notifications\n    Session --> Sampling\n```\n**Context and Session Architecture**\nThe context system enables:\n- **Logging** : Send log messages to clients via `LoggingMessageNotification`\n- **Progress** : Report operation progress via `ProgressNotification`\n- **Resource Access** : Read other resources via `ReadResourceRequest`\n- **User Interaction** : Request additional information via `ElicitRequest`\n- **LLM Sampling** : Generate text via `CreateMessageRequest`",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 20,
+      "char_count": 1406,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637301"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:12",
+    "content": "Both\n```\nClientSession\n```\nand\n```\nServerSession\n```\nmanage connection state, protocol version negotiation, and message routing throughout the connection lifetime.\nSources:\n[README.md:580-646](.)\n,\n[src/mcp/shared/context.py](.)\n(referenced),\n[src/mcp/server/session.py](.)\n(referenced)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 20,
+      "char_count": 286,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637306"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:13",
+    "content": "FastMCP is a high-level, decorator-based framework for building Model Context Protocol (MCP) servers in Python. It provides an ergonomic interface that simplifies server development through automatic function introspection, context injection, and seamless integration with multiple transport protocols.\nFor low-level server implementation details, see\n[Low-Level Server Implementation](#6)\n. For client-side components, see\n[Client Framework](#3)\n. For transport layer specifics, see\n[Transport Layer](#5)\n.",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 13,
+      "total_chunks": 20,
+      "char_count": 507,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637312"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:14",
+    "content": "FastMCP abstracts away the complexities of the MCP protocol by providing a decorator-based API that automatically converts Python functions into MCP tools, resources, and prompts. The framework handles JSON schema generation, input validation, output conversion, and protocol message handling.",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 14,
+      "total_chunks": 20,
+      "char_count": 293,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637317"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:15",
+    "content": "```\ngraph TB\n    subgraph \"FastMCP Server Framework\"\n        FastMCPClass[FastMCP]\n        Settings[Settings]\n        Context[Context]\n        \n        subgraph \"Managers\"\n            ToolManager[ToolManager]\n            ResourceManager[ResourceManager] \n            PromptManager[PromptManager]\n        end\n        \n        subgraph \"Decorators\"\n            ToolDecorator[\"@tool()\"]\n            ResourceDecorator[\"@resource()\"]\n            PromptDecorator[\"@prompt()\"]\n        end\n        \n        subgraph \"Low-Level Integration\"\n            MCPServer[MCPServer]\n            ServerSession[ServerSession]\n        end\n        \n        subgraph \"Transport Apps\"\n            StdioTransport[\"stdio_server()\"]\n            SSEApp[\"sse_app()\"]\n            StreamableApp[\"streamable_http_app()\"]\n        end\n    end\n    \n    subgraph \"User Code\"\n        UserFunctions[\"Python Functions\"]\n    end\n    \n    %% User interactions\n    UserFunctions --> ToolDecorator\n    UserFunctions --> ResourceDecorator\n    UserFunctions --> PromptDecorator\n    \n    %% Decorator to manager connections\n    ToolDecorator --> ToolManager\n    ResourceDecorator --> ResourceManager\n    PromptDecorator --> PromptManager\n    \n    %% FastMCP orchestration\n    FastMCPClass --> Settings\n    FastMCPClass --> ToolManager\n    FastMCPClass --> ResourceManager\n    FastMCPClass --> PromptManager\n    FastMCPClass --> MCPServer\n    \n    %% Context injection\n    Context -.-> UserFunctions\n    FastMCPClass --> Context\n    \n    %% Transport integration\n    FastMCPClass --> StdioTransport\n    FastMCPClass --> SSEApp\n    FastMCPClass --> StreamableApp\n    \n    %% Low-level connection\n    MCPServer --> ServerSession\n```\nSources:\n[src/mcp/server/fastmcp/server.py:122-209](.)\n,\n[src/mcp/server/fastmcp/server.py:268-280](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 15,
+      "total_chunks": 20,
+      "char_count": 1786,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637322"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:16",
+    "content": "The\n```\nFastMCP\n```\nclass serves as the central orchestrator, managing all server components and providing the decorator-based API. It wraps a low-level\n```\nMCPServer\n```\ninstance while providing higher-level abstractions.\n```\nFastMCP\n```\n```\ntool()\n```\n,\n```\nresource()\n```\n,\n```\nprompt()\n```\n,\n```\nrun()\n```\n```\nSettings\n```\n```\nContext\n```\n```\nlog()\n```\n,\n```\nreport_progress()\n```\n,\n```\nread_resource()\n```\n, Purpose = . , Key Methods = ",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 16,
+      "total_chunks": 20,
+      "char_count": 441,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637329"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:17",
+    "content": "FastMCP uses specialized manager classes to handle different types of MCP entities:\n```\ngraph LR\n    subgraph \"Entity Managers\"\n        ToolManager[\"ToolManager<br/>_tool_manager\"]\n        ResourceManager[\"ResourceManager<br/>_resource_manager\"]\n        PromptManager[\"PromptManager<br/>_prompt_manager\"]\n    end\n    \n    subgraph \"MCP Protocol Handlers\"\n        ListTools[\"list_tools()\"]\n        CallTool[\"call_tool()\"]\n        ListResources[\"list_resources()\"]\n        ReadResource[\"read_resource()\"]\n        ListPrompts[\"list_prompts()\"]\n        GetPrompt[\"get_prompt()\"]\n    end\n    \n    ToolManager --> ListTools\n    ToolManager --> CallTool\n    ResourceManager --> ListResources\n    ResourceManager --> ReadResource\n    PromptManager --> ListPrompts\n    PromptManager --> GetPrompt\n```\nSources:\n[src/mcp/server/fastmcp/server.py:181-183](.)\n,\n[src/mcp/server/fastmcp/server.py:270-279](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 17,
+      "total_chunks": 20,
+      "char_count": 894,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637334"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:18",
+    "content": "The\n```\n@tool()\n```\ndecorator converts Python functions into MCP tools with automatic schema generation:\n```\n@server.tool()\ndef calculate_sum(a: int, b: int) -> int:\n    \"\"\"Add two numbers together.\"\"\"\n    return a + b\n\n@server.tool()\nasync def async_tool(x: int, ctx: Context) -> str:\n    await ctx.report_progress(50, 100)\n    return f\"Processed {x}\"\n```\nThe decorator supports several parameters for customization:\n```\nname\n```\n```\nstr \\| None\n```\n```\ntitle\n```\n```\nstr \\| None\n```\n```\ndescription\n```\n```\nstr \\| None\n```\n```\nstructured_output\n```\n```\nbool \\| None\n```\n, Type = . , Purpose = \nSources:\n[src/mcp/server/fastmcp/server.py:393-451](.)\n,\n[tests/server/fastmcp/test_server.py:146-153](.)",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 18,
+      "total_chunks": 20,
+      "char_count": 701,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637342"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Key_Concepts:chunk:19",
+    "content": "Resources can be registered as static resources or parameterized templates:",
+    "metadata": {
+      "source": "python-sdk\\Key_Concepts.md",
+      "file_name": "Key_Concepts.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 19,
+      "total_chunks": 20,
+      "char_count": 75,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:19.637349"
+    }
+  }
+]

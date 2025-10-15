@@ -1,0 +1,497 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:0",
+    "content": "The resource and prompt management system in FastMCP provides structured access to data sources and conversation templates for MCP servers. Resources represent data that can be read (files, HTTP endpoints, databases), while prompts are message templates that can be rendered with parameters for LLM interactions.\nFor tool execution functionality, see\n[Tool Management](#2.2)\n. For low-level protocol handling, see\n[Protocol & Message System](#4)\n.",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 33,
+      "char_count": 447,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172827"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:1",
+    "content": "The resource system provides a unified interface for accessing various data sources through the\n```\nResource\n```\nbase class and supporting infrastructure.",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 33,
+      "char_count": 154,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172843"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:2",
+    "content": "```\nclassDiagram\n    class Resource {\n        <<abstract>>\n        +uri: AnyUrl\n        +name: str\n        +title: str\n        +description: str  \n        +mime_type: str\n        +icons: list[Icon]\n        +read()* str|bytes\n    }\n    \n    class TextResource {\n        +text: str\n        +read() str\n    }\n    \n    class BinaryResource {\n        +data: bytes\n        +read() bytes\n    }\n    \n    class FunctionResource {\n        +fn: Callable\n        +read() str|bytes\n        +from_function() FunctionResource\n    }\n    \n    class FileResource {\n        +path: Path\n        +is_binary: bool\n        +read() str|bytes\n    }\n    \n    class HttpResource {\n        +url: str\n        +read() str|bytes\n    }\n    \n    class DirectoryResource {\n        +path: Path\n        +recursive: bool\n        +pattern: str\n        +list_files() list[Path]\n        +read() str\n    }\n    \n    Resource <|-- TextResource\n    Resource <|-- BinaryResource  \n    Resource <|-- FunctionResource\n    Resource <|-- FileResource\n    Resource <|-- HttpResource\n    Resource <|-- DirectoryResource\n```\n**Sources:**\n[src/mcp/server/fastmcp/resources/base.py:19-49](.)\n,\n[src/mcp/server/fastmcp/resources/types.py:20-200](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 33,
+      "char_count": 1193,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172850"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:3",
+    "content": "```\nsequenceDiagram\n    participant Client\n    participant \"ResourceManager\" as RM\n    participant \"ResourceTemplate\" as RT\n    participant \"Resource\" as R\n    participant \"Context\" as CTX\n\n    Note over RM: \"Static resources and templates registered\"\n    \n    Client->>RM: \"get_resource(uri, context)\"\n    RM->>RM: \"Check _resources dict\"\n    \n    alt \"Static resource exists\"\n        RM->>R: \"Return cached resource\"\n        R->>Client: \"Resource instance\"\n    else \"No static resource\"\n        RM->>RT: \"Check _templates for pattern match\"\n        RT->>RT: \"matches(uri) -> params\"\n        RT->>CTX: \"inject_context(fn, params, context)\"\n        RT->>RT: \"fn(**params)\"\n        RT->>R: \"create FunctionResource\"\n        R->>Client: \"Dynamic resource instance\"\n    end\n    \n    Client->>R: \"read()\"\n    R->>Client: \"str | bytes\"\n```\n**Sources:**\n[src/mcp/server/fastmcp/resources/resource_manager.py:77-98](.)\n,\n[src/mcp/server/fastmcp/resources/templates.py:84-110](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 33,
+      "char_count": 971,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172856"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:4",
+    "content": "The system provides several concrete resource implementations for common data sources:\n```\nTextResource\n```\n```\nread() -> str\n```\n```\nBinaryResource\n```\n```\nread() -> bytes\n```\n```\nFileResource\n```\n```\nread() -> str\\|bytes\n```\n```\nHttpResource\n```\n```\nread() -> str\\|bytes\n```\n```\nDirectoryResource\n```\n```\nlist_files() -> list[Path]\n```\n, Purpose = . , Key Methods = . , File Location = \n**Sources:**\n[src/mcp/server/fastmcp/resources/types.py:1-200](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 33,
+      "char_count": 454,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172861"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:5",
+    "content": "```\nFunctionResource\n```\nenables lazy loading by wrapping functions that return data only when accessed:\n```\ngraph TB\n    subgraph \"FunctionResource Creation\"\n        F[\"Function Definition\"] --> V[\"validate_call()\"]\n        V --> FR[\"FunctionResource Instance\"]\n    end\n    \n    subgraph \"ResourceTemplate System\"\n        UT[\"uri_template: weather://{city}/current\"] --> M[\"matches(uri)\"]\n        M --> P[\"Extract params: {city: 'london'}\"]\n        P --> CI[\"inject_context()\"]\n        CI --> FC[\"fn(**params)\"]\n        FC --> CR[\"create_resource()\"]\n    end\n    \n    subgraph \"Runtime Execution\"\n        Client --> RM[\"ResourceManager.get_resource()\"]\n        RM --> RT[\"ResourceTemplate.create_resource()\"]\n        RT --> FR2[\"FunctionResource with closure\"]\n        FR2 --> Read[\"resource.read()\"]\n        Read --> Result[\"Data returned\"]\n    end\n```\n**Sources:**\n[src/mcp/server/fastmcp/resources/types.py:40-102](.)\n,\n[src/mcp/server/fastmcp/resources/templates.py:22-110](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 33,
+      "char_count": 981,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172867"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:6",
+    "content": "The prompt system provides template-based message generation for LLM interactions with parameter validation and context injection.",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 33,
+      "char_count": 130,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172873"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:7",
+    "content": "```\nclassDiagram\n    class Message {\n        +role: \"user\"|\"assistant\"\n        +content: ContentBlock\n    }\n    \n    class UserMessage {\n        +role: \"user\"\n    }\n    \n    class AssistantMessage {\n        +role: \"assistant\"\n    }\n    \n    class PromptArgument {\n        +name: str\n        +description: str\n        +required: bool\n    }\n    \n    class Prompt {\n        +name: str\n        +title: str\n        +description: str\n        +arguments: list[PromptArgument]\n        +fn: Callable\n        +context_kwarg: str\n        +from_function() Prompt\n        +render() list[Message]\n    }\n    \n    class PromptManager {\n        +_prompts: dict[str, Prompt]\n        +add_prompt() Prompt\n        +get_prompt() Prompt\n        +list_prompts() list[Prompt]\n        +render_prompt() list[Message]\n    }\n    \n    Message <|-- UserMessage\n    Message <|-- AssistantMessage\n    Prompt --> PromptArgument\n    PromptManager --> Prompt\n```\n**Sources:**\n[src/mcp/server/fastmcp/prompts/base.py:22-184](.)\n,\n[src/mcp/server/fastmcp/prompts/manager.py:18-60](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 33,
+      "char_count": 1046,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172878"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:8",
+    "content": "```\nsequenceDiagram\n    participant Client\n    participant \"PromptManager\" as PM\n    participant \"Prompt\" as P\n    participant \"func_metadata\" as FM\n    participant \"Context\" as CTX\n\n    Note over PM: \"Prompts registered via from_function()\"\n    \n    Client->>PM: \"render_prompt(name, arguments)\"\n    PM->>P: \"get_prompt(name)\"\n    P->>P: \"validate required arguments\"\n    P->>CTX: \"inject_context(fn, arguments, context)\"\n    P->>P: \"fn(**call_args)\"\n    \n    alt \"Function returns coroutine\"\n        P->>P: \"await result\"\n    end\n    \n    P->>P: \"Convert result to Message list\"\n    \n    loop \"For each result item\"\n        alt \"isinstance(item, Message)\"\n            P->>P: \"Add to messages\"\n        else \"isinstance(item, dict)\"\n            P->>P: \"message_validator.validate_python()\"\n        else \"isinstance(item, str)\"\n            P->>P: \"Create UserMessage with TextContent\"\n        else \"Other types\"\n            P->>P: \"JSON serialize and create Message\"\n        end\n    end\n    \n    P->>Client: \"list[Message]\"\n```\n**Sources:**\n[src/mcp/server/fastmcp/prompts/base.py:137-183](.)\n,\n[src/mcp/server/fastmcp/prompts/manager.py:49-60](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 33,
+      "char_count": 1146,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172883"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:9",
+    "content": "Both resources and prompts support context injection for accessing request-specific information during execution.",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 33,
+      "char_count": 113,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172889"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:10",
+    "content": "```\nflowchart TD\n    F[\"Function Definition\"] --> TH[\"get_type_hints(fn)\"]\n    TH --> LP[\"Loop through parameters\"]\n    LP --> CT[\"Check if type is Context\"]\n    CT --> |\"Yes\"| RN[\"Return parameter name\"]\n    CT --> |\"No\"| GO[\"Check generic origin\"]\n    GO --> GA[\"Get type args\"]\n    GA --> CGA[\"Check if any arg is Context\"]\n    CGA --> |\"Yes\"| RN\n    CGA --> |\"No\"| LP\n    LP --> |\"No more params\"| RNone[\"Return None\"]\n```\n**Sources:**\n[src/mcp/server/fastmcp/utilities/context_injection.py:11-46](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 33,
+      "char_count": 504,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172894"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:11",
+    "content": "The context injection system integrates with both resource templates and prompts:\n```\nResourceTemplate.create_resource()\n```\n```\nPrompt.render()\n```\n```\ninject_context()\n```\n, Context Usage = . , Implementation = \n**Sources:**\n[src/mcp/server/fastmcp/resources/templates.py:84-110](.)\n,\n[src/mcp/server/fastmcp/prompts/base.py:137-183](.)\n,\n[src/mcp/server/fastmcp/utilities/context_injection.py:49-68](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 33,
+      "char_count": 405,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172899"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:12",
+    "content": "Both\n```\nResourceManager\n```\nand\n```\nPromptManager\n```\nprovide registration APIs for adding resources and prompts to FastMCP servers:",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 33,
+      "char_count": 133,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172905"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:13",
+    "content": "```\ngraph LR\n    subgraph \"Resource Registration Methods\"\n        AR[\"add_resource(resource)\"] --> R[\"_resources dict\"]\n        AT[\"add_template(fn, uri_template)\"] --> T[\"_templates dict\"]\n    end\n    \n    subgraph \"Resource Retrieval\"\n        GR[\"get_resource(uri, context)\"] --> CR[\"Check _resources\"]\n        CR --> |\"Found\"| RET[\"Return resource\"]\n        CR --> |\"Not found\"| CT[\"Check _templates\"]\n        CT --> |\"Match\"| TR[\"template.create_resource()\"]\n        CT --> |\"No match\"| ERR[\"ValueError\"]\n    end\n```",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 13,
+      "total_chunks": 33,
+      "char_count": 520,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172910"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:14",
+    "content": "The\n```\nPromptManager\n```\nmaintains a simple dictionary mapping prompt names to\n```\nPrompt\n```\ninstances, with optional duplicate warnings.\n**Sources:**\n[src/mcp/server/fastmcp/resources/resource_manager.py:22-108](.)\n,\n[src/mcp/server/fastmcp/prompts/manager.py:18-60](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 14,
+      "total_chunks": 33,
+      "char_count": 272,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172915"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:15",
+    "content": "This document explains how FastMCP automatically analyzes Python functions to generate JSON schemas for their arguments and return values, enabling automatic validation and structured output generation. This system allows FastMCP to seamlessly bridge between Python function signatures and the MCP protocol's JSON-based communication.\nFor information about how tools are registered and managed, see\n[Tool Management](#2.2)\n. For details about the FastMCP server architecture, see\n[FastMCP Server Architecture](#2.1)\n.",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 15,
+      "total_chunks": 33,
+      "char_count": 517,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172921"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:16",
+    "content": "The function introspection system serves two primary purposes:\n1. **Automatic Schema Generation** : Converts Python function signatures into JSON schemas that can be used by MCP clients to understand tool parameters\n2. **Structured Output Support** : Enables tools to return structured data with schemas, allowing for richer client interactions\nThe system is built around the\n```\nfunc_metadata\n```\nfunction and\n```\nFuncMetadata\n```\nclass, which analyze function signatures using Python's\n```\ninspect\n```\nmodule and Pydantic models to create validation and conversion pipelines.",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 16,
+      "total_chunks": 33,
+      "char_count": 577,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172926"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:17",
+    "content": "The introspection system follows a pipeline from Python functions to validated execution:\n```\ngraph TB\n    subgraph \"Function Analysis\"\n        Function[\"Python Function\"]\n        Signature[\"inspect.Signature\"]\n        TypeHints[\"Type Hints & Annotations\"]\n    end\n    \n    subgraph \"Metadata Generation\"\n        FuncMetadata[\"FuncMetadata\"]\n        ArgModel[\"ArgModelBase (Pydantic)\"]\n        OutputModel[\"Output Model (Optional)\"]\n        JSONSchema[\"JSON Schema\"]\n    end\n    \n    subgraph \"Runtime Processing\"\n        RawArgs[\"Raw Arguments (dict)\"]\n        PreParse[\"JSON Pre-parsing\"]\n        Validation[\"Pydantic Validation\"]\n        FunctionCall[\"Function Execution\"]\n        OutputConversion[\"Output Conversion\"]\n    end\n    \n    Function --> Signature\n    Function --> TypeHints\n    Signature --> FuncMetadata\n    TypeHints --> FuncMetadata\n    FuncMetadata --> ArgModel\n    FuncMetadata --> OutputModel\n    FuncMetadata --> JSONSchema\n    \n    RawArgs --> PreParse\n    PreParse --> Validation\n    ArgModel --> Validation\n    Validation --> FunctionCall\n    FunctionCall --> OutputConversion\n    OutputModel --> OutputConversion\n```\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:166-284](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:62-164](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 17,
+      "total_chunks": 33,
+      "char_count": 1278,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172932"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:18",
+    "content": "The\n```\nfunc_metadata\n```\nfunction creates Pydantic models from function signatures to enable automatic validation:",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 18,
+      "total_chunks": 33,
+      "char_count": 115,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172937"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:19",
+    "content": "```\ngraph LR\n    subgraph \"Function Parameter Analysis\"\n        Params[\"Function Parameters\"]\n        TypeAnnotations[\"Type Annotations\"]\n        Defaults[\"Default Values\"]\n        FieldInfo[\"Pydantic FieldInfo\"]\n    end\n    \n    subgraph \"Model Creation\"\n        ArgModelBase[\"ArgModelBase\"]\n        DynamicModel[\"create_model()\"]\n        ValidationModel[\"Validation Model\"]\n    end\n    \n    Params --> TypeAnnotations\n    Params --> Defaults\n    TypeAnnotations --> FieldInfo\n    Defaults --> FieldInfo\n    FieldInfo --> DynamicModel\n    ArgModelBase --> DynamicModel\n    DynamicModel --> ValidationModel\n```",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 19,
+      "total_chunks": 33,
+      "char_count": 610,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172943"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:20",
+    "content": "```\nname: str\n```\n→\n```\nstr\n```\n```\nAny\n```\n```\nvalue\n```\n→\n```\nAny\n```\n```\nNone\n```\n```\nx: None\n```\n```\n_\n```\n```\nInvalidSignature\n```\n```\n_private: str\n```\n```\nskip_names\n```\n```\nmodel_dump: str\n```\nTyped parameters, Treatment = Direct mapping. Typed parameters, Example = \nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:208-258](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:240-252](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 20,
+      "total_chunks": 33,
+      "char_count": 412,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172948"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:21",
+    "content": "FastMCP supports structured output based on function return type annotations. The system automatically detects whether a function should return structured or unstructured output:",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 21,
+      "total_chunks": 33,
+      "char_count": 178,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172953"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:22",
+    "content": "```\ngraph TB\n    subgraph \"Return Type Analysis\"\n        ReturnAnnotation[\"Return Annotation\"]\n        StructuredOutputFlag[\"structured_output parameter\"]\n        TypeCheck[\"Type Analysis\"]\n    end\n    \n    subgraph \"Model Creation Strategy\"\n        BaseModelDirect[\"BaseModel → Direct Use\"]\n        PrimitivesWrapped[\"Primitives → Wrapped in 'result'\"]\n        DictStrKeys[\"dict[str, T] → RootModel\"]\n        DictOtherKeys[\"dict[other, T] → Wrapped\"]\n        TypedDictConverted[\"TypedDict → Converted Model\"]\n        ClassWithHints[\"Annotated Class → Converted Model\"]\n        GenericTypesWrapped[\"Generic Types → Wrapped\"]\n        UnserializableNone[\"Unserializable → None\"]\n    end\n    \n    ReturnAnnotation --> TypeCheck\n    StructuredOutputFlag --> TypeCheck\n    TypeCheck --> BaseModelDirect\n    TypeCheck --> PrimitivesWrapped\n    TypeCheck --> DictStrKeys\n    TypeCheck --> DictOtherKeys\n    TypeCheck --> TypedDictConverted\n    TypeCheck --> ClassWithHints\n    TypeCheck --> GenericTypesWrapped\n    TypeCheck --> UnserializableNone\n```",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 22,
+      "total_chunks": 33,
+      "char_count": 1044,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172959"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:23",
+    "content": "```\nstr\n```\n```\n{\"result\": str}\n```\n```\nBaseModel\n```\n```\ndict[str, int]\n```\n```\ndict[int, str]\n```\n```\n{\"result\": dict}\n```\n```\nTypedDict\n```\n```\nlist[str]\n```\n```\n{\"result\": list}\n```\n, Model Strategy = . , Schema Generation = \nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:287-371](.)\n,\n[examples/snippets/servers/structured_output.py:1-98](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 23,
+      "total_chunks": 33,
+      "char_count": 360,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172964"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:24",
+    "content": "The system generates JSON schemas using Pydantic's schema generation with strict validation:",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 24,
+      "total_chunks": 33,
+      "char_count": 92,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172970"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:25",
+    "content": "```\ngraph LR\n    subgraph \"Schema Creation\"\n        OutputModel[\"Output Model\"]\n        StrictJsonSchema[\"StrictJsonSchema Generator\"]\n        SchemaDict[\"JSON Schema Dict\"]\n    end\n    \n    subgraph \"Error Handling\"\n        ValidationErrors[\"Pydantic Errors\"]\n        SchemaErrors[\"Schema Generation Errors\"] \n        FallbackToNone[\"Fallback to None\"]\n    end\n    \n    OutputModel --> StrictJsonSchema\n    StrictJsonSchema --> SchemaDict\n    StrictJsonSchema --> ValidationErrors\n    ValidationErrors --> FallbackToNone\n    SchemaErrors --> FallbackToNone\n```\nThe\n```\nStrictJsonSchema\n```\nclass raises exceptions instead of emitting warnings, allowing the system to detect non-serializable types and gracefully fall back to unstructured output.\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:30-38](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:355-371](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 25,
+      "total_chunks": 33,
+      "char_count": 881,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172975"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:26",
+    "content": "The validation system includes sophisticated JSON pre-parsing to handle common client behavior:",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 26,
+      "total_chunks": 33,
+      "char_count": 95,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172980"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:27",
+    "content": "```\ngraph TB\n    subgraph \"Input Processing\"\n        RawInput[\"Raw Arguments Dict\"]\n        PreParseJSON[\"pre_parse_json()\"]\n        ModelValidation[\"Pydantic Validation\"]\n        ArgumentExtraction[\"model_dump_one_level()\"]\n    end\n    \n    subgraph \"JSON Pre-parsing Rules\"\n        StringValue[\"String Value\"]\n        FieldAnnotation[\"Field Type Annotation\"]\n        JSONParseable[\"Valid JSON?\"]\n        ParsedValue[\"Parsed Value\"]\n        OriginalValue[\"Original String\"]\n    end\n    \n    RawInput --> PreParseJSON\n    PreParseJSON --> ModelValidation\n    ModelValidation --> ArgumentExtraction\n    \n    StringValue --> FieldAnnotation\n    FieldAnnotation --> JSONParseable\n    JSONParseable -->|Yes, Complex Type| ParsedValue\n    JSONParseable -->|No or Simple Type| OriginalValue\n```",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 27,
+      "total_chunks": 33,
+      "char_count": 788,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172985"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:28",
+    "content": "```\n'[\"a\", \"b\"]'\n```\n```\nlist[str]\n```\n```\n[\"a\", \"b\"]\n```\n```\n'\"hello\"'\n```\n```\nstr\n```\n```\n'\"hello\"'\n```\n```\n'{\"x\": 1}'\n```\n```\nSomeModel\n```\n```\n{\"x\": 1}\n```\n```\n'123'\n```\n```\nint\n```\n```\n'123'\n```\n```\n'invalid'\n```\n```\nlist[str]\n```\n```\n'invalid'\n```\n, Field Type = . , Pre-parsed Result = . , Reason = \nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:121-159](.)\n,\n[tests/server/fastmcp/test_func_metadata.py:463-552](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 28,
+      "total_chunks": 33,
+      "char_count": 436,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172991"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:29",
+    "content": "The\n```\nconvert_result\n```\nmethod handles converting function return values to the appropriate format for MCP responses:",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 29,
+      "total_chunks": 33,
+      "char_count": 120,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.172996"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:30",
+    "content": "```\ngraph TB\n    subgraph \"Output Processing\"\n        FunctionResult[\"Function Return Value\"]\n        UnstructuredConversion[\"_convert_to_content()\"]\n        StructuredCheck[\"Has Output Schema?\"]\n        StructuredValidation[\"Output Model Validation\"]\n        BothFormats[\"(Unstructured, Structured)\"]\n        UnstructuredOnly[\"Unstructured Content Only\"]\n    end\n    \n    subgraph \"Content Conversion\"\n        ContentBlock[\"ContentBlock → Direct\"]\n        ImageAudio[\"Image/Audio → Content\"]\n        ListTuple[\"List/Tuple → Flattened\"]\n        OtherTypes[\"Other → JSON + TextContent\"]\n    end\n    \n    FunctionResult --> UnstructuredConversion\n    FunctionResult --> StructuredCheck\n    UnstructuredConversion --> ContentBlock\n    UnstructuredConversion --> ImageAudio\n    UnstructuredConversion --> ListTuple\n    UnstructuredConversion --> OtherTypes\n    \n    StructuredCheck -->|Yes| StructuredValidation\n    StructuredCheck -->|No| UnstructuredOnly\n    StructuredValidation --> BothFormats\n```",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 30,
+      "total_chunks": 33,
+      "char_count": 997,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.173001"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:31",
+    "content": "```\nNone\n```\n```\n[]\n```\n```\nContentBlock\n```\n```\n[ContentBlock]\n```\n```\nImage\n```\n```\n[ImageContent]\n```\n```\nAudio\n```\n```\n[AudioContent]\n```\n```\nlist/tuple\n```\n```\n[TextContent]\n```\n, Conversion Result = \nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:91-119](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:489-523](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 31,
+      "total_chunks": 33,
+      "char_count": 341,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.173006"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Resource__Prompt_Management:chunk:32",
+    "content": "The function introspection system integrates seamlessly with FastMCP's tool registration:\n```\ngraph LR\n    subgraph \"Tool Registration\"\n        ToolDecorator[\"@mcp.tool()\"]\n        FunctionAnalysis[\"func_metadata()\"]\n        ToolManager[\"ToolManager\"]\n    end\n    \n    subgraph \"Runtime Execution\"\n        ClientCall[\"Client Tool Call\"]\n        ArgumentValidation[\"call_fn_with_arg_validation()\"]\n        FunctionExecution[\"Function Call\"]\n        ResultConversion[\"convert_result()\"]\n        MCPResponse[\"MCP Response\"]\n    end\n    \n    ToolDecorator --> FunctionAnalysis\n    FunctionAnalysis --> ToolManager\n    ClientCall --> ArgumentValidation\n    ArgumentValidation --> FunctionExecution\n    FunctionExecution --> ResultConversion\n    ResultConversion --> MCPResponse\n```\nThis system enables FastMCP to provide rich, type-safe tool interfaces while maintaining compatibility with the MCP protocol's JSON-based communication model.\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:68-89](.)\n,\n[tests/server/fastmcp/test_integration.py:666-700](.)",
+    "metadata": {
+      "source": "python-sdk\\Resource__Prompt_Management.md",
+      "file_name": "Resource__Prompt_Management.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 32,
+      "total_chunks": 33,
+      "char_count": 1061,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.173011"
+    }
+  }
+]

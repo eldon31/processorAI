@@ -1,0 +1,482 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:0",
+    "content": "This document covers FastMCP's configuration management system, which enables declarative server definitions, multi-server orchestration, and standardized MCP client configurations. The system provides both programmatic and file-based configuration approaches for defining MCP servers, their connections, authentication, and behavioral transformations.\nFor information about HTTP server deployment configuration, see\n[HTTP Server and Deployment](#4)\n. For CLI-based configuration commands, see\n[Command Line Interface](#5)\n. For project build and dependency configuration, see\n[Installation and Setup](#1.1)\n.",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 32,
+      "char_count": 609,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293893"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:1",
+    "content": "The configuration management system centers around the\n```\nMCPConfig\n```\nclass hierarchy, which provides both standard and canonical configuration formats for defining MCP servers and their properties.\n```\ngraph TB\n    subgraph \"Configuration Classes\"\n        MCPConfig[\"MCPConfig<br/>Standard format with transformations\"]\n        CanonicalMCPConfig[\"CanonicalMCPConfig<br/>Normalized format without transformations\"]\n        MCPServerTypes[\"MCPServerTypes<br/>Union[StdioMCPServer, RemoteMCPServer, TransformingStdioMCPServer]\"]\n        CanonicalMCPServerTypes[\"CanonicalMCPServerTypes<br/>Union[StdioMCPServer, RemoteMCPServer]\"]\n    end\n    \n    subgraph \"Server Definitions\"\n        StdioMCPServer[\"StdioMCPServer<br/>Local subprocess servers\"]\n        RemoteMCPServer[\"RemoteMCPServer<br/>HTTP/SSE remote servers\"]\n        TransformingStdioMCPServer[\"TransformingStdioMCPServer<br/>Stdio with tool/resource transforms\"]\n    end\n    \n    subgraph \"Transport Generation\"\n        MCPConfigTransport[\"MCPConfigTransport<br/>Multi-server client transport\"]\n        StdioTransport[\"StdioTransport\"]\n        StreamableHttpTransport[\"StreamableHttpTransport\"]\n        SSETransport[\"SSETransport\"]\n    end\n    \n    subgraph \"Configuration Sources\"\n        DictConfig[\"Dictionary Configuration\"]\n        JSONFile[\"fastmcp.json\"]\n        ProgrammaticConfig[\"Programmatic Construction\"]\n    end\n    \n    MCPConfig --> MCPServerTypes\n    CanonicalMCPConfig --> CanonicalMCPServerTypes\n    MCPServerTypes --> StdioMCPServer\n    MCPServerTypes --> RemoteMCPServer  \n    MCPServerTypes --> TransformingStdioMCPServer\n    CanonicalMCPServerTypes --> StdioMCPServer\n    CanonicalMCPServerTypes --> RemoteMCPServer\n    \n    StdioMCPServer --> StdioTransport\n    RemoteMCPServer --> StreamableHttpTransport\n    RemoteMCPServer --> SSETransport\n    TransformingStdioMCPServer --> StdioTransport\n    \n    DictConfig --> MCPConfig\n    JSONFile --> MCPConfig\n    ProgrammaticConfig --> MCPConfig\n    \n    MCPConfig --> MCPConfigTransport\n    CanonicalMCPConfig --> MCPConfigTransport\n```\nSources:\n[tests/test_mcp_config.py:25-33](.)\n,\n[src/fastmcp/mcp_config.py](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 32,
+      "char_count": 2147,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293911"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:2",
+    "content": "FastMCP supports three primary server configuration types, each designed for different deployment scenarios and capability requirements.",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 32,
+      "char_count": 136,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293918"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:3",
+    "content": "```\nStdioMCPServer\n```\nconfigurations define local subprocess-based MCP servers that communicate via standard input/output streams.\n```\ngraph LR\n    subgraph \"StdioMCPServer Properties\"\n        Command[\"command: str<br/>Executable path\"]\n        Args[\"args: list[str]<br/>Command arguments\"]\n        Env[\"env: dict[str, str]<br/>Environment variables\"]\n        Cwd[\"cwd: str | None<br/>Working directory\"]\n    end\n    \n    subgraph \"Generated Transport\"\n        StdioTransport[\"StdioTransport<br/>subprocess communication\"]\n    end\n    \n    Command --> StdioTransport\n    Args --> StdioTransport\n    Env --> StdioTransport\n    Cwd --> StdioTransport\n```\nExample configuration structure:\n```\n{\n  \"mcpServers\": {\n    \"local_server\": {\n      \"command\": \"python\",\n      \"args\": [\"/path/to/server.py\"],\n      \"env\": {\"DEBUG\": \"1\"}\n    }\n  }\n}\n```\nSources:\n[tests/test_mcp_config.py:50-63](.)\n,\n[tests/test_mcp_config.py:177-202](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 32,
+      "char_count": 926,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293923"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:4",
+    "content": "```\nRemoteMCPServer\n```\nconfigurations define HTTP-based remote MCP servers with automatic transport inference and authentication support.\n```\ngraph LR\n    subgraph \"RemoteMCPServer Properties\"\n        URL[\"url: str<br/>Server endpoint\"]\n        Transport[\"transport: str | None<br/>Override transport type\"]\n        Auth[\"auth: str | None<br/>Authentication configuration\"]\n    end\n    \n    subgraph \"Transport Inference\"\n        URLAnalysis[\"URL Path Analysis\"]\n        TransportSelection[\"Transport Selection\"]\n    end\n    \n    subgraph \"Generated Transports\"\n        StreamableHTTP[\"StreamableHttpTransport<br/>Default HTTP transport\"]\n        SSE[\"SSETransport<br/>/sse/ path detected\"]\n    end\n    \n    URL --> URLAnalysis\n    URLAnalysis --> TransportSelection\n    TransportSelection --> StreamableHTTP\n    TransportSelection --> SSE\n    Transport --> TransportSelection\n    Auth --> StreamableHTTP\n    Auth --> SSE\n```\nThe system automatically infers\n```\nSSETransport\n```\nfor URLs containing\n```\n/sse/\n```\npaths, while defaulting to\n```\nStreamableHttpTransport\n```\nfor other HTTP endpoints.\nSources:\n[tests/test_mcp_config.py:134-175](.)\n,\n[tests/test_mcp_config.py:412-467](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 32,
+      "char_count": 1185,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293929"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:5",
+    "content": "```\nTransformingStdioMCPServer\n```\nextends stdio servers with tool and resource transformation capabilities, enabling name remapping, argument transformation, and selective inclusion/exclusion.\n```\ngraph TB\n    subgraph \"TransformingStdioMCPServer\"\n        BaseConfig[\"Base StdioMCPServer properties\"]\n        Tools[\"tools: dict<br/>Tool transformations\"]\n        Resources[\"resources: dict<br/>Resource transformations\"] \n        Prompts[\"prompts: dict<br/>Prompt transformations\"]\n        IncludeTags[\"include_tags: list[str]\"]\n        ExcludeTags[\"exclude_tags: list[str]\"]\n    end\n    \n    subgraph \"Tool Transformation\"\n        ToolName[\"name: str<br/>Renamed tool name\"]\n        ToolArgs[\"arguments: dict<br/>Argument remapping\"]\n        ToolTags[\"tags: list[str]<br/>Applied tags\"]\n    end\n    \n    subgraph \"Filtering Logic\"\n        TagFilter[\"Tag-based filtering<br/>include/exclude logic\"]\n        ComponentFilter[\"Component selection\"]\n    end\n    \n    Tools --> ToolName\n    Tools --> ToolArgs\n    Tools --> ToolTags\n    IncludeTags --> TagFilter\n    ExcludeTags --> TagFilter\n    TagFilter --> ComponentFilter\n```\nSources:\n[tests/test_mcp_config.py:534-588](.)\n,\n[tests/test_mcp_config.py:639-698](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 32,
+      "char_count": 1213,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293935"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:6",
+    "content": "FastMCP supports multiple configuration input formats with automatic normalization and validation.",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 32,
+      "char_count": 98,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293940"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:7",
+    "content": "The system accepts both nested\n```\nmcpServers\n```\nformat and root-level server definitions:\n```\ngraph LR\n    subgraph \"Input Formats\"\n        NestedFormat[\"Nested Format<br/>{mcpServers: {name: config}}\"]\n        RootFormat[\"Root Format<br/>{name: config}\"]\n    end\n    \n    subgraph \"Normalization\"\n        Parser[\"MCPConfig.from_dict()\"]\n        Validation[\"Pydantic validation\"]\n    end\n    \n    subgraph \"Output\"\n        StandardizedConfig[\"Standardized MCPConfig\"]\n    end\n    \n    NestedFormat --> Parser\n    RootFormat --> Parser\n    Parser --> Validation\n    Validation --> StandardizedConfig\n```\nThe parser automatically detects and normalizes root-level server definitions to the standard nested format.\nSources:\n[tests/test_mcp_config.py:86-99](.)\n,\n[tests/test_mcp_config.py:66-84](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 32,
+      "char_count": 796,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293946"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:8",
+    "content": "The system uses discriminated unions to automatically select appropriate server types based on configuration content:\n```\ngraph TD\n    subgraph \"Discrimination Logic\"\n        ConfigInput[\"Server Configuration\"]\n        HasTransforms[\"Has tools/resources/prompts?\"]\n        HasURL[\"Has url property?\"]\n        ServerType[\"Selected Server Type\"]\n    end\n    \n    ConfigInput --> HasURL\n    HasURL -->|Yes| RemoteServer[\"RemoteMCPServer\"]\n    HasURL -->|No| HasTransforms\n    HasTransforms -->|Yes| TransformingServer[\"TransformingStdioMCPServer\"]\n    HasTransforms -->|No| StdioServer[\"StdioMCPServer\"]\n    \n    RemoteServer --> ServerType\n    TransformingServer --> ServerType\n    StdioServer --> ServerType\n```\nSources:\n[tests/test_mcp_config.py:101-132](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 32,
+      "char_count": 757,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293952"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:9",
+    "content": "The configuration system generates appropriate transport instances based on server definitions, with automatic inference and override capabilities.",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 32,
+      "char_count": 147,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293957"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:10",
+    "content": "```\ngraph TB\n    subgraph \"Server Configs\"\n        StdioConfig[\"StdioMCPServer<br/>TransformingStdioMCPServer\"]\n        RemoteConfig[\"RemoteMCPServer\"]\n    end\n    \n    subgraph \"Transport Factory\"\n        ToTransport[\"to_transport() method\"]\n        URLInference[\"URL-based inference\"]\n        TransportOverride[\"Explicit transport override\"]\n    end\n    \n    subgraph \"Generated Transports\"\n        StdioT[\"StdioTransport<br/>command, args, env\"]\n        StreamableT[\"StreamableHttpTransport<br/>url, auth\"]\n        SSET[\"SSETransport<br/>url, auth\"]\n    end\n    \n    subgraph \"Multi-Server Transport\"\n        MCPConfigTransport[\"MCPConfigTransport<br/>Aggregates multiple servers\"]\n    end\n    \n    StdioConfig --> ToTransport\n    RemoteConfig --> ToTransport\n    ToTransport --> URLInference\n    ToTransport --> TransportOverride\n    URLInference --> StdioT\n    URLInference --> StreamableT\n    URLInference --> SSET\n    TransportOverride --> StreamableT\n    TransportOverride --> SSET\n    \n    StdioT --> MCPConfigTransport\n    StreamableT --> MCPConfigTransport\n    SSET --> MCPConfigTransport\n```\nSources:\n[tests/test_mcp_config.py:142-175](.)\n,\n[src/fastmcp/client/transports.py](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 32,
+      "char_count": 1190,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293963"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:11",
+    "content": "FastMCP provides flexible authentication configuration supporting bearer tokens and OAuth flows for remote servers.",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 32,
+      "char_count": 115,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293968"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:12",
+    "content": "```\ngraph LR\n    subgraph \"Auth Configuration Values\"\n        NoAuth[\"null<br/>No authentication\"]\n        TokenAuth[\"string token<br/>Bearer authentication\"]  \n        OAuthLiteral[\"'oauth' literal<br/>OAuth flow\"]\n    end\n    \n    subgraph \"Generated Auth Providers\"\n        NoAuthProvider[\"None\"]\n        BearerAuth[\"BearerAuth<br/>token: SecretStr\"]\n        OAuthProvider[\"OAuthClientProvider<br/>Dynamic token acquisition\"]\n    end\n    \n    subgraph \"Transport Integration\"\n        HTTPTransport[\"HTTP Transport<br/>auth parameter\"]\n        SSETransport[\"SSE Transport<br/>auth parameter\"]\n    end\n    \n    NoAuth --> NoAuthProvider\n    TokenAuth --> BearerAuth\n    OAuthLiteral --> OAuthProvider\n    \n    NoAuthProvider --> HTTPTransport\n    BearerAuth --> HTTPTransport\n    OAuthProvider --> HTTPTransport\n    \n    NoAuthProvider --> SSETransport\n    BearerAuth --> SSETransport\n    OAuthProvider --> SSETransport\n```\nAuthentication is automatically applied to both\n```\nStreamableHttpTransport\n```\nand\n```\nSSETransport\n```\ninstances based on the remote server configuration.\nSources:\n[tests/test_mcp_config.py:425-467](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 32,
+      "char_count": 1128,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293974"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:13",
+    "content": "The\n```\nMCPConfigTransport\n```\nenables simultaneous connection to multiple MCP servers with unified tool/resource/prompt namespacing.",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 13,
+      "total_chunks": 32,
+      "char_count": 133,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293979"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:14",
+    "content": "```\ngraph TB\n    subgraph \"MCPConfig Definition\"\n        Server1[\"Server1: stdio server\"]\n        Server2[\"Server2: remote server\"]\n        Server3[\"Server3: transforming server\"]\n    end\n    \n    subgraph \"MCPConfigTransport\"\n        TransportAggregator[\"Transport Aggregator\"]\n        NamespaceManager[\"Namespace Manager\"]\n        ConnectionPool[\"Connection Pool\"]\n    end\n    \n    subgraph \"Unified Client Interface\"\n        ListTools[\"list_tools()<br/>server1_tool, server2_tool\"]\n        CallTool[\"call_tool('server1_tool', args)\"]\n        Logging[\"Centralized logging\"]\n        Elicitation[\"Elicitation forwarding\"]\n    end\n    \n    Server1 --> TransportAggregator\n    Server2 --> TransportAggregator\n    Server3 --> TransportAggregator\n    \n    TransportAggregator --> NamespaceManager\n    TransportAggregator --> ConnectionPool\n    \n    NamespaceManager --> ListTools\n    NamespaceManager --> CallTool\n    ConnectionPool --> Logging\n    ConnectionPool --> Elicitation\n```\nEach server's tools, resources, and prompts are prefixed with the server name (e.g.,\n```\nserver_name_tool_name\n```\n) to avoid conflicts while maintaining clear attribution.\nSources:\n[tests/test_mcp_config.py:204-244](.)\n,\n[tests/test_mcp_config.py:469-532](.)\n,\n[tests/test_mcp_config.py:700-740](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 14,
+      "total_chunks": 32,
+      "char_count": 1279,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293985"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:15",
+    "content": "FastMCP integrates with standard Python project configuration through\n```\npyproject.toml\n```\nand supports environment-based configuration management.",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 15,
+      "total_chunks": 32,
+      "char_count": 149,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293990"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:16",
+    "content": "```\ngraph TB\n    subgraph \"pyproject.toml Sections\"\n        ProjectMeta[\"[project]<br/>name, version, dependencies\"]\n        Scripts[\"[project.scripts]<br/>fastmcp = 'fastmcp.cli:app'\"]\n        OptionalDeps[\"[project.optional-dependencies]<br/>websockets, openai\"]\n        DepGroups[\"[dependency-groups]<br/>dev dependencies\"]\n    end\n    \n    subgraph \"Build Configuration\"\n        BuildSystem[\"[build-system]<br/>hatchling, uv-dynamic-versioning\"]\n        HatchVersion[\"[tool.hatch.version]<br/>source = 'uv-dynamic-versioning'\"]\n    end\n    \n    subgraph \"Tool Configuration\"\n        PytestConfig[\"[tool.pytest.ini_options]<br/>Test configuration\"]\n        RuffConfig[\"[tool.ruff.lint]<br/>Linting rules\"]\n        TyConfig[\"[tool.ty.*]<br/>Type checking\"]\n    end\n    \n    subgraph \"Runtime Environment\"\n        EnvVars[\"Environment Variables<br/>FASTMCP_*\"]\n        UVLock[\"uv.lock<br/>Dependency resolution\"]\n    end\n    \n    ProjectMeta --> Scripts\n    Scripts --> OptionalDeps\n    OptionalDeps --> DepGroups\n    \n    BuildSystem --> HatchVersion\n    \n    PytestConfig --> TyConfig\n    TyConfig --> RuffConfig\n    \n    EnvVars --> PytestConfig\n    UVLock --> ProjectMeta\n```\nThe configuration system supports environment variable-based test configuration through\n```\nFASTMCP_TEST_MODE\n```\n,\n```\nFASTMCP_LOG_LEVEL\n```\n, and other\n```\nFASTMCP_*\n```\nprefixed variables.\nSources:\n[pyproject.toml:1-147](.)\n,\n[.github/workflows/run-tests.yml:78-81](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 16,
+      "total_chunks": 32,
+      "char_count": 1452,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.293997"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:17",
+    "content": "This document covers FastMCP's comprehensive testing infrastructure, development utilities, and testing patterns. It explains the testing utilities, fixtures, and methodologies used to test FastMCP servers, clients, transports, and integrations.\nFor information about deployment and production configuration, see\n[HTTP Server and Deployment](#4)\n. For development workflow tools like the CLI, see\n[Command Line Interface](#5)\n.",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 17,
+      "total_chunks": 32,
+      "char_count": 427,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294003"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:18",
+    "content": "FastMCP provides a robust testing framework designed to handle the complexities of testing distributed MCP systems, including process isolation, network communication, authentication flows, and transport mechanisms.\n```\ngraph TB\n    subgraph \"Testing Utilities\"\n        TestUtils[\"fastmcp.utilities.tests\"]\n        ProcessMgmt[\"run_server_in_process()\"]\n        SettingsOverride[\"temporary_settings()\"]\n        LogCapture[\"caplog_for_fastmcp()\"]\n        HeadlessAuth[\"HeadlessOAuth\"]\n    end\n    \n    subgraph \"Test Fixtures\"\n        ConfTest[\"tests/conftest.py\"]\n        PortMgmt[\"free_port_factory()\"]\n        WorkerID[\"worker_id fixture\"]\n        IntegrationMarker[\"integration marker\"]\n    end\n    \n    subgraph \"Transport Testing\"\n        HTTPTests[\"StreamableHttpTransport tests\"]\n        SSETests[\"SSETransport tests\"]\n        StdioTests[\"StdioTransport tests\"]\n        MemoryTests[\"FastMCPTransport tests\"]\n    end\n    \n    subgraph \"Server Testing\"\n        ServerFixtures[\"FastMCP server fixtures\"]\n        AuthTesting[\"OAuth/JWT testing\"]\n        ComponentTesting[\"Tool/Resource/Prompt testing\"]\n        MiddlewareTesting[\"Middleware testing\"]\n    end\n    \n    subgraph \"Client Testing\"\n        ClientFixtures[\"Client fixtures\"]\n        AuthClientTesting[\"Client authentication\"]\n        TimeoutTesting[\"Timeout behavior\"]\n        ErrorHandling[\"Error handling\"]\n    end\n    \n    TestUtils --> ProcessMgmt\n    TestUtils --> SettingsOverride\n    TestUtils --> LogCapture\n    TestUtils --> HeadlessAuth\n    \n    ConfTest --> PortMgmt\n    ConfTest --> WorkerID\n    ConfTest --> IntegrationMarker\n    \n    ProcessMgmt --> ServerFixtures\n    PortMgmt --> ServerFixtures\n    \n    ServerFixtures --> HTTPTests\n    ServerFixtures --> SSETests\n    ServerFixtures --> AuthTesting\n    \n    HeadlessAuth --> AuthClientTesting\n    ClientFixtures --> TimeoutTesting\n```\n**Testing Framework Architecture**\nSources:\n[src/fastmcp/utilities/tests.py:1-200](.)\n,\n[tests/conftest.py:1-60](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 18,
+      "total_chunks": 32,
+      "char_count": 1981,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294008"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:19",
+    "content": "The\n```\nrun_server_in_process()\n```\nfunction provides isolated server testing by running FastMCP servers in separate processes:\n```\ngraph LR\n    TestProcess[\"Test Process\"]\n    ServerProcess[\"Server Process\"]\n    NetworkComm[\"Network Communication\"]\n    \n    TestProcess -->|\"spawn\"| ServerProcess\n    TestProcess <-->|\"HTTP/TCP\"| NetworkComm\n    NetworkComm <-->|\"MCP Protocol\"| ServerProcess\n    \n    subgraph \"Server Lifecycle\"\n        Start[\"server_fn()\"]\n        WaitReady[\"Socket check\"]\n        TestExecution[\"Test execution\"]\n        Cleanup[\"Process termination\"]\n        \n        Start --> WaitReady\n        WaitReady --> TestExecution\n        TestExecution --> Cleanup\n    end\n```\n**Process Isolation for Server Testing**\nThe utility handles server lifecycle, port allocation, and cleanup automatically:\n```\nrun_server_in_process()\n```\n```\nserver_fn\n```\n,\n```\nhost\n```\n,\n```\nport\n```\n,\n```\n**kwargs\n```\n```\nmax_attempts=30\n```\n```\ntimeout=5\n```\nfor graceful, then\n```\nkill()\n```\n, Purpose = . , Key Parameters = \nSources:\n[src/fastmcp/utilities/tests.py:74-140](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 19,
+      "total_chunks": 32,
+      "char_count": 1075,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294014"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:20",
+    "content": "The\n```\ntemporary_settings()\n```\ncontext manager allows safe modification of FastMCP configuration during tests:\n```\n# Example usage pattern from tests\nwith temporary_settings(log_level='DEBUG', experimental_feature=True):\n    # Test code runs with modified settings\n    assert fastmcp.settings.log_level == 'DEBUG'\n# Settings automatically restored\n```\nSources:\n[src/fastmcp/utilities/tests.py:24-55](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 20,
+      "total_chunks": 32,
+      "char_count": 404,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294019"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:21",
+    "content": "The\n```\nHeadlessOAuth\n```\nclass simulates OAuth flows without browser interaction:\n```\nsequenceDiagram\n    participant Test as \"Test Code\"\n    participant HeadlessOAuth as \"HeadlessOAuth\"\n    participant Server as \"MCP Server\"\n    participant AuthProvider as \"OAuth Provider\"\n    \n    Test->>HeadlessOAuth: Initialize with mcp_url\n    HeadlessOAuth->>Server: GET /auth/authorize\n    Server->>AuthProvider: Redirect to OAuth\n    AuthProvider-->>HeadlessOAuth: HTTP redirect response\n    HeadlessOAuth->>HeadlessOAuth: Parse authorization code\n    HeadlessOAuth->>Server: POST /auth/token\n    Server-->>HeadlessOAuth: Access token\n    HeadlessOAuth-->>Test: Authenticated client\n```\n**Headless OAuth Flow for Testing**\nThe implementation bypasses browser interaction by making direct HTTP requests and parsing redirect responses:\n```\nredirect_handler()\n```\n```\ncallback_handler()\n```\n```\n(auth_code, state)\n```\n, Purpose = . , Returns = \nSources:\n[src/fastmcp/utilities/tests.py:154-200](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 21,
+      "total_chunks": 32,
+      "char_count": 988,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294025"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:22",
+    "content": "FastMCP provides utilities for managing network ports in test environments:\n```\n# Free port fixtures from conftest.py\n@pytest.fixture\ndef free_port():\n    \"\"\"Get a free port for the test to use.\"\"\"\n    \n@pytest.fixture \ndef free_port_factory(worker_id):\n    \"\"\"Factory to get free ports that tracks used ports per test session.\"\"\"\n```\nThe\n```\nfree_port_factory\n```\ntracks used ports to prevent conflicts in parallel test execution.\nSources:\n[tests/conftest.py:34-59](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 22,
+      "total_chunks": 32,
+      "char_count": 469,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294031"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:23",
+    "content": "Tests are automatically categorized based on their location:\n```\ndef pytest_collection_modifyitems(items):\n    \"\"\"Automatically mark tests in integration_tests folder with 'integration' marker.\"\"\"\n    for item in items:\n        if \"integration_tests\" in str(item.fspath):\n            item.add_marker(pytest.mark.integration)\n```\nSources:\n[tests/conftest.py:8-13](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 23,
+      "total_chunks": 32,
+      "char_count": 365,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294037"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:24",
+    "content": "FastMCP tests HTTP transports using real server instances with comprehensive scenarios:\n```\ngraph TB\n    subgraph \"HTTP Transport Test Patterns\"\n        ServerFixture[\"fastmcp_server() fixture\"]\n        StatelessTest[\"Stateless HTTP testing\"]\n        StatefulTest[\"Stateful HTTP testing\"]\n        HeaderTest[\"Header propagation\"]\n        TimeoutTest[\"Timeout behavior\"]\n        ProgressTest[\"Progress reporting\"]\n        ElicitationTest[\"User elicitation\"]\n    end\n    \n    subgraph \"Test Scenarios\"\n        BasicPing[\"Ping operations\"]\n        ToolCalls[\"Tool execution\"]\n        ResourceRead[\"Resource reading\"]\n        PromptGet[\"Prompt retrieval\"]\n        ErrorHandling[\"Error conditions\"]\n    end\n    \n    ServerFixture --> StatelessTest\n    ServerFixture --> StatefulTest\n    \n    StatelessTest --> BasicPing\n    StatefulTest --> ToolCalls\n    HeaderTest --> ResourceRead\n    TimeoutTest --> ErrorHandling\n    ProgressTest --> ToolCalls\n    ElicitationTest --> ToolCalls\n```\n**HTTP Transport Testing Architecture**\nKey test patterns include:\n- **Parameterized testing** : Tests run against both stateless and stateful HTTP modes\n- **Header propagation** : Verification that client headers reach server components\n- **Timeout handling** : Testing both client-level and operation-level timeouts\n- **Progress reporting** : Async progress updates during long-running operations\nSources:\n[tests/client/test_streamable_http.py:21-248](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 24,
+      "total_chunks": 32,
+      "char_count": 1437,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294042"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:25",
+    "content": "Server-Sent Events transport testing follows similar patterns with transport-specific considerations:\n```\ntest_ping()\n```\n```\ntest_http_headers()\n```\n```\nTestTimeout\n```\n```\ntest_nested_sse_server_resolves_correctly()\n```\nBasic connectivity, Key Features = Ping, list operations. Basic connectivity, Example Test = \nSources:\n[tests/client/test_sse.py:19-167](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 25,
+      "total_chunks": 32,
+      "char_count": 361,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294048"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:26",
+    "content": "FastMCP includes comprehensive JWT testing with both RSA and symmetric key scenarios:\n```\ngraph TB\n    subgraph \"JWT Testing Components\"\n        RSAKeyPair[\"RSAKeyPair helper\"]\n        SymmetricHelper[\"SymmetricKeyHelper\"]\n        JWTVerifier[\"JWTVerifier provider\"]\n        MockJWKS[\"JWKS mocking\"]\n    end\n    \n    subgraph \"Test Scenarios\"\n        ValidTokens[\"Valid token validation\"]\n        ExpiredTokens[\"Expired token rejection\"]\n        InvalidIssuer[\"Invalid issuer rejection\"]\n        InvalidAudience[\"Invalid audience rejection\"]\n        ScopeExtraction[\"Scope parsing\"]\n        AlgorithmValidation[\"Algorithm verification\"]\n    end\n    \n    subgraph \"Key Management\"\n        KeyGeneration[\"RSA key generation\"]\n        TokenCreation[\"JWT token creation\"]\n        SignatureValidation[\"Signature verification\"]\n    end\n    \n    RSAKeyPair --> KeyGeneration\n    SymmetricHelper --> TokenCreation\n    JWTVerifier --> ValidTokens\n    MockJWKS --> SignatureValidation\n    \n    ValidTokens --> ScopeExtraction\n    ExpiredTokens --> AlgorithmValidation\n    InvalidIssuer --> InvalidAudience\n```\n**JWT Authentication Testing Framework**\nThe testing framework provides helpers for various JWT scenarios:\n- **RSA key management** : `RSAKeyPair.generate()` creates test key pairs\n- **Symmetric keys** : `SymmetricKeyHelper` for HMAC algorithms\n- **Token validation** : Comprehensive issuer, audience, and scope testing\n- **JWKS mocking** : HTTP mocking for JWKS URI endpoints\nSources:\n[tests/server/auth/test_jwt_provider.py:14-871](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 26,
+      "total_chunks": 32,
+      "char_count": 1536,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294054"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:27",
+    "content": "OAuth providers are tested using integration patterns with real HTTP servers:\n```\n# Example OAuth provider test pattern\ndef run_mcp_server(host: str, port: int) -> None:\n    mcp = FastMCP(auth=DescopeProvider(...))\n    \n    @mcp.tool\n    def add(a: int, b: int) -> int:\n        return a + b\n    \n    mcp.run(host=host, port=port, transport=\"http\")\n\n@pytest.fixture  \ndef mcp_server_url() -> Generator[str]:\n    with run_server_in_process(run_mcp_server) as url:\n        yield f\"{url}/mcp\"\n```\nSources:\n[tests/server/auth/providers/test_descope.py:121-141](.)\n,\n[tests/server/auth/providers/test_workos.py:160-178](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 27,
+      "total_chunks": 32,
+      "char_count": 616,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294060"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:28",
+    "content": "The\n```\nBulkToolCaller\n```\nprovides patterns for testing tool execution at scale:\n```\ngraph LR\n    subgraph \"Bulk Tool Testing\"\n        BulkCaller[\"BulkToolCaller\"]\n        LiveServer[\"Live FastMCP Server\"]\n        ToolRegistry[\"Tool registration\"]\n        \n        BulkCaller --> LiveServer\n        LiveServer --> ToolRegistry\n    end\n    \n    subgraph \"Test Scenarios\"\n        SingleSuccess[\"Single tool success\"]\n        MultipleSuccess[\"Multiple tool success\"] \n        ErrorHandling[\"Error propagation\"]\n        ContinueOnError[\"Continue on error\"]\n    end\n    \n    subgraph \"Tool Types\"\n        EchoTool[\"echo_tool()\"]\n        ErrorTool[\"error_tool()\"]\n        NoReturnTool[\"no_return_tool()\"]\n    end\n    \n    ToolRegistry --> EchoTool\n    ToolRegistry --> ErrorTool  \n    ToolRegistry --> NoReturnTool\n    \n    BulkCaller --> SingleSuccess\n    BulkCaller --> MultipleSuccess\n    BulkCaller --> ErrorHandling\n    BulkCaller --> ContinueOnError\n```\n**Bulk Tool Testing Framework**\nKey testing patterns include:\n- **Live server integration** : Tests use actual `FastMCP` instances with registered tools\n- **Error propagation** : Testing both fail-fast and continue-on-error modes\n- **Result validation** : Snapshot testing for consistent output verification\nSources:\n[tests/contrib/test_bulk_tool_caller.py:70-289](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 28,
+      "total_chunks": 32,
+      "char_count": 1322,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294065"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:29",
+    "content": "FastMCP tests dependency injection in HTTP contexts across multiple transports:\n`get_http_request()`\n, Test Pattern = . , Verification = \nSSE, Header extraction from HTTP request = Event stream headers\nSources:\n[tests/server/http/test_http_dependencies.py:13-124](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 29,
+      "total_chunks": 32,
+      "char_count": 266,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294070"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:30",
+    "content": "FastMCP tests OpenAPI server generation with both legacy and experimental parsers:\n```\n# Test pattern for OpenAPI integration\ndef fastmcp_server_for_headers() -> FastMCP:\n    app = FastAPI()\n    \n    @app.get(\"/headers\")  \n    def get_headers(request: Request):\n        return request.headers\n    \n    mcp = FastMCP.from_fastapi(\n        app,\n        httpx_client_kwargs={\"headers\": {\"x-server-header\": \"test-abc\"}},\n        route_maps=[\n            RouteMap(methods=[\"GET\"], pattern=r\".*\\{.*\\}.*\", mcp_type=MCPType.RESOURCE_TEMPLATE),\n            RouteMap(methods=[\"GET\"], pattern=r\".*\", mcp_type=MCPType.RESOURCE),\n        ],\n    )\n    return mcp\n```\nThe testing verifies:\n- **Route mapping** : HTTP routes to MCP components\n- **Header propagation** : Client and server headers through proxy chains\n- **Resource templates** : Dynamic URI pattern matching\nSources:\n[tests/client/test_openapi_legacy.py:13-47](.)\n,\n[tests/client/test_openapi_experimental.py:14-46](.)",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 30,
+      "total_chunks": 32,
+      "char_count": 967,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294075"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Configuration_Management:chunk:31",
+    "content": "FastMCP follows these testing organization principles:\n1. **Fixture-based setup** : Reusable server and client configurations\n2. **Process isolation** : Each test gets clean server instances\n3. **Transport agnostic** : Tests run across multiple transport types\n4. **Integration marking** : Automatic categorization of integration vs unit tests\n5. **Parallel execution** : xdist compatibility with port management",
+    "metadata": {
+      "source": "fastmcp\\Configuration_Management.md",
+      "file_name": "Configuration_Management.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 31,
+      "total_chunks": 32,
+      "char_count": 412,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.294081"
+    }
+  }
+]

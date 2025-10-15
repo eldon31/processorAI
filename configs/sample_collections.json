@@ -1,0 +1,41 @@
+{
+  "settings": {
+    "embedding_model": "nomic-ai/nomic-embed-code",
+    "embedding_device": "cpu",
+    "embedding_batch_size": 4,
+    "chunk_max_tokens": 2048,
+    "chunk_overlap": 100,
+    "chunk_min_size": 100,
+    "qdrant_host": "localhost",
+    "qdrant_port": 6333,
+    "default_collection": "knowledge_base",
+    "enable_quantization": true,
+    "ingest_to_qdrant": true,
+    "output_root": "output/collections",
+    "download_root": "data/downloads"
+  },
+  "collections": [
+    {
+      "name": "Inngest Platform Docs",
+      "slug": "inngest-platform",
+      "description": "Core documentation pages for the Inngest application platform.",
+      "qdrant_collection": "inngest_docs",
+      "metadata": {
+        "source": "Docs/inngest_overall",
+        "owner": "platform-team"
+      },
+      "documents": [
+        {
+          "id": "apps",
+          "path": "Docs/inngest_overall/apps.md",
+          "category": "platform",
+          "subcategory": "apps",
+          "tags": ["inngest", "apps", "platform"],
+          "metadata": {
+            "product_area": "cloud"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "source": "Docs\\agent_kit\\changelog_overview.md",
+  "title": "Changelog",
+  "num_chunks": 1,
+  "total_chars": 2114,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "Changelog\n- [Changelog](\\changelog\\overview)\nclose\nChangelog\nRecent releases, new features, and fixes.\n2025-03-11 v0.5.0\n- Introducing support for [Grok models](\\reference\\model-grok)\n- Adding support for [Gemini latest models](\\reference\\model-gemini)\n2025-03-06 v0.4.0\n- \nAdd support for model hyper params (ex: temperature, top\n_\np, etc)\n- Breaking change: `anthropic() max_tokens` options has been moved in `defaultParameters`\n- Add support OpenAI o3-mini, gpt-4.5, and more\n- [Integration with Browserbase](\\integrations\\browserbase)\n2025-02-19 v0.3.0\n- remove `server` export to allow non-Node runtimes\n- allow tools with no parameters\n- [Integration with E2B Code Interpreter](\\integrations\\e2b)\n2025-01-29 v0.2.2\n- Allow specifying [Inngest functions as tools](\\advanced-patterns\\multi-steps-tools)\n- Inngest is now an optional dependency\n2025-01-16 v0.2.1\n- Fixed OpenAI adapter to safely parse non-string tool return values for Function calling\n- Various documentation improvements\n2025-01-16 v0.2.0\n- Added support for Model Context Protocol (MCP) tool calling\n- Added basic development server\n- Fixed Anthropic model to ensure proper message handling\n- Improved code samples and concepts documentation\n- Added comprehensive quick start guide\n- Fixed bundling issues\n- Improved model exports for better discovery\n- Various cross-platform compatibility improvements\n2024-12-19 v0.1.2\n- Fixed state reference handling in agents\n- Updated SWEBench example configuration\n- Various stability improvements\n2024-12-19 v0.1.1\n- Fixed network to agent state propagation in run\n- Improved git clone handling in SWEBench example\n- Various minor improvements\n2024-12-19 v0.1.0\n- Initial release of AgentKit\n- Core framework implementation with lifecycle management\n- Support for OpenAI and Anthropic models\n- Network and Agent architecture with state management\n- ReAct implementation for networks\n- Tool calling support for agents\n- Added SWEBench example\n- Comprehensive documentation structure\n- Stepless model/network/agent instantiations\n⌘ I\nAssistant Responses are generated using AI and may contain mistakes.",
+      "char_count": 2114,
+      "token_count": 576,
+      "metadata": {
+        "title": "Changelog",
+        "source": "Docs\\agent_kit\\changelog_overview.md",
+        "chunk_method": "hybrid",
+        "file_path": "Docs\\agent_kit\\changelog_overview.md",
+        "file_name": "changelog_overview.md",
+        "file_size": 2388,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "d7f2630167956037eb19b296da512e7f7b76116be49ad9039bc9c77ccaf98d4b",
+        "author": null,
+        "created_at": "2025-10-12T23:51:16.414773",
+        "modified_at": "2025-10-12T23:51:16.414773",
+        "page_count": null,
+        "word_count": 292,
+        "extracted_at": "2025-10-13T19:59:18.614287",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 1,
+        "token_count": 576,
+        "has_context": true
+      }
+    }
+  ]
+}

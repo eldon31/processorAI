@@ -1,0 +1,137 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:0",
+    "content": "```\nSources: [src/mcp/client/auth.py:49-62](), [tests/client/test_auth.py:82-107]()\n\n## Authentication Flow\n\n### Complete OAuth Flow Sequence\n\n```mermaid\nsequenceDiagram\n    participant C as \"Client\"\n    participant OCP as \"OAuthClientProvider\"\n    participant RS as \"Resource Server<br/>(MCP Server)\"\n    participant AS as \"Authorization Server\"\n    participant User as \"User Browser\"\n    \n    Note over C,User: Initial Request (No Auth)\n    C->>OCP: Make request via httpx\n    OCP->>RS: Request without Authorization header\n    RS-->>OCP: 401 Unauthorized + WWW-Authenticate\n    \n    Note over C,User: Discovery Phase\n    OCP->>RS: GET /.well-known/oauth-protected-resource\n    RS-->>OCP: Protected resource metadata\n    OCP->>AS: GET /.well-known/oauth-authorization-server\n    AS-->>OCP: OAuth metadata\n    \n    Note over C,User: Registration Phase\n    OCP->>AS: POST /register (client metadata)\n    AS-->>OCP: Client credentials\n    \n    Note over C,User: Authorization Phase\n    OCP->>User: Redirect to /authorize + PKCE challenge\n    User->>AS: User authentication\n    AS->>User: Redirect with auth code\n    User-->>OCP: Authorization code via callback\n    \n    Note over C,User: Token Exchange\n    OCP->>AS: POST /token (code + PKCE verifier)\n    AS-->>OCP: Access + refresh tokens\n    \n    Note over C,User: Authenticated Request\n    OCP->>RS: Original request + Authorization header\n    RS-->>OCP: 200 OK + response data\n    OCP-->>C: Final response\n```\nSources:\n[src/mcp/client/auth.py:485-552](.)\n,\n[tests/client/test_auth.py:575-701](.)",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 9,
+      "char_count": 1549,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816838"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:1",
+    "content": "The client implements multiple discovery mechanisms for maximum compatibility:\n**1. RFC 9728 Protected Resource Discovery**\n- Extracts resource metadata URL from `WWW-Authenticate` header\n- Falls back to `/.well-known/oauth-protected-resource`\n- Discovers authorization server URLs\n**2. OAuth Metadata Discovery with Fallback**\nThe client tries multiple discovery URLs in order:\n1. `/.well-known/oauth-authorization-server{path}` (RFC 8414 path-aware)\n2. `/.well-known/oauth-authorization-server` (OAuth root)\n3. `/.well-known/openid-configuration{path}` (OIDC path-aware)\n4. `{server_url}/.well-known/openid-configuration` (OIDC fallback)\n```\ndef _get_discovery_urls(self) -> list[str]:\n    urls = []\n    # Path-aware OAuth discovery\n    if parsed.path and parsed.path != \"/\":\n        oauth_path = f\"/.well-known/oauth-authorization-server{parsed.path.rstrip('/')}\"\n        urls.append(urljoin(base_url, oauth_path))\n    # Additional fallback URLs...\n```\nSources:\n[src/mcp/client/auth.py:254-279](.)\n,\n[src/mcp/client/auth.py:231-253](.)\n,\n[tests/client/test_auth.py:252-365](.)",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 9,
+      "char_count": 1079,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816855"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:2",
+    "content": "Supports RFC 9728 resource metadata discovery via\n```\nWWW-Authenticate\n```\nheader parsing:\n```\ndef _extract_resource_metadata_from_www_auth(self, response: httpx.Response) -> str | None:\n    # Pattern: resource_metadata=\"url\" or resource_metadata=url\n    pattern = r'resource_metadata=(?:\"([^\"]+)\"|([^\\s,]+))'\n    match = re.search(pattern, www_auth_header)\n    return match.group(1) or match.group(2) if match else None\n```\n**Supported Header Formats:**\n```\nBearer resource_metadata=\"https://api.example.com/.well-known/oauth-protected-resource\"\n```\n```\nBearer resource_metadata=https://api.example.com/metadata\n```\n```\nBearer realm=\"api\", resource_metadata=\"https://api.example.com/metadata\", error=\"insufficient_scope\"\n```\n- Sources:\n- Sources:\n- Sources:\n[src/mcp/client/auth.py:207-229](.)\n,\n[tests/client/test_auth.py:782-900](.)",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 9,
+      "char_count": 835,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816862"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:3",
+    "content": "```\nstateDiagram-v2\n    [*] --> NoTokens: \"Initial state\"\n    \n    NoTokens --> Discovering: \"Start OAuth flow\"\n    Discovering --> Registering: \"Discovery complete\"\n    Registering --> Authorizing: \"Client registered\"\n    Authorizing --> TokenExchange: \"Auth code received\"\n    TokenExchange --> ValidTokens: \"Tokens obtained\"\n    \n    ValidTokens --> ValidTokens: \"Token valid,<br/>add to requests\"\n    ValidTokens --> ExpiredTokens: \"Token expired\"\n    ValidTokens --> NoTokens: \"Token revoked\"\n    \n    ExpiredTokens --> RefreshingTokens: \"Can refresh\"\n    ExpiredTokens --> NoTokens: \"Cannot refresh\"\n    RefreshingTokens --> ValidTokens: \"Refresh success\"\n    RefreshingTokens --> NoTokens: \"Refresh failed\"\n    \n    NoTokens --> Discovering: \"Retry OAuth flow\"\n```",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 9,
+      "char_count": 771,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816868"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:4",
+    "content": "**Token Validity Checking:**\n```\ndef is_token_valid(self) -> bool:\n    return bool(\n        self.current_tokens\n        and self.current_tokens.access_token\n        and (not self.token_expiry_time or time.time() <= self.token_expiry_time)\n    )\n\ndef can_refresh_token(self) -> bool:\n    return bool(\n        self.current_tokens \n        and self.current_tokens.refresh_token \n        and self.client_info\n    )\n```\n**Automatic Refresh Logic:**\nThe provider automatically attempts token refresh when:\n1. Current token is expired but refresh token exists\n2. Client information is available for authentication\n3. Refresh fails trigger full re-authentication\nSources:\n[src/mcp/client/auth.py:127-143](.)\n,\n[src/mcp/client/auth.py:494-502](.)\n,\n[src/mcp/client/auth.py:411-462](.)",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 9,
+      "char_count": 775,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816874"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:5",
+    "content": "Implements RFC 8707 resource parameter inclusion based on protocol version and protected resource metadata:\n```\ndef should_include_resource_param(self, protocol_version: str | None = None) -> bool:\n    # Always include if protected resource metadata is available\n    if self.protected_resource_metadata is not None:\n        return True\n    \n    # Include for protocol version 2025-06-18 or later\n    if protocol_version:\n        return protocol_version >= \"2025-06-18\"\n    \n    return False\n```\n**Resource URL Calculation:**\n- Uses protected resource metadata if available and valid\n- Falls back to canonical server URL derived from MCP endpoint\n- Validates hierarchical resource relationships\nSources:\n[src/mcp/client/auth.py:159-177](.)\n,\n[src/mcp/client/auth.py:144-158](.)\n,\n[tests/client/test_auth.py:459-534](.)",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 9,
+      "char_count": 817,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816880"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:6",
+    "content": "The\n```\nTokenStorage\n```\nprotocol defines the interface for persistent token storage:\n```\nclass TokenStorage(Protocol):\n    async def get_tokens(self) -> OAuthToken | None: ...\n    async def set_tokens(self, tokens: OAuthToken) -> None: ...\n    async def get_client_info(self) -> OAuthClientInformationFull | None: ...\n    async def set_client_info(self, client_info: OAuthClientInformationFull) -> None: ...\n```\n**Implementation Requirements:**\n- **Persistence** : Tokens should survive application restarts\n- **Security** : Secure storage with appropriate encryption\n- **Concurrency** : Thread-safe access patterns\n- **Cleanup** : Automatic removal of expired tokens\n**Example Storage Implementation:**\n```\nclass MockTokenStorage:\n    def __init__(self):\n        self._tokens: OAuthToken | None = None\n        self._client_info: OAuthClientInformationFull | None = None\n    \n    async def get_tokens(self) -> OAuthToken | None:\n        return self._tokens\n    \n    async def set_tokens(self, tokens: OAuthToken) -> None:\n        self._tokens = tokens\n```\nSources:\n[src/mcp/client/auth.py:64-82](.)\n,\n[tests/client/test_auth.py:17-35](.)",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 9,
+      "char_count": 1138,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816886"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:7",
+    "content": "```\nOAuthFlowError\n```\n```\nOAuthTokenError\n```\n```\nOAuthRegistrationError\n```\n, Usage = . , Common Causes = \n**Error Recovery Strategies:**\n- **Network errors** : Automatic retry with exponential backoff\n- **Invalid tokens** : Clear stored tokens and restart OAuth flow\n- **Registration failures** : Log error details for debugging\n- **Authorization failures** : Clear state and prompt re-authentication\n```\ntry:\n    # OAuth flow operations\n    await oauth_provider._handle_token_response(response)\nexcept OAuthTokenError as e:\n    logger.warning(f\"Token operation failed: {e}\")\n    oauth_provider.context.clear_tokens()\n    # Trigger re-authentication\n```\nSources:\n[src/mcp/client/auth.py:37-47](.)\n,\n[src/mcp/client/auth.py:388-410](.)\n,\n[src/mcp/client/auth.py:442-462](.)",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 9,
+      "char_count": 775,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816891"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:pkce.code_challenge_base64urlsha256code_verifier:chunk:8",
+    "content": "```\nfrom mcp.client.auth import OAuthClientProvider\nfrom mcp.shared.auth import OAuthClientMetadata\n```",
+    "metadata": {
+      "source": "python-sdk\\pkce.code_challenge_base64urlsha256code_verifier.md",
+      "file_name": "pkce.code_challenge_base64urlsha256code_verifier.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 9,
+      "char_count": 103,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.816897"
+    }
+  }
+]

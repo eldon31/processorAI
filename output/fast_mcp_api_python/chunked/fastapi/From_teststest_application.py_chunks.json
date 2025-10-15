@@ -1,0 +1,377 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:0",
+    "content": "@pytest.mark.parametrize(\n\"path,expected_status,expected_response\",\n[\n(\"/api_route\", 200, {\"message\": \"Hello World\"}),\n(\"/non_decorated_route\", 200, {\"message\": \"Hello World\"}),\n(\"/nonexistent\", 404, {\"detail\": \"Not Found\"}),\n],\n)\ndef test_get_path(path, expected_status, expected_response):\nresponse = client.get(path)\nassert response.status_code == expected_status\nassert response.json() == expected_response\n```\nSources: [tests/test_application.py:10-22](), [tests/test_tutorial/test_cookie_param_models/test_tutorial002.py:17-36]()\n\n# Code Quality and Pre-commit\n\n\n\n\nThis document covers the code quality infrastructure and pre-commit hook system used in the FastAPI repository. It details the configuration and usage of linting, formatting, type checking, and automated quality gates that ensure code consistency and reliability.\n\nFor information about the actual test framework and testing utilities, see [Test Framework and Tools](#5.1). For CI/CD automation that runs these quality checks, see [CI/CD Pipeline](#6.2).\n\n## Pre-commit Hook System\n\nFastAPI uses a comprehensive pre-commit hook system to enforce code quality standards before commits are made to the repository. The configuration is defined in [.pre-commit-config.yaml:1-26]().\n\n### Hook Configuration\n\nThe pre-commit system is configured with Python 3.10 as the default language version and includes two main repository sources:\n\n```mermaid\ngraph TB\n    subgraph \"Pre-commit Configuration\"\n        CONFIG[\".pre-commit-config.yaml\"]\n        PYTHON_VERSION[\"default_language_version: python3.10\"]\n    end\n    \n    subgraph \"pre-commit-hooks Repository v6.0.0\"\n        LARGE_FILES[\"id: check-added-large-files\"]\n        CHECK_TOML[\"id: check-toml\"]\n        CHECK_YAML[\"id: check-yaml args: --unsafe\"]\n        EOF_FIXER[\"id: end-of-file-fixer\"]\n        TRAILING_WS[\"id: trailing-whitespace\"]\n    end\n    \n    subgraph \"ruff-pre-commit Repository v0.12.10\"\n        RUFF_LINT[\"id: ruff args: --fix\"]\n        RUFF_FORMAT[\"id: ruff-format\"]\n    end\n    \n    subgraph \"Pre-commit.ci Integration\"\n        AUTOFIX[\"autofix_commit_msg\"]\n        AUTOUPDATE[\"autoupdate_commit_msg\"]\n    end\n    \n    CONFIG --> PYTHON_VERSION\n    CONFIG --> LARGE_FILES\n    CONFIG --> CHECK_TOML\n    CONFIG --> CHECK_YAML\n    CONFIG --> EOF_FIXER\n    CONFIG --> TRAILING_WS\n    CONFIG --> RUFF_LINT\n    CONFIG --> RUFF_FORMAT\n    CONFIG --> AUTOFIX\n    CONFIG --> AUTOUPDATE\n```\nThe system includes validation hooks for file formats and content, plus automated code quality enforcement through Ruff.\n**Sources:**\n[.pre-commit-config.yaml:1-26](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 25,
+      "char_count": 2587,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447237"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:1",
+    "content": "The configuration includes integration with pre-commit.ci for automated maintenance:\n```\n🎨 [pre-commit.ci] Auto format from pre-commit.com hooks\n```\n```\n⬆ [pre-commit.ci] pre-commit autoupdate\n```\nAuto-fix Messages, Configuration = . Auto-fix Messages, Description = \n**Sources:**\n[.pre-commit-config.yaml:24-25](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 25,
+      "char_count": 315,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447253"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:2",
+    "content": "FastAPI uses Ruff as its primary tool for both code linting and formatting, replacing multiple traditional tools with a single, fast implementation.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 25,
+      "char_count": 148,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447261"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:3",
+    "content": "The Ruff configuration includes two main hooks:\n```\ngraph LR\n    subgraph \"Ruff Integration\"\n        RUFF_REPO[\"astral-sh/ruff-pre-commit v0.12.10\"]\n        RUFF_LINT_HOOK[\"ruff --fix\"]\n        RUFF_FORMAT_HOOK[\"ruff-format\"]\n    end\n    \n    subgraph \"Target Directories\"\n        FASTAPI_DIR[\"fastapi/\"]\n        TESTS_DIR[\"tests/\"]\n        DOCS_SRC_DIR[\"docs_src/\"]\n        SCRIPTS_DIR[\"scripts/\"]\n    end\n    \n    RUFF_REPO --> RUFF_LINT_HOOK\n    RUFF_REPO --> RUFF_FORMAT_HOOK\n    \n    RUFF_LINT_HOOK --> FASTAPI_DIR\n    RUFF_LINT_HOOK --> TESTS_DIR\n    RUFF_LINT_HOOK --> DOCS_SRC_DIR\n    RUFF_LINT_HOOK --> SCRIPTS_DIR\n    \n    RUFF_FORMAT_HOOK --> FASTAPI_DIR\n    RUFF_FORMAT_HOOK --> TESTS_DIR\n    RUFF_FORMAT_HOOK --> DOCS_SRC_DIR\n    RUFF_FORMAT_HOOK --> SCRIPTS_DIR\n```\n**Sources:**\n[.pre-commit-config.yaml:16-22](.)\n,\n[scripts/lint.sh:7-8](.)\n,\n[scripts/format.sh:4-5](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 25,
+      "char_count": 883,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447267"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:4",
+    "content": "The repository provides several scripts for manual execution of code quality tools:\n```\nscripts/lint.sh\n```\n```\nmypy fastapi\n```\n,\n```\nruff check\n```\n,\n```\nruff format --check\n```\n```\nscripts/format.sh\n```\n```\nruff check --fix\n```\n,\n```\nruff format\n```\n, Purpose = . , Commands = \n**Sources:**\n[scripts/lint.sh:1-9](.)\n,\n[scripts/format.sh:1-6](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 25,
+      "char_count": 347,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447273"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:5",
+    "content": "FastAPI uses mypy for static type checking to ensure type safety across the codebase.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 25,
+      "char_count": 85,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447278"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:6",
+    "content": "The mypy version is pinned in the test requirements and executed as part of the linting process:\n```\ngraph TB\n    subgraph \"Type Checking Pipeline\"\n        MYPY_REQ[\"requirements-tests.txt: mypy ==1.8.0\"]\n        LINT_SCRIPT[\"scripts/lint.sh\"]\n        MYPY_EXEC[\"mypy fastapi\"]\n    end\n    \n    subgraph \"Target Analysis\"\n        FASTAPI_PACKAGE[\"fastapi/ package\"]\n        TYPE_ANNOTATIONS[\"Type annotations\"]\n        TYPE_ERRORS[\"Type errors and inconsistencies\"]\n    end\n    \n    MYPY_REQ --> LINT_SCRIPT\n    LINT_SCRIPT --> MYPY_EXEC\n    MYPY_EXEC --> FASTAPI_PACKAGE\n    FASTAPI_PACKAGE --> TYPE_ANNOTATIONS\n    FASTAPI_PACKAGE --> TYPE_ERRORS\n```\n**Sources:**\n[requirements-tests.txt:5](.)\n,\n[scripts/lint.sh:6](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 25,
+      "char_count": 720,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447284"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:7",
+    "content": "The repository includes comprehensive test coverage tracking using the\n```\ncoverage\n```\ntool.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 25,
+      "char_count": 93,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447290"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:8",
+    "content": "```\ngraph TB\n    subgraph \"Coverage Dependencies\"\n        COV_REQ[\"coverage[toml] >= 6.5.0,< 8.0\"]\n        PYTEST_REQ[\"pytest >=7.1.3,<9.0.0\"]\n    end\n    \n    subgraph \"Test Execution Scripts\"\n        TEST_SCRIPT[\"scripts/test.sh\"]\n        COV_HTML_SCRIPT[\"scripts/test-cov-html.sh\"]\n    end\n    \n    subgraph \"Coverage Process\"\n        COV_RUN[\"coverage run -m pytest tests\"]\n        COV_COMBINE[\"coverage combine\"]\n        COV_REPORT[\"coverage report\"]\n        COV_HTML[\"coverage html\"]\n    end\n    \n    COV_REQ --> TEST_SCRIPT\n    PYTEST_REQ --> TEST_SCRIPT\n    \n    TEST_SCRIPT --> COV_RUN\n    COV_HTML_SCRIPT --> COV_RUN\n    COV_HTML_SCRIPT --> COV_COMBINE\n    COV_HTML_SCRIPT --> COV_REPORT\n    COV_HTML_SCRIPT --> COV_HTML\n```\nThe test execution includes setting\n```\nPYTHONPATH=./docs_src\n```\nto include documentation source code in the test environment.\n**Sources:**\n[requirements-tests.txt:3-4](.)\n,\n[scripts/test.sh:6-7](.)\n,\n[scripts/test-cov-html.sh:6-9](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 25,
+      "char_count": 970,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447295"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:9",
+    "content": "The testing infrastructure includes several specialized testing libraries and utilities:\n```\npytest\n```\n```\n>=7.1.3,<9.0.0\n```\n```\ncoverage[toml]\n```\n```\n>= 6.5.0,< 8.0\n```\n```\nmypy\n```\n```\n==1.8.0\n```\n```\ndirty-equals\n```\n```\n==0.9.0\n```\n```\ninline-snapshot\n```\n```\n>=0.21.1\n```\n, Version = . , Purpose = \n**Sources:**\n[requirements-tests.txt:3-6](.)\n,\n[requirements-tests.txt:13](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 25,
+      "char_count": 384,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447301"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:10",
+    "content": "The repository includes specialized testing utilities for handling different Python versions and Pydantic versions:\n```\ngraph TB\n    subgraph \"Test Utilities\"\n        UTILS_MODULE[\"tests/utils.py\"]\n        PY39_MARKER[\"needs_py39\"]\n        PY310_MARKER[\"needs_py310\"]\n        PYDANTIC_V1_MARKER[\"needs_pydanticv1\"]\n        PYDANTIC_V2_MARKER[\"needs_pydanticv2\"]\n        SNAPSHOT_HELPER[\"pydantic_snapshot()\"]\n    end\n    \n    subgraph \"Version-specific Testing\"\n        PYTHON_VERSIONS[\"Python 3.9+ and 3.10+ tests\"]\n        PYDANTIC_VERSIONS[\"Pydantic v1 and v2 compatibility\"]\n        CONDITIONAL_SNAPSHOTS[\"Version-specific test snapshots\"]\n    end\n    \n    UTILS_MODULE --> PY39_MARKER\n    UTILS_MODULE --> PY310_MARKER\n    UTILS_MODULE --> PYDANTIC_V1_MARKER\n    UTILS_MODULE --> PYDANTIC_V2_MARKER\n    UTILS_MODULE --> SNAPSHOT_HELPER\n    \n    PY39_MARKER --> PYTHON_VERSIONS\n    PY310_MARKER --> PYTHON_VERSIONS\n    PYDANTIC_V1_MARKER --> PYDANTIC_VERSIONS\n    PYDANTIC_V2_MARKER --> PYDANTIC_VERSIONS\n    SNAPSHOT_HELPER --> CONDITIONAL_SNAPSHOTS\n```\nThe\n```\npydantic_snapshot\n```\nfunction enables version-specific snapshot testing for maintaining compatibility across Pydantic versions.\n**Sources:**\n[tests/utils.py:7-12](.)\n,\n[tests/utils.py:15-34](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 25,
+      "char_count": 1261,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447307"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:11",
+    "content": "The code quality system integrates with the broader development workflow through standardized scripts and dependency management:",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 25,
+      "char_count": 128,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447312"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:12",
+    "content": "The main requirements file includes pre-commit as a development dependency:\n```\ngraph LR\n    subgraph \"Development Requirements\"\n        MAIN_REQ[\"requirements.txt\"]\n        ALL_DEPS[\"-e .[all]\"]\n        TEST_DEPS[\"-r requirements-tests.txt\"]\n        DOCS_DEPS[\"-r requirements-docs.txt\"]\n        PRECOMMIT_DEP[\"pre-commit >=2.17.0,<5.0.0\"]\n        PLAYWRIGHT_DEP[\"playwright\"]\n    end\n    \n    MAIN_REQ --> ALL_DEPS\n    MAIN_REQ --> TEST_DEPS\n    MAIN_REQ --> DOCS_DEPS\n    MAIN_REQ --> PRECOMMIT_DEP\n    MAIN_REQ --> PLAYWRIGHT_DEP\n```\n**Sources:**\n[requirements.txt:1-7](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 25,
+      "char_count": 576,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447318"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:13",
+    "content": "The quality assurance scripts follow consistent patterns for error handling and output:\n```\nset -e\n```\n```\nset -x\n```\n```\nexport PYTHONPATH=./docs_src\n```\n```\n${@}\n```\nError Handling, Implementation = . Error Handling, Purpose = \n**Sources:**\n[scripts/test.sh:3-4](.)\n,\n[scripts/lint.sh:3-4](.)\n,\n[scripts/format.sh:2](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 25,
+      "char_count": 321,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447324"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:14",
+    "content": "This document covers the fundamental project infrastructure of FastAPI, including the build system, packaging configuration, dependency management, and development tool configurations. The infrastructure serves as the foundation that enables FastAPI's development workflow, testing, and distribution.\nFor information about the documentation build system, see\n[Documentation System](#6.1)\n. For CI/CD automation workflows, see\n[CI/CD Pipeline](#6.2)\n. For development scripts and contributor workflows, see\n[Development Workflow](#6.3)\n.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 25,
+      "char_count": 536,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447329"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:15",
+    "content": "FastAPI uses a modern Python packaging approach centered around PDM (Python Dependency Manager) as the build backend. The project configuration is entirely defined in\n```\npyproject.toml\n```\n, following PEP 518 standards.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 25,
+      "char_count": 220,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447334"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:16",
+    "content": "```\ngraph TD\n    A[\"pyproject.toml\"] --> B[\"PDM Backend\"]\n    B --> C[\"Package Distribution\"]\n    C --> D[\"PyPI Release\"]\n    \n    A --> E[\"Dynamic Versioning\"]\n    E --> F[\"fastapi/__init__.py\"]\n    F --> G[\"Version Extraction\"]\n    \n    A --> H[\"Source Includes\"]\n    H --> I[\"tests/\"]\n    H --> J[\"docs_src/\"]\n    H --> K[\"scripts/\"]\n    H --> L[\"requirements*.txt\"]\n```\n**Build System Configuration**\nThe build system is configured in\n[pyproject.toml:1-3](.)\n, specifying PDM as the backend. The\n```\npdm.backend\n```\nhandles all packaging operations, from source distribution to wheel creation.\n**Dynamic Versioning**\nVersion management is handled dynamically through\n[pyproject.toml:127-128](.)\n, extracting the version from\n[fastapi/](.)\n[**init**](.)\n[.py](.)\n. This ensures the package version stays synchronized with the codebase version without manual updates.\n**Source Distribution Includes**\nThe build includes additional directories beyond the core package\n[pyproject.toml:132-139](.)\n:\n- `tests/` - Test suite for distribution validation\n- `docs_src/` - Documentation source examples\n- `scripts/` - Development and utility scripts\n- `requirements*.txt` - Dependency specifications\n- `docs/en/docs/img/favicon.png` - Required for testing\nSources:\n[pyproject.toml:1-139](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 16,
+      "total_chunks": 25,
+      "char_count": 1284,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447340"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:17",
+    "content": "```\ngraph LR\n    subgraph \"Core Dependencies\"\n        A[\"starlette>=0.40.0,<0.48.0\"]\n        B[\"pydantic>=1.7.4,<3.0.0\"]  \n        C[\"typing-extensions>=4.8.0\"]\n    end\n    \n    subgraph \"Optional Dependencies\"\n        D[\"standard\"]\n        E[\"standard-no-fastapi-cloud-cli\"]\n        F[\"all\"]\n    end\n    \n    subgraph \"Standard Set\"\n        G[\"fastapi-cli[standard]\"]\n        H[\"httpx\"]\n        I[\"jinja2\"] \n        J[\"python-multipart\"]\n        K[\"email-validator\"]\n        L[\"uvicorn[standard]\"]\n    end\n    \n    subgraph \"All Set\"\n        M[\"itsdangerous\"]\n        N[\"pyyaml\"]\n        O[\"ujson\"]\n        P[\"orjson\"]\n        Q[\"pydantic-settings\"]\n        R[\"pydantic-extra-types\"]\n    end\n    \n    A --> D\n    B --> D  \n    C --> D\n    D --> G\n    D --> H\n    D --> I\n    D --> J\n    D --> K\n    D --> L\n    \n    F --> M\n    F --> N\n    F --> O\n    F --> P\n    F --> Q\n    F --> R\n```\n**Core Dependencies**\nFastAPI maintains minimal core dependencies\n[pyproject.toml:45-49](.)\n:\n- `starlette` - ASGI framework foundation\n- `pydantic` - Data validation and serialization\n- `typing-extensions` - Enhanced type hints\n**Optional Dependency Sets**\nThree optional dependency sets provide different installation profiles\n[pyproject.toml:58-122](.)\n:\n```\nstandard\n```\n```\nstandard-no-fastapi-cloud-cli\n```\n```\nall\n```\n, Purpose = . , Key Components = \n**CLI Entry Point**\nThe package provides a command-line interface through\n[pyproject.toml:124-125](.)\n, mapping the\n```\nfastapi\n```\ncommand to\n```\nfastapi.cli:main\n```\n.\nSources:\n[pyproject.toml:5-125](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 17,
+      "total_chunks": 25,
+      "char_count": 1552,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447346"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:18",
+    "content": "FastAPI integrates multiple development tools through centralized configuration, ensuring consistent code quality and development experience across the project.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 18,
+      "total_chunks": 25,
+      "char_count": 160,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447352"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:19",
+    "content": "```\ngraph TD\n    subgraph \"mypy Configuration\"\n        A[\"strict = true\"]\n        B[\"Module Overrides\"]\n        B --> C[\"fastapi.concurrency\"]\n        B --> D[\"fastapi.tests.*\"] \n        B --> E[\"docs_src.*\"]\n    end\n    \n    subgraph \"ruff Configuration\"\n        F[\"Lint Rules\"]\n        F --> G[\"pycodestyle E,W\"]\n        F --> H[\"pyflakes F\"]\n        F --> I[\"isort I\"]\n        F --> J[\"flake8-bugbear B\"]\n        F --> K[\"comprehensions C4\"]\n        F --> L[\"pyupgrade UP\"]\n    end\n    \n    subgraph \"Per-file Overrides\"\n        M[\"__init__.py\"]\n        N[\"docs_src/ examples\"]\n        O[\"Security tutorials\"]\n        P[\"Dependencies tutorials\"]\n    end\n    \n    A --> F\n    B --> M\n    F --> M\n    F --> N\n    F --> O\n    F --> P\n```\n**MyPy Type Checking**\nStrict type checking is enabled globally\n[pyproject.toml:144-145](.)\nwith targeted overrides for specific modules:\n- `fastapi.concurrency` - Relaxed import checking due to threading complexity\n- `fastapi.tests.*` - Allow missing imports for test isolation\n- `docs_src.*` - Relaxed rules for documentation examples\n**Ruff Linting and Formatting**\nComprehensive linting rules\n[pyproject.toml:211-226](.)\ncover:\n- Code style enforcement (pycodestyle)\n- Import organization (isort)\n- Bug prevention (flake8-bugbear)\n- Code modernization (pyupgrade)\nExtensive per-file overrides\n[pyproject.toml:228-258](.)\naccommodate documentation examples and tutorial code that intentionally demonstrates specific patterns.\nSources:\n[pyproject.toml:144-266](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 19,
+      "total_chunks": 25,
+      "char_count": 1503,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447357"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:20",
+    "content": "```\ngraph LR\n    subgraph \"pytest Configuration\"\n        A[\"Strict Config\"]\n        B[\"Strict Markers\"]\n        C[\"Ignore docs_src\"]\n        D[\"XFail Strict\"]\n        E[\"JUnit XML\"]\n    end\n    \n    subgraph \"Coverage Settings\"\n        F[\"Parallel Execution\"]\n        G[\"Data Directory\"]\n        H[\"Source Tracking\"]\n        I[\"Dynamic Context\"]\n        J[\"HTML Reports\"]\n    end\n    \n    subgraph \"Filter Warnings\"\n        K[\"Starlette Deprecations\"]\n        L[\"Passlib Warnings\"]\n        M[\"Trio Warnings\"]\n        N[\"SQLAlchemy Warnings\"]\n        O[\"Coverage Warnings\"]\n    end\n    \n    A --> F\n    C --> H\n    E --> J\n    K --> A\n    L --> A\n    M --> A\n    N --> A\n    O --> A\n```\n**Pytest Configuration**\nTest execution is configured for strict validation\n[pyproject.toml:163-170](.)\n:\n- Strict configuration prevents typos in pytest options\n- Strict markers require all test markers to be registered\n- Documentation source is excluded from test discovery\n- XFail strict mode prevents accidentally passing expected failures\n**Coverage Tracking**\nComprehensive coverage configuration\n[pyproject.toml:189-210](.)\nenables:\n- Parallel test execution with data aggregation\n- Source tracking across `fastapi` , `tests` , and `docs_src`\n- Dynamic context tracking per test function\n- HTML reports with test context display\n**Warning Filters**\nExtensive warning filters\n[pyproject.toml:171-187](.)\nhandle known issues:\n- Framework deprecation warnings (Starlette, SQLAlchemy)\n- Library compatibility warnings (passlib, trio)\n- Python version-specific warnings\nSources:\n[pyproject.toml:163-210](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 20,
+      "total_chunks": 25,
+      "char_count": 1594,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447362"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:21",
+    "content": "The project maintains comprehensive metadata for PyPI distribution and ecosystem integration.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 21,
+      "total_chunks": 25,
+      "char_count": 93,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447368"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:22",
+    "content": "```\ngraph TD\n    subgraph \"Target Audiences\"\n        A[\"Information Technology\"]\n        B[\"System Administrators\"] \n        C[\"Developers\"]\n    end\n    \n    subgraph \"Framework Classifications\"\n        D[\"AsyncIO\"]\n        E[\"FastAPI\"]\n        F[\"Pydantic v1/v2\"]\n    end\n    \n    subgraph \"Python Support\"\n        G[\"Python 3.8+\"]\n        H[\"Typed Package\"]\n        I[\"OS Independent\"]\n    end\n    \n    subgraph \"Topic Areas\"\n        J[\"Web Development\"]\n        K[\"HTTP Servers\"]\n        L[\"Application Frameworks\"]\n    end\n    \n    A --> D\n    B --> D\n    C --> D\n    D --> G\n    E --> G\n    F --> G\n    G --> J\n    H --> J\n    I --> J\n    J --> K\n    J --> L\n```\n**Compatibility Matrix**\nFastAPI supports a broad compatibility matrix\n[pyproject.toml:36-41](.)\n:\n- Python versions: 3.8 through 3.13\n- Framework integrations: AsyncIO, Pydantic v1/v2\n- Operating systems: Platform independent\n- Development status: Beta (stable API, active development)\n**Project URLs and Resources**\nThe package provides comprehensive resource links\n[pyproject.toml:51-56](.)\n:\nHomepage, URL = GitHub repository. Documentation, URL = Official docs site. Issues, URL = GitHub issue tracker. Changelog, URL = Release notes section\nSources:\n[pyproject.toml:14-56](.)",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 22,
+      "total_chunks": 25,
+      "char_count": 1249,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447374"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:23",
+    "content": "FastAPI supports a minimal distribution variant for specialized deployment scenarios.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 23,
+      "total_chunks": 25,
+      "char_count": 85,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447380"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_teststest_application.py:chunk:24",
+    "content": "The project includes configuration for generating a\n```\nfastapi-slim\n```\npackage\n[pyproject.toml:141-142](.)\nthrough the\n```\ntiangolo._internal-slim-build\n```\ntool. This variant likely excludes optional dependencies and development tools for reduced installation size.\nThis configuration enables:\n- Lightweight container deployments\n- Minimal dependency installations\n- Specialized distribution channels\nSources:\n[pyproject.toml:141-142](.)\nThe project infrastructure provides a robust foundation for FastAPI's development, testing, and distribution processes. The configuration balances strict quality standards with practical development needs, supporting both core maintainers and the broader contributor community through comprehensive tooling and clear dependency management.",
+    "metadata": {
+      "source": "fastapi\\From_teststest_application.py.md",
+      "file_name": "From_teststest_application.py.md",
+      "subfolder": "fastapi",
+      "chunk_index": 24,
+      "total_chunks": 25,
+      "char_count": 780,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:45.447385"
+    }
+  }
+]

@@ -1,0 +1,617 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:0",
+    "content": "This document covers the transport layer of the FastMCP client system, which handles connection establishment and communication with MCP servers. Transport mechanisms are responsible for the underlying connection details (subprocess management, HTTP connections, in-memory calls), while the\n```\nClient\n```\nclass handles MCP protocol operations.\nFor information about client operations like calling tools and reading resources, see\n[Client Operations and Testing](#3.2)\n. For server-side HTTP infrastructure, see\n[HTTP Server and Deployment](#6)\n.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 41,
+      "char_count": 546,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274849"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:1",
+    "content": "The FastMCP client system separates concerns between protocol handling and connection management through a two-layer architecture:",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 41,
+      "char_count": 130,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274867"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:2",
+    "content": "```\ngraph TB\n    subgraph \"Client Layer\"\n        Client[\"Client[ClientTransportT]<br/>• ClientSessionState management<br/>• _connect()/_disconnect() lifecycle<br/>• _session_runner() background task\"]\n    end\n    \n    subgraph \"Transport Layer\"\n        ClientTransport[\"ClientTransport (ABC)<br/>• connect_session(**SessionKwargs)<br/>• close() method<br/>• _set_auth() authentication\"]\n        \n        StdioTransport[\"StdioTransport<br/>• _stdio_transport_connect_task()<br/>• keep_alive parameter<br/>• StdioServerParameters\"]\n        \n        StreamableHttpTransport[\"StreamableHttpTransport<br/>• streamablehttp_client()<br/>• BearerAuth/OAuth classes<br/>• get_http_headers() forwarding\"]\n        \n        SSETransport[\"SSETransport<br/>• sse_client()<br/>• Legacy SSE support<br/>• DeprecationWarning\"]\n        \n        FastMCPTransport[\"FastMCPTransport<br/>• create_client_server_memory_streams()<br/>• anyio.create_task_group()<br/>• raise_exceptions parameter\"]\n        \n        MCPConfigTransport[\"MCPConfigTransport<br/>• ProxyClient composition<br/>• FastMCPProxy.as_proxy()<br/>• _create_composite_server()\"]\n        \n        ClientTransport --> StdioTransport\n        ClientTransport --> StreamableHttpTransport\n        ClientTransport --> SSETransport\n        ClientTransport --> FastMCPTransport\n        ClientTransport --> MCPConfigTransport\n    end\n    \n    subgraph \"Stdio Specializations\"\n        PythonStdioTransport[\"PythonStdioTransport<br/>• sys.executable command<br/>• .py file validation\"]\n        NodeStdioTransport[\"NodeStdioTransport<br/>• node command<br/>• .js file validation\"]\n        FastMCPStdioTransport[\"FastMCPStdioTransport<br/>• fastmcp run command<br/>• CLI integration\"]\n        UvStdioTransport[\"UvStdioTransport<br/>• UVEnvironment config<br/>• uv run args\"]\n        UvxStdioTransport[\"UvxStdioTransport<br/>• uvx tool execution<br/>• with_packages args\"]\n        NpxStdioTransport[\"NpxStdioTransport<br/>• npx package execution<br/>• prefer_offline option\"]\n        \n        StdioTransport --> PythonStdioTransport\n        StdioTransport --> NodeStdioTransport\n        StdioTransport --> FastMCPStdioTransport\n        StdioTransport --> UvStdioTransport\n        StdioTransport --> UvxStdioTransport\n        StdioTransport --> NpxStdioTransport\n    end\n    \n    Client --> ClientTransport\n```\n**Sources:**\n[src/fastmcp/client/client.py:97-155](.)\n,\n[src/fastmcp/client/transports.py:75-119](.)\n,\n[src/fastmcp/client/transports.py:301-417](.)\nThe\n```\nClient\n```\nclass is a generic type\n```\nClient[ClientTransportT]\n```\nthat accepts any transport instance or transport-inferrable input and delegates connection management to the transport while handling all MCP protocol details itself. The transport layer provides connection abstraction while the client handles session management including reentrant context managers and initialization.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 41,
+      "char_count": 2884,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274873"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:3",
+    "content": "The client system automatically selects appropriate transports based on input types through the\n```\ninfer_transport\n```\nfunction:",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 41,
+      "char_count": 129,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274879"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:4",
+    "content": "```\nflowchart TD\n    Input[\"Client(transport=...)\"] --> infer_transport[\"infer_transport()<br/>[transports.py:957-1016]\"]\n    \n    infer_transport --> CheckType{\"isinstance() checks\"}\n    \n    CheckType --> |\"ClientTransport\"| DirectUse[\"return transport\"]\n    CheckType --> |\"FastMCP | FastMCP1Server\"| InMemory[\"FastMCPTransport(mcp)\"]\n    CheckType --> |\"AnyUrl\"| URLAnalysis[\"infer_transport_type_from_url()<br/>[mcp_config.py:56-74]\"]\n    CheckType --> |\"Path\"| PathAnalysis[\"Path.suffix check\"]\n    CheckType --> |\"MCPConfig | dict\"| ConfigInput[\"MCPConfigTransport(config)\"]\n    CheckType --> |\"str\"| StringAnalysis[\"URL or Path parsing\"]\n    \n    URLAnalysis --> |\"re.search(r'/sse(/|\\\\?|&|$)')\"| SSETransport[\"SSETransport(url)\"]\n    URLAnalysis --> |\"default\"| StreamableHttp[\"StreamableHttpTransport(url)\"]\n    \n    PathAnalysis --> |\"suffix == '.py'\"| PythonScript[\"PythonStdioTransport(script_path)\"]\n    PathAnalysis --> |\"suffix == '.js'\"| NodeScript[\"NodeStdioTransport(script_path)\"]\n    PathAnalysis --> |\"else\"| DefaultPython[\"PythonStdioTransport(default)\"]\n    \n    StringAnalysis --> |\"startswith('http')\"| URLString[\"AnyUrl(transport) -> URLAnalysis\"]\n    StringAnalysis --> |\"else\"| PathString[\"Path(transport) -> PathAnalysis\"]\n```\n**Sources:**\n[src/fastmcp/client/transports.py:957-1016](.)\n,\n[src/fastmcp/client/client.py:231](.)\n,\n[src/fastmcp/mcp_config.py:56-74](.)\nThe\n```\ninfer_transport\n```\nfunction provides automatic transport selection with intelligent defaults. HTTP URLs are analyzed for SSE paths (containing\n```\n/sse/\n```\n) while other HTTP URLs default to\n```\nStreamableHttpTransport\n```\n. File paths use extension-based selection, and the system gracefully handles edge cases by falling back to sensible defaults.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 41,
+      "char_count": 1755,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274886"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:5",
+    "content": "```\nFastMCPTransport\n```\n```\nStreamableHttpTransport\n```\n```\nSSETransport\n```\n```\nStdioTransport\n```\n```\nkeep_alive\n```\n```\nMCPConfigTransport\n```\n, Best For = . , Connection Model = . , Session Persistence = . , Authentication Support = ",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 41,
+      "char_count": 238,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274892"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:6",
+    "content": "```\nStreamableHttpTransport\n```\n```\nget_http_headers()\n```\n```\nsse_read_timeout\n```\n```\nSSETransport\n```\n```\nget_http_headers()\n```\n```\nsse_read_timeout\n```\n```\nStdioTransport\n```\n```\nenv\n```\n```\nFastMCPTransport\n```\n, Header Forwarding = . , Timeout Control = . , Environment Variables = . , Keep-Alive = \n**Sources:**\n[src/fastmcp/client/transports.py:160-227](.)\n,\n[src/fastmcp/client/transports.py:230-298](.)\n,\n[src/fastmcp/client/transports.py:301-417](.)\n,\n[src/fastmcp/client/transports.py:783-835](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 41,
+      "char_count": 509,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274897"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:7",
+    "content": "Stdio transports manage local MCP servers through subprocess execution, communicating via stdin/stdout pipes.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 41,
+      "char_count": 109,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274903"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:8",
+    "content": "```\ngraph TB\n    subgraph \"StdioTransport Lifecycle\"\n        Create[\"StdioTransport(command, args, env)\"]\n        Connect[\"connect_session()\"]\n        Launch[\"_stdio_transport_connect_task()\"]\n        Session[\"ClientSession established\"]\n        KeepAlive{\"keep_alive?\"}\n        Reuse[\"Session persists\"]\n        Terminate[\"Session terminates\"]\n        \n        Create --> Connect\n        Connect --> Launch\n        Launch --> Session\n        Session --> KeepAlive\n        KeepAlive --> |\"True\"| Reuse\n        KeepAlive --> |\"False\"| Terminate\n    end\n```\n**Sources:**\n[src/fastmcp/client/transports.py:301-417](.)\n,\n[src/fastmcp/client/transports.py:419-463](.)\nThe\n```\nStdioTransport\n```\nclass provides the foundation for all subprocess-based transports. Key features include:\n- **Session Persistence** : Controlled via `keep_alive` parameter [src/fastmcp/client/transports.py:315-336](.)\n- **Environment Isolation** : Explicit environment variable passing [src/fastmcp/client/transports.py:312-314](.)\n- **Async Task Management** : Background connection task [src/fastmcp/client/transports.py:419-463](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 41,
+      "char_count": 1107,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274909"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:9",
+    "content": "```\nPythonStdioTransport\n```\n```\npython\n```\n```\n.py\n```\n```\nNodeStdioTransport\n```\n```\nnode\n```\n```\n.js\n```\n```\nFastMCPStdioTransport\n```\n```\nfastmcp\n```\n```\n.py\n```\n```\nUvStdioTransport\n```\n```\nuv\n```\n```\nUvxStdioTransport\n```\n```\nuvx\n```\n```\nNpxStdioTransport\n```\n```\nnpx\n```\n, Command = . , File Extension = . , Use Case = \n**Sources:**\n[src/fastmcp/client/transports.py:465-509](.)\n,\n[src/fastmcp/client/transports.py:511-536](.)\n,\n[src/fastmcp/client/transports.py:538-577](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 41,
+      "char_count": 481,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274914"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:10",
+    "content": "Remote transports connect to MCP servers running as web services over HTTP connections.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 41,
+      "char_count": 87,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274920"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:11",
+    "content": "```\ngraph LR\n    subgraph \"StreamableHttpTransport Flow\"\n        Client[\"FastMCP Client\"]\n        Transport[\"StreamableHttpTransport\"]\n        HttpClient[\"streamablehttp_client\"]\n        RemoteServer[\"Remote MCP Server\"]\n        \n        Client --> |\"connect_session()\"| Transport\n        Transport --> |\"Bidirectional streaming\"| HttpClient\n        HttpClient --> |\"HTTP requests/responses\"| RemoteServer\n    end\n```\n**Sources:**\n[src/fastmcp/client/transports.py:228-298](.)\nThe\n```\nStreamableHttpTransport\n```\nprovides efficient bidirectional communication for production deployments:\n- **Authentication Support** : OAuth and Bearer token authentication [src/fastmcp/client/transports.py:256-261](.)\n- **Header Forwarding** : Automatic forwarding of HTTP headers in proxy scenarios [src/fastmcp/client/transports.py:274](.)\n- **Timeout Configuration** : Configurable request timeouts [src/fastmcp/client/transports.py:280-281](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 41,
+      "char_count": 932,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274925"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:12",
+    "content": "The\n```\nSSETransport\n```\nmaintains compatibility with older Server-Sent Events implementations but is superseded by\n```\nStreamableHttpTransport\n```\nfor new deployments\n[src/fastmcp/client/transports.py:156-226](.)\n.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 41,
+      "char_count": 215,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274931"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:13",
+    "content": "The\n```\nFastMCPTransport\n```\nenables direct communication with FastMCP server instances within the same Python process.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 13,
+      "total_chunks": 41,
+      "char_count": 119,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274938"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:14",
+    "content": "```\nsequenceDiagram\n    participant C as \"Client\"\n    participant T as \"FastMCPTransport\"\n    participant M as \"Memory Streams\"\n    participant S as \"FastMCP Server\"\n    \n    C->>T: \"connect_session()\"\n    T->>M: \"create_client_server_memory_streams()\"\n    T->>S: \"server._mcp_server.run()\"\n    Note over T,S: \"Direct memory communication\"\n    T->>C: \"ClientSession\"\n    C->>S: \"MCP requests via memory\"\n    S->>C: \"MCP responses via memory\"\n```\n**Sources:**\n[src/fastmcp/client/transports.py:763-815](.)\nKey characteristics of in-memory transport:\n- **Zero Network Overhead** : Direct method calls within same process\n- **Shared Environment** : Full access to client process environment variables\n- **Exception Control** : Configurable exception raising via `raise_exceptions` parameter [src/fastmcp/client/transports.py:772](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 14,
+      "total_chunks": 41,
+      "char_count": 829,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274943"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:15",
+    "content": "The\n```\nMCPConfigTransport\n```\nenables connections to multiple MCP servers through configuration-based routing.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 15,
+      "total_chunks": 41,
+      "char_count": 111,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274949"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:16",
+    "content": "```\ngraph TB\n    subgraph \"MCPConfigTransport Structure\"\n        Config[\"MCPConfig Dictionary\"]\n        Single{\"Single Server?\"}\n        Direct[\"Direct Transport\"]\n        Composite[\"Composite FastMCP Server\"]\n        \n        Config --> Single\n        Single --> |\"Yes\"| Direct\n        Single --> |\"No\"| Composite\n        \n        subgraph \"Multi-Server Composition\"\n            Mount1[\"Server 1<br/>prefix: weather_\"]\n            Mount2[\"Server 2<br/>prefix: calendar_\"]\n            Mount3[\"Server N<br/>prefix: {name}_\"]\n        end\n        \n        Composite --> Mount1\n        Composite --> Mount2\n        Composite --> Mount3\n    end\n```\n**Sources:**\n[src/fastmcp/client/transports.py:817-926](.)\nThe transport automatically handles server composition:\n- **Single Server** : Direct transport to the configured server\n- **Multiple Servers** : Creates composite server with prefixed component names\n- **Flexible Configuration** : Supports all transport types within the configuration",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 16,
+      "total_chunks": 41,
+      "char_count": 987,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274954"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:17",
+    "content": "```\nconfig = {\n    \"mcpServers\": {\n        \"server_name\": {\n            \"transport\": \"http\",\n            \"url\": \"https://api.example.com/mcp\",\n            \"headers\": {\"Authorization\": \"Bearer token\"}\n        }\n    }\n}\n```\n**Sources:**\n[src/fastmcp/client/transports.py:865-887](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 17,
+      "total_chunks": 41,
+      "char_count": 280,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274960"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:18",
+    "content": "The transport layer provides async context manager support for proper session lifecycle, with sophisticated reentrant session management in the\n```\nClient\n```\nclass:",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 18,
+      "total_chunks": 41,
+      "char_count": 165,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274966"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:19",
+    "content": "```\nstateDiagram-v2\n    [*] --> Disconnected: \"ClientSessionState() created\"\n    \n    Disconnected --> Connecting: \"_connect() -> __aenter__()\"\n    Connecting --> SessionTask: \"asyncio.create_task(_session_runner())\"\n    SessionTask --> Ready: \"self._session_state.ready_event.set()\"\n    Ready --> Connected: \"ClientSession available\"\n    \n    Connected --> Nested: \"Additional async with client:\"\n    Nested --> Connected: \"self._session_state.nesting_counter += 1\"\n    Connected --> Connected: \"session.call_tool() etc\"\n    \n    Connected --> Checking: \"_disconnect() -> __aexit__()\"\n    Checking --> StillNested: \"nesting_counter > 0\"\n    StillNested --> Connected: \"max(0, nesting_counter - 1)\"\n    Checking --> Stopping: \"nesting_counter == 0\"\n    Stopping --> Disconnected: \"self._session_state.stop_event.set()\"\n    \n    SessionTask --> Failed: \"transport.connect_session() fails\"\n    Failed --> [*]: \"ready_event.set() in finally\"\n```\n**Sources:**\n[src/fastmcp/client/client.py:80-96](.)\n,\n[src/fastmcp/client/client.py:373-463](.)\n,\n[src/fastmcp/client/client.py:465-488](.)\nThe\n```\nClient\n```\nimplements sophisticated reentrant context manager support using:\n- `ClientSessionState` with `nesting_counter` , `session_task` , `ready_event` , and `stop_event`\n- Background `_session_runner()` task for session lifecycle management\n- Thread-safe session sharing across multiple concurrent `async with client:` blocks\n- Automatic cleanup when the last context exits",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 19,
+      "total_chunks": 41,
+      "char_count": 1470,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274972"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:20",
+    "content": "All transports implement the\n```\nconnect_session\n```\nasync context manager method:\n```\n@abc.abstractmethod\n@contextlib.asynccontextmanager\nasync def connect_session(\n    self, **session_kwargs: Unpack[SessionKwargs]\n) -> AsyncIterator[ClientSession]:\n```\n**Sources:**\n[src/fastmcp/client/transports.py:84-106](.)\nThis protocol ensures consistent connection lifecycle across all transport types while allowing transport-specific connection details.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 20,
+      "total_chunks": 41,
+      "char_count": 447,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274978"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:21",
+    "content": "Remote transports support multiple authentication mechanisms:\n```\nBearerAuth\n```\n```\nauth\n```\n```\nOAuth\n```\n```\nauth=\"oauth\"\n```\nBearer Token, Implementation = . Bearer Token, Usage = \n**Sources:**\n[src/fastmcp/client/transports.py:184-189](.)\n,\n[src/fastmcp/client/transports.py:256-261](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 21,
+      "total_chunks": 41,
+      "char_count": 291,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274983"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:22",
+    "content": "This page covers client-side authentication in FastMCP, focusing on OAuth flows, token storage, browser-based authentication, and integration with identity providers. This documentation explains how FastMCP clients authenticate with protected servers using industry-standard OAuth 2.0 and OpenID Connect protocols.\nFor server-side authentication configuration and identity providers, see\n[Authentication and Security](#4.1)\n. For transport-specific authentication mechanisms, see\n[Transport Mechanisms](#3.1)\n.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 22,
+      "total_chunks": 41,
+      "char_count": 510,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274988"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:23",
+    "content": "FastMCP client authentication is built around OAuth 2.0 with OpenID Connect support, providing secure token-based authentication for MCP clients connecting to protected servers. The authentication system handles the complete OAuth flow, from initial authorization to token refresh and storage.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 23,
+      "total_chunks": 41,
+      "char_count": 293,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274994"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:24",
+    "content": "```\ngraph TD\n    subgraph \"Client Application\"\n        ClientApp[\"Client Application\"]\n        FastMCPClient[\"FastMCP Client\"]\n    end\n    \n    subgraph \"Authentication Layer\"\n        OAuthProvider[\"OAuth(OAuthClientProvider)<br/>- redirect_handler<br/>- callback_handler<br/>- async_auth_flow\"]\n        TokenStorage[\"FileTokenStorage<br/>- get_tokens<br/>- set_tokens<br/>- get_client_info<br/>- set_client_info\"]\n        CallbackServer[\"OAuth Callback Server<br/>- uvicorn.Server<br/>- create_oauth_callback_server\"]\n    end\n    \n    subgraph \"Browser & External\"\n        Browser[\"Web Browser<br/>webbrowser.open\"]\n        AuthServer[\"Authorization Server<br/>- /authorize endpoint<br/>- /token endpoint\"]\n    end\n    \n    subgraph \"Storage Layer\"\n        JSONStorage[\"JSONFileStorage<br/>~/.fastmcp/oauth-mcp-client-cache/\"]\n        TokenFiles[\"Token Files<br/>- {base_url}_tokens.json<br/>- {base_url}_client_info.json\"]\n    end\n    \n    ClientApp --> FastMCPClient\n    FastMCPClient --> OAuthProvider\n    OAuthProvider --> TokenStorage\n    OAuthProvider --> CallbackServer\n    OAuthProvider --> Browser\n    Browser --> AuthServer\n    AuthServer --> CallbackServer\n    TokenStorage --> JSONStorage\n    JSONStorage --> TokenFiles\n```\nSources:\n[src/fastmcp/client/auth/oauth.py:242-428](.)\n,\n[src/fastmcp/client/oauth_callback.py](.)\n,\n[src/fastmcp/utilities/storage.py](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 24,
+      "total_chunks": 41,
+      "char_count": 1375,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.274999"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:25",
+    "content": "The\n```\nOAuth\n```\nclass implements the complete OAuth 2.0 authorization code flow with PKCE support, handling dynamic client registration, browser-based authorization, and token management.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 25,
+      "total_chunks": 41,
+      "char_count": 189,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275005"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:26",
+    "content": "```\ngraph TB\n    subgraph \"OAuth Class Hierarchy\"\n        OAuthClientProvider[\"mcp.client.auth.OAuthClientProvider<br/>Base OAuth implementation\"]\n        OAuth[\"fastmcp.client.auth.oauth.OAuth<br/>FastMCP OAuth implementation\"]\n        OAuth --> OAuthClientProvider\n    end\n    \n    subgraph \"OAuth Methods\"\n        redirect_handler[\"redirect_handler()<br/>- Pre-flight client validation<br/>- Opens browser to auth URL\"]\n        callback_handler[\"callback_handler()<br/>- Starts local server<br/>- Waits for OAuth callback<br/>- Returns (code, state)\"]\n        async_auth_flow[\"async_auth_flow()<br/>- HTTPX auth flow<br/>- Automatic retry on stale credentials<br/>- Token refresh handling\"]\n    end\n    \n    subgraph \"Configuration\"\n        client_metadata[\"OAuthClientMetadata<br/>- client_name<br/>- redirect_uris<br/>- grant_types<br/>- response_types<br/>- scope\"]\n        storage[\"FileTokenStorage<br/>- Server-specific isolation<br/>- Token expiry handling\"]\n    end\n    \n    OAuth --> redirect_handler\n    OAuth --> callback_handler\n    OAuth --> async_auth_flow\n    OAuth --> client_metadata\n    OAuth --> storage\n```\nSources:\n[src/fastmcp/client/auth/oauth.py:242-311](.)\n,\n[src/fastmcp/client/auth/oauth.py:322-374](.)\n,\n[src/fastmcp/client/auth/oauth.py:376-427](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 26,
+      "total_chunks": 41,
+      "char_count": 1279,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275011"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:27",
+    "content": "The OAuth authorization flow follows these steps:\n```\nredirect_handler()\n```\n```\ncallback_handler()\n```\n1, Method = . 1, Description = . 1, Error Handling = \n4, 5-minute timeout with graceful shutdown = Token Storage\nSources:\n[src/fastmcp/client/auth/oauth.py:322-341](.)\n,\n[src/fastmcp/client/auth/oauth.py:343-374](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 27,
+      "total_chunks": 41,
+      "char_count": 319,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275016"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:28",
+    "content": "FastMCP implements sophisticated token storage with automatic expiry handling, server isolation, and format validation through the\n```\nFileTokenStorage\n```\nclass.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 28,
+      "total_chunks": 41,
+      "char_count": 162,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275022"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:29",
+    "content": "```\ngraph TB\n    subgraph \"Token Storage Components\"\n        FileTokenStorage[\"FileTokenStorage<br/>TokenStorage protocol\"]\n        JSONFileStorage[\"JSONFileStorage<br/>File operations & validation\"]\n        StoredToken[\"StoredToken (BaseModel)<br/>- token_payload: OAuthToken<br/>- expires_at: datetime\"]\n    end\n    \n    subgraph \"Storage Operations\"\n        get_tokens[\"get_tokens()<br/>- Load from disk<br/>- Check expiry<br/>- Recalculate expires_in\"]\n        set_tokens[\"set_tokens()<br/>- Calculate absolute expiry<br/>- Save to disk<br/>- Format validation\"]\n        get_client_info[\"get_client_info()<br/>- Load client credentials<br/>- Validate with tokens<br/>- Clear if incomplete\"]\n        set_client_info[\"set_client_info()<br/>- Save client registration<br/>- Validate format\"]\n    end\n    \n    subgraph \"File System\"\n        cache_dir[\"~/.fastmcp/oauth-mcp-client-cache/\"]\n        token_file[\"{base_url}_tokens.json<br/>JSON wrapper format\"]\n        client_file[\"{base_url}_client_info.json<br/>Client registration data\"]\n    end\n    \n    FileTokenStorage --> JSONFileStorage\n    FileTokenStorage --> StoredToken\n    FileTokenStorage --> get_tokens\n    FileTokenStorage --> set_tokens  \n    FileTokenStorage --> get_client_info\n    FileTokenStorage --> set_client_info\n    JSONFileStorage --> cache_dir\n    cache_dir --> token_file\n    cache_dir --> client_file\n```\nSources:\n[src/fastmcp/client/auth/oauth.py:59-196](.)\n,\n[src/fastmcp/client/auth/oauth.py:44-52](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 29,
+      "total_chunks": 41,
+      "char_count": 1481,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275028"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:30",
+    "content": "The token storage system uses absolute timestamps rather than relative\n```\nexpires_in\n```\nvalues to ensure accurate expiry checking across application restarts:\n```\ngraph LR\n    subgraph \"Token Save Process\"\n        OAuthToken[\"OAuthToken<br/>expires_in: 3600\"]\n        Calculate[\"Calculate Absolute Expiry<br/>now + expires_in\"]\n        StoredToken[\"StoredToken<br/>expires_at: 2024-01-01T12:00:00Z\"]\n        SaveToDisk[\"Save to Disk<br/>JSON format\"]\n    end\n    \n    subgraph \"Token Load Process\"\n        LoadFromDisk[\"Load from Disk<br/>Parse JSON\"]\n        CheckExpiry[\"Check Expiry<br/>now >= expires_at?\"]\n        RecalculateExpiresIn[\"Recalculate expires_in<br/>expires_at - now\"]\n        ReturnToken[\"Return OAuthToken<br/>Updated expires_in\"]\n        ReturnNull[\"Return None<br/>Token expired\"]\n    end\n    \n    OAuthToken --> Calculate\n    Calculate --> StoredToken\n    StoredToken --> SaveToDisk\n    \n    LoadFromDisk --> CheckExpiry\n    CheckExpiry -->|Valid| RecalculateExpiresIn\n    CheckExpiry -->|Expired| ReturnNull\n    RecalculateExpiresIn --> ReturnToken\n```\nSources:\n[src/fastmcp/client/auth/oauth.py:132-147](.)\n,\n[src/fastmcp/client/auth/oauth.py:96-130](.)\n,\n[tests/client/auth/test_oauth_token_expiry.py:13-164](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 30,
+      "total_chunks": 41,
+      "char_count": 1239,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275033"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:31",
+    "content": "FastMCP uses a browser-based OAuth flow that opens the user's default browser for authorization and runs a temporary local server to receive the OAuth callback.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 31,
+      "total_chunks": 41,
+      "char_count": 160,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275039"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:32",
+    "content": "```\ngraph TD\n    subgraph \"Authorization Flow\"\n        StartAuth[\"Start OAuth Flow<br/>redirect_handler()\"]\n        PreflightCheck[\"Pre-flight Check<br/>GET authorization_url\"]\n        ValidateResponse[\"Validate Response<br/>Check for 400 (bad client_id)\"]\n        OpenBrowser[\"Open Browser<br/>webbrowser.open(auth_url)\"]\n    end\n    \n    subgraph \"Callback Handling\"\n        StartCallbackServer[\"Start Callback Server<br/>create_oauth_callback_server()\"]\n        WaitForCallback[\"Wait for Callback<br/>response_future.await\"]\n        HandleTimeout[\"Handle Timeout<br/>300 second limit\"]\n        ExtractCode[\"Extract Auth Code<br/>Return (code, state)\"]\n    end\n    \n    subgraph \"Error Handling\"\n        ClientNotFound[\"ClientNotFoundError<br/>Invalid client_id detected\"]\n        ClearCache[\"Clear Cached Credentials<br/>storage.clear()\"]\n        RetryFlow[\"Retry OAuth Flow<br/>Fresh registration\"]\n    end\n    \n    StartAuth --> PreflightCheck\n    PreflightCheck --> ValidateResponse\n    ValidateResponse -->|Valid| OpenBrowser\n    ValidateResponse -->|400 Error| ClientNotFound\n    OpenBrowser --> StartCallbackServer\n    StartCallbackServer --> WaitForCallback\n    WaitForCallback -->|Success| ExtractCode\n    WaitForCallback -->|Timeout| HandleTimeout\n    ClientNotFound --> ClearCache\n    ClearCache --> RetryFlow\n```\nSources:\n[src/fastmcp/client/auth/oauth.py:322-341](.)\n,\n[src/fastmcp/client/auth/oauth.py:343-374](.)\n,\n[src/fastmcp/client/auth/oauth.py:395-427](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 32,
+      "total_chunks": 41,
+      "char_count": 1477,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275045"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:33",
+    "content": "The OAuth callback server uses dynamic port allocation and graceful shutdown:\n```\nfind_available_port()\n```\n```\nhttp://localhost:{port}/callback\n```\n```\nuvicorn.Server\n```\nPort, Default = . Port, Description = \nSources:\n[src/fastmcp/client/auth/oauth.py:275-276](.)\n,\n[src/fastmcp/utilities/http.py](.)\n,\n[src/fastmcp/client/oauth_callback.py](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 33,
+      "total_chunks": 41,
+      "char_count": 346,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275051"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:34",
+    "content": "FastMCP supports multiple identity providers through standardized OAuth 2.0 and OpenID Connect protocols. The authentication system is provider-agnostic, requiring only standard OAuth endpoints.",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 34,
+      "total_chunks": 41,
+      "char_count": 194,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275056"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:35",
+    "content": "```\ngraph TB\n    subgraph \"Identity Providers\"\n        Auth0[\"Auth0<br/>/.well-known/openid-configuration\"]\n        Google[\"Google<br/>accounts.google.com\"]\n        GitHub[\"GitHub OAuth<br/>/login/oauth/authorize\"]\n        Azure[\"Azure AD<br/>login.microsoftonline.com\"]\n        Custom[\"Custom OIDC<br/>Any RFC-compliant provider\"]\n    end\n    \n    subgraph \"OAuth Configuration\"\n        OIDCDiscovery[\"OIDC Discovery<br/>/.well-known/openid-configuration\"]\n        AuthEndpoint[\"authorization_endpoint<br/>User login page\"]\n        TokenEndpoint[\"token_endpoint<br/>Token exchange\"]\n        JWKSUri[\"jwks_uri<br/>Public key validation\"]\n    end\n    \n    subgraph \"Client Requirements\"\n        ClientID[\"client_id<br/>Public identifier\"]\n        RedirectURI[\"redirect_uri<br/>http://localhost:{port}/callback\"]\n        Scopes[\"scopes<br/>Requested permissions\"]\n        GrantType[\"grant_types<br/>authorization_code, refresh_token\"]\n    end\n    \n    Auth0 --> OIDCDiscovery\n    Google --> OIDCDiscovery\n    GitHub --> AuthEndpoint\n    Azure --> OIDCDiscovery\n    Custom --> OIDCDiscovery\n    \n    OIDCDiscovery --> AuthEndpoint\n    OIDCDiscovery --> TokenEndpoint\n    OIDCDiscovery --> JWKSUri\n    \n    AuthEndpoint --> ClientID\n    TokenEndpoint --> ClientID\n    ClientID --> RedirectURI\n    RedirectURI --> Scopes\n    Scopes --> GrantType\n```\nSources:\n[src/fastmcp/server/auth/oidc_proxy.py:27-169](.)\n,\n[src/fastmcp/server/auth/providers/auth0.py:36-175](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 35,
+      "total_chunks": 41,
+      "char_count": 1460,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275062"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:36",
+    "content": "Before initiating OAuth flows, FastMCP can check if authentication is required:\n```\n# Usage example from oauth.py\nasync def check_if_auth_required(\n    mcp_url: str, httpx_kwargs: dict[str, Any] | None = None\n) -> bool:\n    \"\"\"Check if the MCP endpoint requires authentication.\"\"\"\n```\nThis function tests the endpoint and returns\n```\nTrue\n```\nif authentication appears required based on HTTP status codes (401, 403) or WWW-Authenticate headers.\nSources:\n[src/fastmcp/client/auth/oauth.py:212-240](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 36,
+      "total_chunks": 41,
+      "char_count": 499,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275067"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:37",
+    "content": "```\nfrom fastmcp.client.auth.oauth import OAuth\n\noauth_provider = OAuth(\n    mcp_url=\"https://api.example.com/mcp/\",\n    scopes=[\"openid\", \"profile\", \"email\"],\n    client_name=\"My FastMCP Client\",\n    token_storage_cache_dir=Path(\"~/.my-app/oauth-cache\"),\n    callback_port=8080  # Optional: fixed port\n)\n```",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 37,
+      "total_chunks": 41,
+      "char_count": 308,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275073"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:38",
+    "content": "```\nfrom fastmcp import Client\n\nasync with Client(\n    \"https://api.example.com/mcp/\",\n    auth=oauth_provider\n) as client:\n    # Client automatically handles OAuth flow\n    tools = await client.list_tools()\n```",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 38,
+      "total_chunks": 41,
+      "char_count": 211,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275079"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:39",
+    "content": "The\n```\nFileTokenStorage\n```\nclass stores tokens in server-specific files:\n```\n{base_url}_tokens.json\n```\n```\n{base_url}_client_info.json\n```\n```\n~/.fastmcp/oauth-mcp-client-cache/\n```\nTokens, Path Pattern = . Tokens, Purpose = \nSources:\n[src/fastmcp/client/auth/oauth.py:250-311](.)\n,\n[src/fastmcp/client/auth/oauth.py:55-86](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 39,
+      "total_chunks": 41,
+      "char_count": 329,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275085"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Transport_Mechanisms:chunk:40",
+    "content": "The OAuth implementation includes automatic error recovery:\n- **Stale Credentials** : Detects invalid client_id and clears cache for retry\n- **Token Expiry** : Automatically refreshes expired tokens\n- **Network Errors** : Graceful handling of connection issues\n- **Timeout Handling** : 5-minute timeout with user-friendly messages\nSources:\n[src/fastmcp/client/auth/oauth.py:376-427](.)\n,\n[src/fastmcp/client/auth/oauth.py:38-41](.)",
+    "metadata": {
+      "source": "fastmcp\\Transport_Mechanisms.md",
+      "file_name": "Transport_Mechanisms.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 40,
+      "total_chunks": 41,
+      "char_count": 431,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:07.275091"
+    }
+  }
+]

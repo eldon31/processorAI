@@ -1,0 +1,572 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:0",
+    "content": "FastAPI's settings management system provides type-safe configuration handling through Pydantic's\n```\nBaseSettings\n```\nclass. The system automatically reads environment variables, validates configuration values, and integrates with FastAPI's dependency injection system for clean application architecture.\nThis system centers around the\n```\nBaseSettings\n```\nclass from\n```\npydantic-settings\n```\n, dependency injection using\n```\nDepends()\n```\n, and performance optimization through\n```\n@lru_cache\n```\ndecorators.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 38,
+      "char_count": 511,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581318"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:1",
+    "content": "The settings system is built around\n```\nBaseSettings\n```\nfrom\n```\npydantic-settings\n```\n, which provides automatic environment variable reading and type validation. Configuration flows from environment variables through\n```\nBaseSettings\n```\nsubclasses to application components via dependency injection.\n**BaseSettings Implementation Flow**\n```\ngraph TB\n    subgraph \"Environment Layer\"\n        ENV_VARS[\"Environment Variables<br/>APP_NAME, DEBUG, etc.\"]\n        DOT_ENV[\".env File<br/>APP_NAME=MyApp\"]\n    end\n    \n    subgraph \"Settings Definition\"\n        BaseSettings_class[\"BaseSettings\"]\n        Settings_subclass[\"class Settings(BaseSettings)\"]\n        model_config[\"model_config = SettingsConfigDict\"]\n        class_attributes[\"app_name: str<br/>debug: bool = False\"]\n    end\n    \n    subgraph \"Dependency System\"\n        get_settings_func[\"def get_settings()\"]\n        lru_cache_decorator[\"@lru_cache\"]\n        Depends_call[\"Depends(get_settings)\"]\n    end\n    \n    subgraph \"Application Usage\"\n        path_operations[\"@app.get('/info')\"]\n        settings_param[\"settings: Settings\"]\n        settings_usage[\"settings.app_name\"]\n    end\n    \n    ENV_VARS --> Settings_subclass\n    DOT_ENV --> Settings_subclass\n    BaseSettings_class --> Settings_subclass\n    model_config --> Settings_subclass\n    class_attributes --> Settings_subclass\n    \n    Settings_subclass --> get_settings_func\n    lru_cache_decorator --> get_settings_func\n    get_settings_func --> Depends_call\n    \n    Depends_call --> path_operations\n    path_operations --> settings_param\n    settings_param --> settings_usage\n```\nSources:\n[docs/en/docs/advanced/settings.md:55-90](.)\n,\n[docs/en/docs/advanced/settings.md:141-172](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 38,
+      "char_count": 1706,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581336"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:2",
+    "content": "The\n```\nBaseSettings\n```\nclass from\n```\npydantic-settings\n```\nprovides the core functionality for configuration management. It automatically reads environment variables, performs type conversion, and validates configuration values.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 38,
+      "char_count": 231,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581342"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:3",
+    "content": "Settings classes inherit from\n```\nBaseSettings\n```\nand declare configuration as typed class attributes:\n```\nfrom pydantic_settings import BaseSettings, SettingsConfigDict\n\nclass Settings(BaseSettings):\n    model_config = SettingsConfigDict(env_file=\".env\")\n    \n    app_name: str = \"FastAPI App\"\n    debug: bool = False\n    items_per_user: int = 50\n    admin_email: str\n```\n**Settings Class Structure**\n```\ngraph TB\n    subgraph \"Class Definition\"\n        BaseSettings_import[\"from pydantic_settings import BaseSettings\"]\n        SettingsConfigDict_import[\"from pydantic_settings import SettingsConfigDict\"]\n        Settings_class[\"class Settings(BaseSettings):\"]\n        model_config_attr[\"model_config = SettingsConfigDict()\"]\n    end\n    \n    subgraph \"Attribute Declaration\"\n        typed_attributes[\"app_name: str\"]\n        default_values[\"debug: bool = False\"]\n        required_fields[\"admin_email: str\"]\n        Field_validators[\"Field() constraints\"]\n    end\n    \n    subgraph \"Runtime Processing\"\n        env_var_reading[\"Environment Variable Reading\"]\n        case_insensitive[\"Case-Insensitive Matching<br/>APP_NAME -> app_name\"]\n        type_conversion[\"Type Conversion<br/>str -> bool, int\"]\n        validation[\"Pydantic Validation\"]\n    end\n    \n    BaseSettings_import --> Settings_class\n    SettingsConfigDict_import --> model_config_attr\n    Settings_class --> typed_attributes\n    Settings_class --> default_values\n    Settings_class --> required_fields\n    Settings_class --> Field_validators\n    \n    typed_attributes --> env_var_reading\n    default_values --> env_var_reading\n    required_fields --> env_var_reading\n    \n    env_var_reading --> case_insensitive\n    case_insensitive --> type_conversion\n    type_conversion --> validation\n```\nSources:\n[docs/en/docs/advanced/settings.md:55-90](.)\n,\n[docs/en/docs/advanced/settings.md:218-249](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 38,
+      "char_count": 1865,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581348"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:4",
+    "content": "```\nBaseSettings\n```\nautomatically maps environment variables to class attributes using case-insensitive matching. The system performs type conversion based on the declared type annotations.\n```\napp_name: str\n```\n```\nAPP_NAME\n```\n```\n\"FastAPI App\"\n```\n```\ndebug: bool\n```\n```\nDEBUG\n```\n```\n\"true\"\n```\n→\n```\nTrue\n```\n```\nitems_per_user: int\n```\n```\nITEMS_PER_USER\n```\n```\n\"50\"\n```\n→\n```\n50\n```\n```\nadmin_email: EmailStr\n```\n```\nADMIN_EMAIL\n```\n```\n\"admin@example.com\"\n```\n```\ndatabase_url: str\n```\n```\nDATABASE_URL\n```\n```\n\"postgresql://...\"\n```\n, Environment Variable = . , Type Conversion = . , Example = \nThe mapping follows Python naming conventions (snake_case) for attributes while accepting standard environment variable naming (UPPER_CASE).\nSources:\n[docs/en/docs/advanced/settings.md:87-89](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 38,
+      "char_count": 801,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581353"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:5",
+    "content": "The simplest pattern creates a settings instance at module level that can be imported across the application:\n```\n# config.py\nfrom pydantic_settings import BaseSettings\n\nclass Settings(BaseSettings):\n    app_name: str = \"FastAPI App\"\n    debug: bool = False\n\nsettings = Settings()\n\n# main.py\nfrom fastapi import FastAPI\nfrom .config import settings\n\napp = FastAPI(title=settings.app_name)\n```\nThis pattern works for simple applications but creates global state that complicates testing.\nSources:\n[docs/en/docs/advanced/settings.md:124-139](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 38,
+      "char_count": 542,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581359"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:6",
+    "content": "The recommended pattern uses FastAPI's dependency system with\n```\nDepends()\n```\nto inject settings into path operations. This enables testing through dependency overrides and performance optimization through caching.\n**Settings Dependency Implementation**\n```\ngraph TB\n    subgraph \"Dependency Function Definition\"\n        functools_import[\"from functools import lru_cache\"]\n        lru_cache_decorator[\"@lru_cache\"]\n        get_settings_function[\"def get_settings() -> Settings:\"]\n        return_Settings[\"return Settings()\"]\n    end\n    \n    subgraph \"Path Operation Usage\"\n        app_get_decorator[\"@app.get('/info')\"]\n        async_def_function[\"async def read_info(\"]\n        settings_parameter[\"settings: Settings = Depends(get_settings)\"]\n        function_body[\"):\"]\n        settings_access[\"return {'app_name': settings.app_name}\"]\n    end\n    \n    subgraph \"Dependency Resolution\"\n        first_request[\"First Request\"]\n        Settings_instantiation[\"Settings() called\"]\n        cache_storage[\"Cached in @lru_cache\"]\n        subsequent_requests[\"Subsequent Requests\"]\n        cache_retrieval[\"Cached instance returned\"]\n    end\n    \n    functools_import --> lru_cache_decorator\n    lru_cache_decorator --> get_settings_function\n    get_settings_function --> return_Settings\n    \n    app_get_decorator --> async_def_function\n    async_def_function --> settings_parameter\n    settings_parameter --> function_body\n    function_body --> settings_access\n    \n    return_Settings --> first_request\n    first_request --> Settings_instantiation\n    Settings_instantiation --> cache_storage\n    cache_storage --> subsequent_requests\n    subsequent_requests --> cache_retrieval\n    cache_retrieval --> settings_parameter\n```\nThis pattern provides clean separation of concerns and supports dependency overrides for testing.\nSources:\n[docs/en/docs/advanced/settings.md:141-182](.)\n,\n[docs/en/docs/advanced/settings.md:250-275](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 38,
+      "char_count": 1928,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581364"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:7",
+    "content": "```\nBaseSettings\n```\nautomatically reads environment variables as the primary configuration source. All environment variables are initially strings and are converted to declared types through Pydantic's type conversion system.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 38,
+      "char_count": 226,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581370"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:8",
+    "content": "The system supports\n```\n.env\n```\nfiles through\n```\npython-dotenv\n```\nintegration, configured via\n```\nSettingsConfigDict\n```\n:\n```\nfrom pydantic_settings import BaseSettings, SettingsConfigDict\n\nclass Settings(BaseSettings):\n    model_config = SettingsConfigDict(env_file=\".env\")\n    \n    app_name: str = \"Default App\"\n    debug: bool = False\n```\n**Configuration Source Resolution**\n```\ngraph TB\n    subgraph \"Configuration Sources\"\n        environment_variables[\"Environment Variables<br/>export APP_NAME=Production\"]\n        dotenv_file[\".env File<br/>APP_NAME=Development\"]\n        class_defaults[\"Class Defaults<br/>app_name: str = 'Default App'\"]\n    end\n    \n    subgraph \"Settings Resolution Process\"\n        SettingsConfigDict_config[\"SettingsConfigDict(env_file='.env')\"]\n        python_dotenv[\"python-dotenv Library\"]\n        BaseSettings_init[\"BaseSettings.__init__()\"]\n        field_resolution[\"Field Value Resolution\"]\n    end\n    \n    subgraph \"Priority Order\"\n        priority_1[\"1. Environment Variables (Highest)\"]\n        priority_2[\"2. .env File Values\"]\n        priority_3[\"3. Class Defaults (Lowest)\"]\n        final_value[\"Final Attribute Value\"]\n    end\n    \n    environment_variables --> priority_1\n    dotenv_file --> priority_2\n    class_defaults --> priority_3\n    \n    SettingsConfigDict_config --> python_dotenv\n    python_dotenv --> BaseSettings_init\n    BaseSettings_init --> field_resolution\n    \n    priority_1 --> final_value\n    priority_2 --> final_value\n    priority_3 --> final_value\n```\nConfiguration follows a strict precedence: environment variables override\n```\n.env\n```\nfile values, which override class defaults.\nSources:\n[docs/en/docs/advanced/settings.md:183-249](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 38,
+      "char_count": 1710,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581375"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:9",
+    "content": "The\n```\n@lru_cache\n```\ndecorator from\n```\nfunctools\n```\nprevents repeated\n```\nSettings()\n```\ninstantiation and file system access, providing significant performance benefits for frequently accessed configuration.\n```\nfrom functools import lru_cache\nfrom pydantic_settings import BaseSettings\n\n@lru_cache\ndef get_settings() -> Settings:\n    return Settings()\n\n# FastAPI dependency usage\n@app.get(\"/info\")\nasync def read_info(settings: Settings = Depends(get_settings)):\n    return {\"app_name\": settings.app_name}\n```\n**@lru_cache Optimization Flow**\n```\nsequenceDiagram\n    participant path_operation[\"Path Operation Function\"]\n    participant Depends_system[\"Depends(get_settings)\"]\n    participant lru_cache_decorator[\"@lru_cache\"]\n    participant get_settings_function[\"get_settings()\"]\n    participant Settings_constructor[\"Settings()\"]\n    participant filesystem[\".env File System\"]\n    \n    Note over path_operation,filesystem: First Request\n    path_operation->>Depends_system: Inject settings dependency\n    Depends_system->>lru_cache_decorator: Call get_settings()\n    lru_cache_decorator->>get_settings_function: Execute function\n    get_settings_function->>Settings_constructor: Create Settings()\n    Settings_constructor->>filesystem: Read .env file\n    filesystem->>Settings_constructor: Return file contents\n    Settings_constructor->>lru_cache_decorator: Return Settings instance\n    lru_cache_decorator->>path_operation: Cache and return settings\n    \n    Note over path_operation,filesystem: Subsequent Requests\n    path_operation->>Depends_system: Inject settings dependency\n    Depends_system->>lru_cache_decorator: Call get_settings()\n    lru_cache_decorator->>path_operation: Return cached Settings instance\n```\nThe\n```\n@lru_cache\n```\ndecorator ensures\n```\nSettings()\n```\nis only called once, eliminating repeated file I/O and object instantiation overhead.\nSources:\n[docs/en/docs/advanced/settings.md:250-339](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 38,
+      "char_count": 1933,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581381"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:10",
+    "content": "The dependency injection pattern enables clean testing through\n```\napp.dependency_overrides\n```\n, allowing test-specific configuration without modifying global state.\n```\n# Test configuration\ndef get_settings_override():\n    return Settings(\n        admin_email=\"test@example.com\",\n        debug=True,\n        database_url=\"sqlite:///test.db\"\n    )\n\n# Test setup\napp.dependency_overrides[get_settings] = get_settings_override\n\n# Test teardown\napp.dependency_overrides.clear()\n```\n**Testing Override Pattern**\n```\ngraph TB\n    subgraph \"Production Code\"\n        get_settings_prod[\"def get_settings() -> Settings:\"]\n        Settings_prod[\"return Settings()\"]\n        Depends_prod[\"Depends(get_settings)\"]\n    end\n    \n    subgraph \"Test Configuration\"\n        get_settings_override[\"def get_settings_override() -> Settings:\"]\n        Settings_test[\"return Settings(admin_email='test@example.com')\"]\n        app_dependency_overrides[\"app.dependency_overrides[get_settings]\"]\n    end\n    \n    subgraph \"Test Execution\"\n        test_client[\"TestClient(app)\"]\n        test_request[\"client.get('/info')\"]\n        override_resolution[\"Dependency Resolution\"]\n        test_settings[\"Test Settings Instance\"]\n    end\n    \n    get_settings_prod --> Settings_prod\n    Settings_prod --> Depends_prod\n    \n    get_settings_override --> Settings_test\n    Settings_test --> app_dependency_overrides\n    app_dependency_overrides --> override_resolution\n    \n    test_client --> test_request\n    test_request --> override_resolution\n    override_resolution --> test_settings\n```\nThis pattern ensures test isolation and enables testing with different configuration scenarios.\nSources:\n[docs/en/docs/advanced/settings.md:173-182](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 38,
+      "char_count": 1712,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581387"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:11",
+    "content": "Settings management often involves sensitive configuration like database credentials, API keys, and secret tokens. The system supports secure practices through:\n- Environment variable isolation from code\n- `.env` file exclusion from version control\n- Type validation preventing configuration errors\n- Dependency injection enabling secure testing practices\nFor specific security implementations, see\n[Security Components](#2.5)\nwhich covers OAuth2, JWT tokens, and authentication configuration patterns.\nSources:\n[docs/en/docs/advanced/settings.md:1-7](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 38,
+      "char_count": 554,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581392"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:12",
+    "content": "FastAPI implements a comprehensive exception hierarchy and handler system that manages errors from request validation, application logic, and WebSocket connections. The system centers around specific exception classes and handler functions that process different error types while maintaining automatic OpenAPI documentation integration.\nFor information about parameter validation that triggers errors, see\n[Parameter Validation and Handling](#2.3)\n. For broader request processing context, see\n[Application and Routing System](#2.1)\n.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 38,
+      "char_count": 535,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581397"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:13",
+    "content": "FastAPI defines a complete exception hierarchy that extends Starlette's base exceptions while adding framework-specific error handling capabilities.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 38,
+      "char_count": 148,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581403"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:14",
+    "content": "```\ngraph TD\n    StarletteHTTPException[\"StarletteHTTPException\"] --> FastAPIHTTPException[\"fastapi.HTTPException\"]\n    StarletteWebSocketException[\"StarletteWebSocketException\"] --> FastAPIWebSocketException[\"fastapi.WebSocketException\"]\n    \n    RuntimeError --> FastAPIError[\"fastapi.FastAPIError\"]\n    \n    Exception --> ValidationException[\"fastapi.ValidationException\"]\n    ValidationException --> RequestValidationError[\"fastapi.RequestValidationError\"]\n    ValidationException --> WebSocketRequestValidationError[\"fastapi.WebSocketRequestValidationError\"]\n    ValidationException --> ResponseValidationError[\"fastapi.ResponseValidationError\"]\n    \n    FastAPIHTTPException --> status_code[\"status_code: int\"]\n    FastAPIHTTPException --> detail[\"detail: Any\"]\n    FastAPIHTTPException --> headers[\"headers: Optional[Dict[str, str]]\"]\n    \n    FastAPIWebSocketException --> code[\"code: int\"]\n    FastAPIWebSocketException --> reason[\"reason: Union[str, None]\"]\n```\n**FastAPI Exception Class Hierarchy with Code Entity Names**\nSources:\n[fastapi/exceptions.py:9-177](.)\nThe\n```\nHTTPException\n```\nclass\n[fastapi/exceptions.py:9-66](.)\nextends Starlette's version to accept any JSON-serializable data in the\n```\ndetail\n```\nfield, while\n```\nWebSocketException\n```\n[fastapi/exceptions.py:68-137](.)\nprovides WebSocket-specific error handling with RFC 6455 compliant close codes.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 38,
+      "char_count": 1379,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581409"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:15",
+    "content": "```\ngraph LR\n    ValidationException[\"ValidationException\"] --> errors_method[\"errors() -> Sequence[Any]\"]\n    \n    RequestValidationError[\"RequestValidationError\"] --> body_attr[\"body: Any\"]\n    RequestValidationError --> ValidationException\n    \n    WebSocketRequestValidationError[\"WebSocketRequestValidationError\"] --> ValidationException\n    \n    ResponseValidationError[\"ResponseValidationError\"] --> body_attr_resp[\"body: Any\"]\n    ResponseValidationError --> str_method[\"__str__() method\"]\n    ResponseValidationError --> ValidationException\n```\n**Validation Exception Structure with Actual Class Methods**\nSources:\n[fastapi/exceptions.py:149-177](.)\nThe\n```\nValidationException\n```\nbase class\n[fastapi/exceptions.py:149-155](.)\nprovides the\n```\nerrors()\n```\nmethod interface, while\n```\nRequestValidationError\n```\n[fastapi/exceptions.py:157-161](.)\nand\n```\nResponseValidationError\n```\n[fastapi/exceptions.py:167-177](.)\nstore the invalid request/response body for debugging purposes.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 38,
+      "char_count": 991,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581414"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:16",
+    "content": "FastAPI provides default exception handlers for framework exceptions and enables registration of custom handlers for application-specific error processing.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 16,
+      "total_chunks": 38,
+      "char_count": 155,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581420"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:17",
+    "content": "```\ngraph TD\n    http_exception_handler[\"http_exception_handler\"] --> Request[\"request: Request\"]\n    http_exception_handler --> HTTPException[\"exc: HTTPException\"]\n    http_exception_handler --> Response_or_JSONResponse[\"Response | JSONResponse\"]\n    \n    request_validation_exception_handler[\"request_validation_exception_handler\"] --> Request2[\"request: Request\"]\n    request_validation_exception_handler --> RequestValidationError[\"exc: RequestValidationError\"]\n    request_validation_exception_handler --> JSONResponse422[\"JSONResponse(422)\"]\n    \n    websocket_request_validation_exception_handler[\"websocket_request_validation_exception_handler\"] --> WebSocket[\"websocket: WebSocket\"]\n    websocket_request_validation_exception_handler --> WebSocketRequestValidationError[\"exc: WebSocketRequestValidationError\"]\n    websocket_request_validation_exception_handler --> websocket_close[\"websocket.close()\"]\n```\n**Default Exception Handler Function Signatures**\nSources:\n[fastapi/exception_handlers.py:11-35](.)\nThe\n```\nhttp_exception_handler\n```\n[fastapi/exception_handlers.py:11-18](.)\nuses\n```\nis_body_allowed_for_status_code()\n```\nto determine response format, while\n```\nrequest_validation_exception_handler\n```\n[fastapi/exception_handlers.py:20-27](.)\nreturns 422 status with\n```\njsonable_encoder(exc.errors())\n```\n. WebSocket validation errors\n[fastapi/exception_handlers.py:29-35](.)\nclose the connection with\n```\nWS_1008_POLICY_VIOLATION\n```\n.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 17,
+      "total_chunks": 38,
+      "char_count": 1454,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581426"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:18",
+    "content": "```\ngraph LR\n    CustomException[\"CustomException\"] --> app_exception_handler[\"@app.exception_handler(CustomException)\"]\n    app_exception_handler --> handler_function[\"async def custom_handler(request, exc)\"]\n    \n    handler_function --> custom_logic[\"Custom Processing Logic\"]\n    custom_logic --> reuse_default[\"Reuse Default Handler\"]\n    reuse_default --> fastapi_exception_handlers[\"from fastapi.exception_handlers import\"]\n    \n    StarletteHTTPException[\"StarletteHTTPException\"] --> register_starlette[\"@app.exception_handler(StarletteHTTPException)\"]\n    register_starlette --> catches_both[\"Catches FastAPI + Starlette exceptions\"]\n```\n**Exception Handler Registration with Actual Import Paths**\nSources:\n[docs/en/docs/tutorial/handling-errors.md:82-102](.)\n,\n[docs/en/docs/tutorial/handling-errors.md:249-256](.)\nCustom handlers are registered with\n```\n@app.exception_handler()\n```\nand can import default handlers from\n```\nfastapi.exception_handlers\n```\nfor reuse. Registering handlers for Starlette exceptions catches both FastAPI and Starlette internal exceptions.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 18,
+      "total_chunks": 38,
+      "char_count": 1079,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581431"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:19",
+    "content": "```\ngraph TD\n    WebSocketConnection[\"WebSocket Connection\"] --> validation_error[\"Validation Error\"]\n    WebSocketConnection --> custom_exception[\"Custom Exception\"]\n    WebSocketConnection --> dependency_error[\"Dependency Error\"]\n    \n    validation_error --> WebSocketRequestValidationError[\"WebSocketRequestValidationError\"]\n    WebSocketRequestValidationError --> websocket_close_policy[\"websocket.close(WS_1008_POLICY_VIOLATION)\"]\n    \n    custom_exception --> CustomWebSocketHandler[\"Custom WebSocket Handler\"]\n    CustomWebSocketHandler --> websocket_close_custom[\"websocket.close(custom_code, reason)\"]\n    \n    dependency_error --> middleware_catch[\"WebSocket Middleware Catch\"]\n    middleware_catch --> websocket_close_abnormal[\"websocket.close(WS_1006_ABNORMAL_CLOSURE)\"]\n```\n**WebSocket Exception Handling Flow with Status Codes**\nSources:\n[tests/test_ws_router.py:210-272](.)\n,\n[fastapi/exception_handlers.py:29-35](.)\nWebSocket validation errors trigger\n```\nWS_1008_POLICY_VIOLATION\n```\nclose codes, while custom WebSocket exception handlers\n[tests/test_ws_router.py:257-272](.)\ncan define custom close codes and reasons. WebSocket middleware can catch dependency errors\n[tests/test_ws_router.py:236-255](.)\n.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 19,
+      "total_chunks": 38,
+      "char_count": 1224,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581437"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:20",
+    "content": "Error handling integrates with FastAPI's broader request processing pipeline and OpenAPI documentation generation.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 20,
+      "total_chunks": 38,
+      "char_count": 114,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581442"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:21",
+    "content": "```\ngraph TB\n    request_entry[\"Request Entry\"] --> routing[\"Routing System\"]\n    routing --> param_validation[\"Parameter Validation\"]\n    param_validation --> dependency_injection[\"Dependency Injection\"]\n    dependency_injection --> path_operation[\"Path Operation Function\"]\n    \n    param_validation --> RequestValidationError[\"RequestValidationError\"]\n    dependency_injection --> dependency_errors[\"Dependency Errors\"]\n    path_operation --> HTTPException[\"HTTPException\"]\n    path_operation --> custom_exceptions[\"Custom Exceptions\"]\n    \n    RequestValidationError --> validation_handler[\"Validation Error Handler\"]\n    HTTPException --> http_handler[\"HTTP Exception Handler\"]\n    custom_exceptions --> custom_handler[\"Custom Exception Handler\"]\n    dependency_errors --> dependency_handler[\"Dependency Error Handler\"]\n    \n    validation_handler --> error_response[\"Error Response\"]\n    http_handler --> error_response\n    custom_handler --> error_response\n    dependency_handler --> error_response\n```\n**Error Handling Integration with Request Processing**\nSources:\n[docs/en/docs/tutorial/handling-errors.md:1-256](.)\n,\n[docs/en/docs/tutorial/dependencies/index.md:32-42](.)\nErrors can occur at multiple stages of request processing: during parameter validation, dependency injection, or within path operation functions. Each error type is handled by appropriate handlers that can be customized or extended while maintaining the overall request processing flow.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 21,
+      "total_chunks": 38,
+      "char_count": 1469,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581448"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:22",
+    "content": "```\ngraph LR\n    custom_logic[\"Custom Exception Logic\"] --> reuse_default[\"Reuse Default Handler\"]\n    reuse_default --> fastapi_handlers[\"fastapi.exception_handlers\"]\n    \n    import_handlers[\"from fastapi.exception_handlers import\"] --> http_exception_handler[\"http_exception_handler\"]\n    import_handlers --> request_validation_exception_handler[\"request_validation_exception_handler\"]\n    \n    custom_logic --> log_error[\"Log Error\"]\n    log_error --> reuse_default\n```\n**Exception Handler Reuse Pattern**\nSources:\n[docs/en/docs/tutorial/handling-errors.md:249-256](.)\nFastAPI provides importable default exception handlers from\n```\nfastapi.exception_handlers\n```\nthat can be reused within custom exception handling logic. This allows developers to add custom processing (like logging) while maintaining standard error response formats.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 22,
+      "total_chunks": 38,
+      "char_count": 840,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581453"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:23",
+    "content": "Error responses declared in exception handlers and path operations are automatically included in the generated OpenAPI schema, providing comprehensive API documentation that includes both success and error scenarios.\n```\ngraph TB\n    path_operation[\"Path Operation\"] --> responses_param[\"responses parameter\"]\n    HTTPException[\"HTTPException in code\"] --> implicit_422[\"Implicit 422 responses\"]\n    custom_exceptions[\"Custom Exception Handlers\"] --> documented_errors[\"Documented Error Responses\"]\n    \n    responses_param --> openapi_schema[\"OpenAPI Schema\"]\n    implicit_422 --> openapi_schema\n    documented_errors --> openapi_schema\n    \n    openapi_schema --> swagger_ui[\"Swagger UI\"]\n    openapi_schema --> redoc_ui[\"ReDoc UI\"]\n```\n**Error Documentation Generation Flow**\nSources:\n[docs/en/docs/tutorial/handling-errors.md:1-256](.)\n,\n[docs/en/docs/tutorial/query-params-str-validations.md:104-109](.)\nThe framework automatically generates OpenAPI documentation for validation errors (422 responses) and incorporates custom error responses defined in path operations. This ensures that API consumers have complete information about both successful and error response formats.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 23,
+      "total_chunks": 38,
+      "char_count": 1182,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581459"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:24",
+    "content": "The API Documentation System generates and serves interactive API documentation interfaces for FastAPI applications. This system specifically handles the creation of Swagger UI and ReDoc interfaces that allow users to explore, test, and interact with API endpoints directly in the browser.\nThis document covers the automatic generation of documentation HTML pages, asset management (JavaScript/CSS files), and customization options for the documentation UI. For information about OpenAPI schema generation that powers these interfaces, see\n[OpenAPI Schema Generation](#3.1)\n. For broader documentation infrastructure including MkDocs and multi-language support, see\n[Documentation System](#6.1)\n.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 24,
+      "total_chunks": 38,
+      "char_count": 696,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581464"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:25",
+    "content": "The API Documentation System operates as a bridge between FastAPI's OpenAPI schema generation and web-based documentation interfaces. It provides HTML generation functions that create fully functional documentation pages served directly by FastAPI applications.\n```\ngraph TD\n    subgraph \"FastAPI Application\"\n        A[\"FastAPI App Instance\"]\n        B[\"OpenAPI Schema Generation\"]\n        C[\"Documentation Endpoints\"]\n    end\n    \n    subgraph \"Documentation UI Generation\"\n        D[\"get_swagger_ui_html()\"]\n        E[\"get_redoc_html()\"]\n        F[\"get_swagger_ui_oauth2_redirect_html()\"]\n    end\n    \n    subgraph \"Static Assets\"\n        G[\"CDN Resources\"]\n        H[\"Self-Hosted Files\"]\n        I[\"Custom CDN\"]\n    end\n    \n    subgraph \"Browser Interface\"\n        J[\"Swagger UI at /docs\"]\n        K[\"ReDoc at /redoc\"]\n        L[\"OAuth2 Redirect Handler\"]\n    end\n    \n    A --> B\n    B --> C\n    C --> D\n    C --> E\n    C --> F\n    \n    D --> G\n    D --> H\n    D --> I\n    E --> G\n    E --> H\n    E --> I\n    F --> L\n    \n    D --> J\n    E --> K\n    \n    J -.->|\"Loads OpenAPI JSON\"| B\n    K -.->|\"Loads OpenAPI JSON\"| B\n```\n**Documentation UI Generation Flow**\nThe system generates HTML responses containing JavaScript that initializes documentation interfaces using OpenAPI specifications.\nSources:\n[fastapi/openapi/docs.py:1-345](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 25,
+      "total_chunks": 38,
+      "char_count": 1341,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581469"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:26",
+    "content": "The documentation system centers around three primary HTML generation functions that create complete documentation interfaces with embedded JavaScript and CSS.\n```\ngraph LR\n    subgraph \"docs.py Functions\"\n        A[\"get_swagger_ui_html\"]\n        B[\"get_redoc_html\"]\n        C[\"get_swagger_ui_oauth2_redirect_html\"]\n    end\n    \n    subgraph \"Configuration Parameters\"\n        D[\"swagger_ui_default_parameters\"]\n        E[\"openapi_url\"]\n        F[\"title\"]\n        G[\"swagger_js_url\"]\n        H[\"swagger_css_url\"]\n        I[\"redoc_js_url\"]\n        J[\"oauth2_redirect_url\"]\n    end\n    \n    subgraph \"HTML Response Generation\"\n        K[\"HTMLResponse with Swagger UI\"]\n        L[\"HTMLResponse with ReDoc\"]\n        M[\"HTMLResponse with OAuth2 Handler\"]\n    end\n    \n    A --> K\n    B --> L\n    C --> M\n    \n    D --> A\n    E --> A\n    E --> B\n    F --> A\n    F --> B\n    G --> A\n    H --> A\n    I --> B\n    J --> A\n```\n**Core Function Architecture**\nEach documentation interface is generated by a dedicated function that assembles HTML with proper asset references and configuration.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 26,
+      "total_chunks": 38,
+      "char_count": 1080,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581475"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:27",
+    "content": "The\n```\nget_swagger_ui_html()\n```\nfunction creates the main interactive documentation interface. It accepts parameters for customizing the OpenAPI URL, title, asset URLs, and Swagger UI configuration through the\n```\nswagger_ui_parameters\n```\nparameter.\nSources:\n[fastapi/openapi/docs.py:26-158](.)\nThe\n```\nget_redoc_html()\n```\nfunction generates an alternative documentation interface using ReDoc. It provides a different visual style and interaction model compared to Swagger UI, with options for Google Fonts integration and custom styling.\nSources:\n[fastapi/openapi/docs.py:161-253](.)\nThe\n```\nget_swagger_ui_oauth2_redirect_html()\n```\nfunction handles OAuth2 authentication flow redirects specifically for Swagger UI. This enables authentication testing directly within the documentation interface.\nSources:\n[fastapi/openapi/docs.py:256-344](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 27,
+      "total_chunks": 38,
+      "char_count": 848,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581480"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:28",
+    "content": "The system provides sensible defaults through\n```\nswagger_ui_default_parameters\n```\nwhich includes DOM targeting, layout configuration, and feature toggles for the Swagger UI interface.\n```\ndom_id\n```\n```\n\"#swagger-ui\"\n```\n```\nlayout\n```\n```\n\"BaseLayout\"\n```\n```\ndeepLinking\n```\n```\nTrue\n```\n```\nshowExtensions\n```\n```\nTrue\n```\n```\nshowCommonExtensions\n```\n```\nTrue\n```\n, Default Value = . , Purpose = \nSources:\n[fastapi/openapi/docs.py:8-23](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 28,
+      "total_chunks": 38,
+      "char_count": 445,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581485"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:29",
+    "content": "The documentation system supports three asset delivery modes: CDN-based (default), custom CDN, and self-hosted static files. Each mode provides different trade-offs between simplicity, control, and offline functionality.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 29,
+      "total_chunks": 38,
+      "char_count": 220,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581491"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:30",
+    "content": "By default, the system loads assets from jsdelivr CDN with these default URLs:\n- Swagger UI JavaScript: `https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js`\n- Swagger UI CSS: `https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css`\n- ReDoc JavaScript: `https://cdn.jsdelivr.net/npm/redoc@2/bundles/redoc.standalone.js`\n- Favicon: `https://fastapi.tiangolo.com/img/favicon.png`\nSources:\n[fastapi/openapi/docs.py:47-74](.)\n,\n[fastapi/openapi/docs.py:182-199](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 30,
+      "total_chunks": 38,
+      "char_count": 483,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581496"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:31",
+    "content": "Applications can specify alternative CDN URLs by passing custom\n```\nswagger_js_url\n```\n,\n```\nswagger_css_url\n```\n, and\n```\nredoc_js_url\n```\nparameters to the generation functions. This supports scenarios where default CDNs are blocked or alternative sources are preferred.\nSources:\n[docs/en/docs/how-to/custom-docs-ui-assets.md:9-58](.)\n,\n[docs_src/custom_docs_ui/tutorial001.py:11-33](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 31,
+      "total_chunks": 38,
+      "char_count": 388,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581501"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:32",
+    "content": "For offline or airgapped deployments, applications can serve documentation assets locally by:\n1. Downloading required JavaScript and CSS files\n2. Serving them through FastAPI's `StaticFiles` mounting\n3. Configuring documentation functions to use local URLs\nThe required files are:\n- `swagger-ui-bundle.js` and `swagger-ui.css` for Swagger UI\n- `redoc.standalone.js` for ReDoc\nSources:\n[docs/en/docs/how-to/custom-docs-ui-assets.md:59-186](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 32,
+      "total_chunks": 38,
+      "char_count": 441,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581506"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:33",
+    "content": "FastAPI applications automatically configure documentation endpoints unless explicitly disabled. The system integrates through several application-level configurations and automatic endpoint registration.",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 33,
+      "total_chunks": 38,
+      "char_count": 204,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581513"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:34",
+    "content": "FastAPI applications automatically create documentation endpoints at\n```\n/docs\n```\n(Swagger UI) and\n```\n/redoc\n```\n(ReDoc) unless disabled by setting\n```\ndocs_url=None\n```\nor\n```\nredoc_url=None\n```\nin the FastAPI constructor.\nThe automatic endpoints use these application attributes:\n- `app.openapi_url` - URL for OpenAPI JSON schema\n- `app.title` - Application title for documentation pages\n- `app.swagger_ui_oauth2_redirect_url` - OAuth2 redirect handler URL",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 34,
+      "total_chunks": 38,
+      "char_count": 460,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581518"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:35",
+    "content": "Applications requiring asset customization must disable automatic endpoints and create custom path operations that call the HTML generation functions with appropriate parameters.\n```\n# Disable automatic docs\napp = FastAPI(docs_url=None, redoc_url=None)\n\n# Create custom endpoints\n@app.get(\"/docs\", include_in_schema=False)\nasync def custom_swagger_ui_html():\n    return get_swagger_ui_html(\n        openapi_url=app.openapi_url,\n        title=app.title + \" - Swagger UI\",\n        swagger_js_url=\"custom-cdn-url\",\n        swagger_css_url=\"custom-cdn-url\"\n    )\n```\nSources:\n[docs_src/custom_docs_ui/tutorial001.py:8-39](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 35,
+      "total_chunks": 38,
+      "char_count": 620,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581524"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:36",
+    "content": "The system supports OAuth2 authentication flows through the redirect handler endpoint. Applications using OAuth2 security schemes can enable authentication testing directly within Swagger UI by configuring the\n```\noauth2_redirect_url\n```\nand\n```\ninit_oauth\n```\nparameters.\nThe OAuth2 redirect handler processes authentication callbacks and returns tokens to the Swagger UI interface, enabling full authentication testing within the documentation.\nSources:\n[fastapi/openapi/docs.py:75-90](.)\n,\n[fastapi/openapi/docs.py:256-344](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 36,
+      "total_chunks": 38,
+      "char_count": 529,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581529"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Settings_Management:chunk:37",
+    "content": "The documentation system includes comprehensive testing to ensure proper HTML generation, asset URL inclusion, and configuration parameter handling.\nTest coverage includes:\n- Default CDN URL inclusion in generated HTML\n- Custom URL parameter handling\n- OAuth2 redirect functionality\n- Google Fonts configuration for ReDoc\n- Static file serving integration\nSources:\n[tests/test_local_docs.py:1-68](.)\n,\n[tests/test_tutorial/test_custom_docs_ui/test_tutorial001.py:1-43](.)",
+    "metadata": {
+      "source": "fastapi\\Settings_Management.md",
+      "file_name": "Settings_Management.md",
+      "subfolder": "fastapi",
+      "chunk_index": 37,
+      "total_chunks": 38,
+      "char_count": 471,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.581535"
+    }
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:From_server.py176-188:chunk:0",
+    "content": "self._tool_manager = ToolManager(\nduplicate_behavior=on_duplicate_tools,\nmask_error_details=mask_error_details,\ntransformations=tool_transformations,\n)\nself._resource_manager = ResourceManager(\nduplicate_behavior=on_duplicate_resources,\nmask_error_details=mask_error_details,\n)\nself._prompt_manager = PromptManager(\nduplicate_behavior=on_duplicate_prompts,\nmask_error_details=mask_error_details,\n)\n```\nSources: [src/fastmcp/server/server.py:176-188](), [src/fastmcp/tools/tool_manager.py](), [src/fastmcp/resources/resource_manager.py](), [src/fastmcp/prompts/prompt_manager.py]()\n\n### Protocol Handler Registration\n\nFastMCP registers MCP protocol handlers during initialization via `_setup_handlers()`:\n\n```python\n# From server.py:387-395\ndef _setup_handlers(self) -> None:\n    \"\"\"Set up core MCP protocol handlers.\"\"\"\n    self._mcp_server.list_tools()(self._mcp_list_tools)\n    self._mcp_server.list_resources()(self._mcp_list_resources)\n    self._mcp_server.list_resource_templates()(self._mcp_list_resource_templates)\n    self._mcp_server.list_prompts()(self._mcp_list_prompts)\n    self._mcp_server.call_tool()(self._mcp_call_tool)\n    self._mcp_server.read_resource()(self._mcp_read_resource)\n    self._mcp_server.get_prompt()(self._mcp_get_prompt)\n```\nSources:\n[src/fastmcp/server/server.py:387-395](.)\n,\n[src/fastmcp/server/low_level.py](.)",
+    "metadata": {
+      "source": "fastmcp\\From_server.py176-188.md",
+      "file_name": "From_server.py176-188.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 4,
+      "char_count": 1347,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.256766"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:From_server.py176-188:chunk:1",
+    "content": "FastMCP supports multiple transport mechanisms for different deployment scenarios:",
+    "metadata": {
+      "source": "fastmcp\\From_server.py176-188.md",
+      "file_name": "From_server.py176-188.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 4,
+      "char_count": 82,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.256780"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:From_server.py176-188:chunk:2",
+    "content": "```\nstdio\n```\n```\nstdio_server()\n```\n```\nhttp\n```\n/\n```\nsse\n```\n```\ncreate_sse_app()\n```\n,\n```\ncreate_streamable_http_app()\n```\n```\nFastMCPTransport\n```\n, Use Case = . , Implementation = ",
+    "metadata": {
+      "source": "fastmcp\\From_server.py176-188.md",
+      "file_name": "From_server.py176-188.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 4,
+      "char_count": 187,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.256786"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:From_server.py176-188:chunk:3",
+    "content": "The client automatically selects appropriate transports via\n```\ninfer_transport()\n```\nbased on the connection target:",
+    "metadata": {
+      "source": "fastmcp\\From_server.py176-188.md",
+      "file_name": "From_server.py176-188.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 4,
+      "char_count": 117,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.256790"
+    }
+  }
+]

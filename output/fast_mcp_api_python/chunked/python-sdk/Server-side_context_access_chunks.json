@@ -1,0 +1,32 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server-side_context_access:chunk:0",
+    "content": "@server.call_tool()\nasync def handle_call_tool(name: str, args: dict[str, Any]) -> list[TextContent]:\ncontext = server.request_context\nif context.request:\nheaders = dict(context.request.headers)\n# Use headers for authentication, tracing, etc.\n```\nSources: [tests/shared/test_sse.py:183-201](), [tests/shared/test_sse.py:404-433](), [src/mcp/server/sse.py:244-245]()\n\n## Usage Examples\n\n### Basic Starlette Integration\n\n```python\nfrom starlette.applications import Starlette\nfrom starlette.routing import Route, Mount\nfrom mcp.server.sse import SseServerTransport\n\n# Create SSE transport\nsse = SseServerTransport(\"/messages/\")\n\n# Define route handlers\nasync def handle_sse(request):\n    async with sse.connect_sse(request.scope, request.receive, request._send) as streams:\n        await server.run(streams[0], streams[1], server.create_initialization_options())\n    return Response()\n\n# Create Starlette application\napp = Starlette(routes=[\n    Route(\"/sse\", endpoint=handle_sse, methods=[\"GET\"]),\n    Mount(\"/messages/\", app=sse.handle_post_message),\n])\n```",
+    "metadata": {
+      "source": "python-sdk\\Server-side_context_access.md",
+      "file_name": "Server-side_context_access.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 2,
+      "char_count": 1057,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.226092"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server-side_context_access:chunk:1",
+    "content": "The transport supports deployment under path prefixes using Starlette's\n```\nMount\n```\n:",
+    "metadata": {
+      "source": "python-sdk\\Server-side_context_access.md",
+      "file_name": "Server-side_context_access.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 2,
+      "char_count": 87,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.226104"
+    }
+  }
+]

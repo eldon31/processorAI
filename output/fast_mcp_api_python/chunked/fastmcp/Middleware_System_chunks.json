@@ -1,0 +1,797 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:0",
+    "content": "The FastMCP middleware system provides a flexible framework for intercepting, monitoring, and modifying MCP message processing. This system allows developers to add cross-cutting concerns like logging, timing, error handling, and rate limiting without modifying core server logic.\nThis document covers the middleware architecture, built-in middleware implementations, and patterns for creating custom middleware. For authentication-specific middleware functionality, see\n[Authentication and Security](#4.1)\n. For HTTP server deployment patterns, see\n[HTTP Server and Deployment](#4)\n.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 53,
+      "char_count": 584,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000080"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:1",
+    "content": "The middleware system is built around a pipeline pattern where each middleware can inspect, modify, or handle MCP messages before passing control to the next middleware in the chain.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 53,
+      "char_count": 182,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000096"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:2",
+    "content": "```\ngraph TD\n    Client[\"MCP Client Request\"]\n    Server[\"FastMCP Server\"]\n    \n    subgraph \"Middleware Pipeline\"\n        MW1[\"Middleware 1<br/>LoggingMiddleware\"]\n        MW2[\"Middleware 2<br/>TimingMiddleware\"] \n        MW3[\"Middleware 3<br/>ErrorHandlingMiddleware\"]\n        Handler[\"MCP Handler<br/>@server.tool<br/>@server.resource\"]\n    end\n    \n    Client --> Server\n    Server --> MW1\n    MW1 --> MW2\n    MW2 --> MW3\n    MW3 --> Handler\n    \n    Handler --> MW3\n    MW3 --> MW2\n    MW2 --> MW1\n    MW1 --> Server\n    Server --> Client\n```\nSources:\n[src/fastmcp/server/middleware/middleware.py:1-200](.)\n,\n[tests/server/middleware/test_logging.py:506-775](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 53,
+      "char_count": 666,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000102"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:3",
+    "content": "```\nclassDiagram\n    class Middleware {\n        +on_message(context, call_next)\n        +on_request(context, call_next) \n        +on_notification(context, call_next)\n        +on_call_tool(context, call_next)\n        +on_read_resource(context, call_next)\n        +on_get_prompt(context, call_next)\n        +on_list_tools(context, call_next)\n        +on_list_resources(context, call_next)\n        +on_list_prompts(context, call_next)\n    }\n    \n    class MiddlewareContext~T~ {\n        +method: str | None\n        +source: Literal[\"server\", \"client\"]\n        +type: Literal[\"request\", \"notification\"]\n        +message: T\n        +timestamp: datetime\n    }\n    \n    class CallNext~T_R~ {\n        <<type alias>>\n        +__call__(context: MiddlewareContext[T]) -> Awaitable[R]\n    }\n    \n    Middleware --> MiddlewareContext : uses\n    Middleware --> CallNext : calls\n```\nSources:\n[src/fastmcp/server/middleware/middleware.py:11-50](.)\nThe\n```\nMiddleware\n```\nbase class provides hook methods for different MCP operations. The\n```\nMiddlewareContext[T]\n```\ncarries message data and metadata through the pipeline, while\n```\nCallNext[T, R]\n```\nrepresents the continuation of the middleware chain.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 53,
+      "char_count": 1188,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000108"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:4",
+    "content": "FastMCP includes several production-ready middleware implementations for common server needs.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 53,
+      "char_count": 93,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000113"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:5",
+    "content": "The logging system provides two complementary approaches for request monitoring and debugging.\n```\ngraph LR\n    subgraph \"Logging Middleware Types\"\n        LM[\"LoggingMiddleware<br/>fastmcp.requests logger<br/>Human-readable format\"]\n        SLM[\"StructuredLoggingMiddleware<br/>fastmcp.structured logger<br/>JSON format\"]\n    end\n    \n    subgraph \"Configuration Options\"\n        Payloads[\"include_payloads: bool<br/>include_payload_length: bool<br/>estimate_payload_tokens: bool\"]\n        Filtering[\"methods: list[str]<br/>max_payload_length: int\"]\n        Serialization[\"payload_serializer: Callable\"]\n    end\n    \n    LM --> Payloads\n    SLM --> Payloads\n    LM --> Filtering  \n    SLM --> Filtering\n    SLM --> Serialization\n```\nSources:\n[src/fastmcp/server/middleware/logging.py:143-196](.)\n,\n[src/fastmcp/server/middleware/logging.py:198-246](.)\n```\nLoggingMiddleware\n```\n```\nfastmcp.requests\n```\n```\nStructuredLoggingMiddleware\n```\n```\nfastmcp.structured\n```\n, Logger Name = . , Output Format = . , Use Case = \nKey features include payload serialization via\n```\ndefault_serializer()\n```\nusing\n```\npydantic_core.to_json()\n```\n, token estimation at approximately 4 characters per token, and configurable payload truncation via\n```\nmax_payload_length\n```\n.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 53,
+      "char_count": 1261,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000119"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:6",
+    "content": "Performance monitoring middleware provides request timing and operation-specific measurements.\n```\ngraph TD\n    subgraph \"Timing Middleware Architecture\"\n        TM[\"TimingMiddleware<br/>fastmcp.timing logger<br/>Overall request timing\"]\n        DTM[\"DetailedTimingMiddleware<br/>fastmcp.timing.detailed logger<br/>Per-operation timing\"]\n    end\n    \n    subgraph \"Timing Hooks\"\n        Operations[\"on_call_tool()<br/>on_read_resource()<br/>on_get_prompt()<br/>on_list_tools()<br/>on_list_resources()<br/>on_list_prompts()\"]\n    end\n    \n    TM --> |\"measures\"| RequestLevel[\"Request-level timing<br/>time.perf_counter()\"]\n    DTM --> |\"measures\"| Operations\n    DTM --> |\"_time_operation()\"| RequestLevel\n```\nSources:\n[src/fastmcp/server/middleware/timing.py:10-58](.)\n,\n[src/fastmcp/server/middleware/timing.py:60-157](.)\nBoth middleware use\n```\ntime.perf_counter()\n```\nfor high-precision timing measurements and log results in milliseconds with 2 decimal precision.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 53,
+      "char_count": 968,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000124"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:7",
+    "content": "Error management middleware provides consistent error transformation and automatic retry capabilities.\n```\ngraph TD\n    subgraph \"Error Handling Pipeline\"\n        EHM[\"ErrorHandlingMiddleware\"]\n        RM[\"RetryMiddleware\"]\n    end\n    \n    subgraph \"Error Processing\"\n        LogError[\"_log_error()<br/>Track error_counts<br/>Call error_callback\"]\n        Transform[\"_transform_error()<br/>Convert to McpError<br/>Map exception types\"]\n    end\n    \n    subgraph \"Retry Logic\"\n        ShouldRetry[\"_should_retry()<br/>Check retry_exceptions\"]\n        CalcDelay[\"_calculate_delay()<br/>Exponential backoff\"]\n    end\n    \n    EHM --> LogError\n    EHM --> Transform\n    RM --> ShouldRetry\n    RM --> CalcDelay\n    \n    Transform --> |\"ValueError → -32602\"| InvalidParams[\"Invalid params\"]\n    Transform --> |\"FileNotFoundError → -32001\"| NotFound[\"Resource not found\"] \n    Transform --> |\"PermissionError → -32000\"| PermissionDenied[\"Permission denied\"]\n    Transform --> |\"TimeoutError → -32000\"| Timeout[\"Request timeout\"]\n```\nSources:\n[src/fastmcp/server/middleware/error_handling.py:15-124](.)\n,\n[src/fastmcp/server/middleware/error_handling.py:126-207](.)\nThe\n```\nErrorHandlingMiddleware\n```\ntransforms Python exceptions into MCP-compliant\n```\nMcpError\n```\ninstances with appropriate error codes, while\n```\nRetryMiddleware\n```\nimplements exponential backoff retry logic for transient failures.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 53,
+      "char_count": 1396,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000129"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:8",
+    "content": "Rate limiting middleware protects servers from abuse using token bucket and sliding window algorithms.\n```\ngraph LR\n    subgraph \"Rate Limiting Strategies\"\n        TBRM[\"RateLimitingMiddleware<br/>TokenBucketRateLimiter<br/>Burst capacity support\"]\n        SWRM[\"SlidingWindowRateLimitingMiddleware<br/>SlidingWindowRateLimiter<br/>Precise time windows\"]\n    end\n    \n    subgraph \"Token Bucket Algorithm\"\n        TB[\"capacity: int<br/>refill_rate: float<br/>tokens: float<br/>consume(tokens=1)\"]\n    end\n    \n    subgraph \"Sliding Window Algorithm\"\n        SW[\"max_requests: int<br/>window_seconds: int<br/>requests: deque<br/>is_allowed()\"]\n    end\n    \n    TBRM --> TB\n    SWRM --> SW\n    \n    TB --> |\"Allow bursts\"| BurstTraffic[\"Handle burst traffic<br/>Refill over time\"]\n    SW --> |\"Precise limits\"| PreciseControl[\"Exact request counting<br/>Memory per client\"]\n```\nSources:\n[src/fastmcp/server/middleware/rate_limiting.py:92-168](.)\n,\n[src/fastmcp/server/middleware/rate_limiting.py:170-232](.)\nBoth implementations support per-client rate limiting via\n```\nget_client_id\n```\nfunctions and use\n```\nasyncio.Lock()\n```\nfor thread-safe operation.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 53,
+      "char_count": 1153,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000135"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:9",
+    "content": "Creating custom middleware involves extending the\n```\nMiddleware\n```\nbase class and implementing the appropriate hook methods.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 53,
+      "char_count": 126,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000140"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:10",
+    "content": "```\non_message()\n```\n```\non_request()\n```\n```\non_notification()\n```\n```\non_call_tool()\n```\n```\nCallToolRequest\n```\n```\non_read_resource()\n```\n```\nReadResourceRequest\n```\n```\non_get_prompt()\n```\n```\nGetPromptRequest\n```\n, Trigger = . , Context Type = . , Use Case = \nSources:\n[src/fastmcp/server/middleware/middleware.py:11-200](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 53,
+      "char_count": 330,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000146"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:11",
+    "content": "```\nsequenceDiagram\n    participant Client\n    participant CustomMiddleware\n    participant CallNext\n    participant Handler\n    \n    Client->>CustomMiddleware: MCP Request\n    CustomMiddleware->>CustomMiddleware: Pre-processing\n    CustomMiddleware->>CallNext: call_next(context)\n    CallNext->>Handler: Execute handler\n    Handler->>CallNext: Return result\n    CallNext->>CustomMiddleware: Return result\n    CustomMiddleware->>CustomMiddleware: Post-processing\n    CustomMiddleware->>Client: Modified result\n```\nSources:\n[tests/server/middleware/test_logging.py:110-141](.)\n,\n[tests/server/middleware/test_timing.py:47-70](.)\nCustom middleware should call\n```\nawait call_next(context)\n```\nto continue the pipeline and can modify the context or result before/after the call.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 53,
+      "char_count": 775,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000151"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:12",
+    "content": "Middleware integration occurs through the\n```\nFastMCP.add_middleware()\n```\nmethod, which builds the middleware pipeline in registration order.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 53,
+      "char_count": 142,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000156"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:13",
+    "content": "```\ngraph TD\n    subgraph \"FastMCP Server Integration\"\n        Server[\"FastMCP(name='MyServer')\"]\n        AddMW[\"add_middleware(middleware)\"]\n        Pipeline[\"Middleware Pipeline\"]\n    end\n    \n    subgraph \"Execution Context\"\n        LowLevel[\"Low-level MCP Server<br/>Protocol handlers\"]\n        Managers[\"Component Managers<br/>ToolManager<br/>ResourceManager<br/>PromptManager\"]\n    end\n    \n    Server --> AddMW\n    AddMW --> Pipeline\n    Pipeline --> LowLevel\n    LowLevel --> Managers\n    \n    Pipeline --> |\"on_call_tool\"| ToolFlow[\"Tool execution flow\"]\n    Pipeline --> |\"on_read_resource\"| ResourceFlow[\"Resource access flow\"] \n    Pipeline --> |\"on_get_prompt\"| PromptFlow[\"Prompt retrieval flow\"]\n```\nSources:\n[tests/server/middleware/test_logging.py:543-575](.)\n,\n[tests/server/middleware/test_timing.py:192-224](.)\nMiddleware executes in the order registered, forming a chain where each middleware can inspect, modify, or terminate request processing. The system supports both synchronous and asynchronous middleware operations through the\n```\nCallNext\n```\ncontinuation pattern.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 13,
+      "total_chunks": 53,
+      "char_count": 1094,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000163"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:14",
+    "content": "Production deployments typically combine multiple middleware types for comprehensive server monitoring and protection.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 14,
+      "total_chunks": 53,
+      "char_count": 118,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000168"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:15",
+    "content": "```\ngraph TB\n    subgraph \"Production Middleware Stack\"\n        Order1[\"1. RateLimitingMiddleware<br/>Protect against abuse\"]\n        Order2[\"2. LoggingMiddleware<br/>Request/response logging\"]  \n        Order3[\"3. TimingMiddleware<br/>Performance monitoring\"]\n        Order4[\"4. ErrorHandlingMiddleware<br/>Error transformation\"]\n        Order5[\"5. RetryMiddleware<br/>Transient failure handling\"]\n    end\n    \n    Order1 --> Order2\n    Order2 --> Order3  \n    Order3 --> Order4\n    Order4 --> Order5\n    Order5 --> |\"Reaches\"| CoreHandler[\"Core MCP Handlers\"]\n```\nSources:\n[tests/server/middleware/test_error_handling.py:589-624](.)\n,\n[tests/server/middleware/test_logging.py:710-744](.)\nThis ordering ensures that rate limiting occurs first to protect server resources, followed by comprehensive monitoring and error handling capabilities. The middleware system's flexibility allows for custom combinations based on specific deployment requirements.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 15,
+      "total_chunks": 53,
+      "char_count": 952,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000174"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:16",
+    "content": "The FastMCP CLI provides a comprehensive command-line interface for running, developing, installing, and inspecting MCP servers. Built with\n```\ncyclopts\n```\n, it serves as the primary entry point for all FastMCP operations from development to production deployment.\nFor information about the underlying server architecture that the CLI manages, see\n[FastMCP Server Core](#2)\n. For details about client-server communication patterns, see\n[FastMCP Client System](#3)\n.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 16,
+      "total_chunks": 53,
+      "char_count": 466,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000179"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:17",
+    "content": "The FastMCP CLI is implemented as a\n```\ncyclopts.App\n```\nwith modular command structure supporting both direct execution and subprocess delegation through\n```\nuv\n```\n.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 17,
+      "total_chunks": 53,
+      "char_count": 167,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000184"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:18",
+    "content": "```\ngraph TB\n    subgraph \"Entry Point\"\n        app[\"app: cyclopts.App<br/>name: 'fastmcp'<br/>version: fastmcp.__version__\"]\n    end\n    \n    subgraph \"Core Commands\"\n        version_cmd[\"version()\"]\n        run_cmd[\"run()\"] \n        dev_cmd[\"dev()\"]\n        inspect_cmd[\"inspect()\"]\n    end\n    \n    subgraph \"Install Commands\"\n        install_app[\"install_app: cyclopts.App\"]\n        claude_code[\"claude_code_command()\"]\n        claude_desktop[\"claude_desktop_command()\"] \n        cursor[\"cursor_command()\"]\n        mcp_json[\"mcp_json_command()\"]\n    end\n    \n    subgraph \"Project Commands\"\n        project_app[\"project_app: cyclopts.App\"]\n        prepare[\"prepare()\"]\n    end\n    \n    app --> version_cmd\n    app --> run_cmd\n    app --> dev_cmd\n    app --> inspect_cmd\n    app --> install_app\n    app --> project_app\n    \n    install_app --> claude_code\n    install_app --> claude_desktop\n    install_app --> cursor\n    install_app --> mcp_json\n    \n    project_app --> prepare\n```\n**Sources:**\n[src/fastmcp/cli/cli.py:36-40](.)\n,\n[src/fastmcp/cli/cli.py:781-782](.)\n,\n[src/fastmcp/cli/cli.py:871-874](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 18,
+      "total_chunks": 53,
+      "char_count": 1109,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000190"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:19",
+    "content": "```\ngraph LR\n    subgraph \"Configuration Loading\"\n        load_and_merge[\"load_and_merge_config()\"]\n        config_file[\"fastmcp.json\"]\n        cli_overrides[\"CLI arguments\"]\n    end\n    \n    subgraph \"Environment Execution\"\n        needs_uv_check[\"needs_uv?\"]\n        direct_exec[\"Direct execution\"]\n        uv_subprocess[\"uv run subprocess\"]\n    end\n    \n    subgraph \"Configuration Objects\"\n        mcp_config[\"MCPServerConfig\"]\n        uv_env[\"UVEnvironment\"]\n        deployment[\"Deployment\"]\n        source[\"FileSystemSource\"]\n    end\n    \n    config_file --> load_and_merge\n    cli_overrides --> load_and_merge\n    load_and_merge --> mcp_config\n    \n    mcp_config --> uv_env\n    mcp_config --> deployment\n    mcp_config --> source\n    \n    uv_env --> needs_uv_check\n    needs_uv_check -->|true| uv_subprocess\n    needs_uv_check -->|false| direct_exec\n```\n**Sources:**\n[src/fastmcp/utilities/cli.py:23](.)\n,\n[src/fastmcp/cli/cli.py:465-469](.)\n,\n[src/fastmcp/cli/cli.py:497-517](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 19,
+      "total_chunks": 53,
+      "char_count": 987,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000195"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:20",
+    "content": "The\n```\nversion()\n```\ncommand provides comprehensive version and platform information for debugging and support purposes.\n```\n--copy\n```\n```\npyperclip\n```\nCopy, Flag = . Copy, Description = \nInformation displayed:\n- `fastmcp.__version__` - FastMCP version\n- `importlib.metadata.version(\"mcp\")` - MCP protocol version\n- `platform.python_version()` - Python version\n- `platform.platform()` - Platform details\n- `Path(fastmcp.__file__).resolve().parents[1]` - FastMCP root path\n**Sources:**\n[src/fastmcp/cli/cli.py:92-127](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 20,
+      "total_chunks": 53,
+      "char_count": 522,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000200"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:21",
+    "content": "The\n```\nrun()\n```\ncommand executes MCP servers with flexible server specification parsing and multiple execution modes.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 21,
+      "total_chunks": 53,
+      "char_count": 119,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000205"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:22",
+    "content": "```\ngraph LR\n    subgraph \"run_command() Flow\"\n        run_cmd[\"run()\"]\n        config_load[\"load_and_merge_config()\"]\n        spec_check[\"server_spec analysis\"]\n    end\n    \n    subgraph \"Specification Types\"\n        url_spec[\"is_url(server_spec)\"]\n        json_spec[\"server_spec.endswith('.json')\"]\n        file_spec[\"file path\"]\n    end\n    \n    subgraph \"Server Creation\"\n        create_client[\"create_client_server()\"]\n        create_mcp_config[\"create_mcp_config_server()\"] \n        filesystem_source[\"FileSystemSource\"]\n    end\n    \n    run_cmd --> config_load\n    config_load --> spec_check\n    \n    spec_check --> url_spec\n    spec_check --> json_spec  \n    spec_check --> file_spec\n    \n    url_spec --> create_client\n    json_spec --> create_mcp_config\n    file_spec --> filesystem_source\n```\n**Sources:**\n[src/fastmcp/cli/run.py:79-198](.)\n,\n[src/fastmcp/cli/run.py:25-29](.)\n,\n[src/fastmcp/cli/run.py:31-49](.)\n,\n[src/fastmcp/cli/run.py:51-60](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 22,
+      "total_chunks": 53,
+      "char_count": 959,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000211"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:23",
+    "content": "```\nstdio\n```\n```\nhttp\n```\n/\n```\nstreamable-http\n```\n```\n127.0.0.1\n```\n```\n8000\n```\n```\n/mcp/\n```\n```\nsse\n```\n```\n127.0.0.1\n```\n```\n8000\n```\n```\n/sse/\n```\n, Default Host = . , Default Port = . , Default Path = \nThe run command supports both direct execution and\n```\nuv run\n```\nsubprocess execution based on environment configuration.\n**Sources:**\n[src/fastmcp/cli/cli.py:313-333](.)\n,\n[src/fastmcp/cli/cli.py:465-517](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 23,
+      "total_chunks": 53,
+      "char_count": 420,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000216"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:24",
+    "content": "The\n```\ndev()\n```\ncommand launches the MCP Inspector with automatic environment setup and dependency management.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 24,
+      "total_chunks": 53,
+      "char_count": 112,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000222"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:25",
+    "content": "```\ngraph TB\n    subgraph \"dev() Command Flow\"\n        dev_start[\"dev()\"]\n        load_config[\"load_and_merge_config()\"]\n        load_server[\"config.source.load_server()\"]\n        check_deps[\"server.dependencies check\"]\n    end\n    \n    subgraph \"Environment Setup\"\n        build_cmd[\"config.environment.build_command()\"]\n        set_env[\"env vars: CLIENT_PORT, SERVER_PORT\"]\n        get_npx[\"_get_npx_command()\"]\n    end\n    \n    subgraph \"Inspector Launch\" \n        inspector_cmd[\"@modelcontextprotocol/inspector\"]\n        subprocess_run[\"subprocess.run()\"]\n    end\n    \n    dev_start --> load_config\n    load_config --> load_server\n    load_server --> check_deps\n    check_deps --> build_cmd\n    build_cmd --> set_env\n    set_env --> get_npx\n    get_npx --> inspector_cmd\n    inspector_cmd --> subprocess_run\n```\nThe\n```\ndev\n```\ncommand always runs via\n```\nuv run\n```\nsubprocess and includes deprecation warnings for servers using the legacy\n```\ndependencies\n```\nparameter.\n**Sources:**\n[src/fastmcp/cli/cli.py:129-307](.)\n,\n[src/fastmcp/cli/cli.py:43-56](.)\n,\n[src/fastmcp/cli/cli.py:234-251](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 25,
+      "total_chunks": 53,
+      "char_count": 1099,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000227"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:26",
+    "content": "The\n```\ninspect()\n```\ncommand analyzes FastMCP servers and generates detailed reports in multiple formats.\n```\n--format\n```\n/\n```\n-f\n```\n```\nfastmcp\n```\nor\n```\nmcp\n```\n```\n--output\n```\n/\n```\n-o\n```\n```\n--format\n```\nFormat, Flag = . Format, Description = ",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 26,
+      "total_chunks": 53,
+      "char_count": 254,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000233"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:27",
+    "content": "```\ngraph LR\n    subgraph \"inspect() Flow\"\n        inspect_start[\"inspect()\"]\n        load_config[\"load_and_merge_config()\"]\n        load_server[\"config.source.load_server()\"]\n        inspect_server[\"inspect_fastmcp()\"]\n    end\n    \n    subgraph \"Output Generation\"\n        format_check[\"format specified?\"]\n        text_summary[\"console.print() summary\"]\n        format_info[\"format_info()\"]\n        json_output[\"JSON output\"]\n    end\n    \n    inspect_start --> load_config\n    load_config --> load_server\n    load_server --> inspect_server\n    inspect_server --> format_check\n    \n    format_check -->|false| text_summary\n    format_check -->|true| format_info\n    format_info --> json_output\n```\n**Sources:**\n[src/fastmcp/cli/cli.py:543-777](.)\n,\n[src/fastmcp/utilities/inspect.py:26-28](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 27,
+      "total_chunks": 53,
+      "char_count": 793,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000238"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:28",
+    "content": "The FastMCP CLI provides installation commands for multiple MCP clients through a dedicated install subcommand structure.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 28,
+      "total_chunks": 53,
+      "char_count": 121,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000244"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:29",
+    "content": "```\ngraph TB\n    subgraph \"Install App Structure\"\n        install_app[\"install_app: cyclopts.App\"]\n        claude_code_cmd[\"claude_code_command()\"]\n        claude_desktop_cmd[\"claude_desktop_command()\"]\n        cursor_cmd[\"cursor_command()\"]\n        mcp_json_cmd[\"mcp_json_command()\"]\n    end\n    \n    subgraph \"Client Integrations\"\n        claude_code_install[\"install_claude_code()\"]\n        claude_desktop_install[\"install_claude_desktop()\"]\n        cursor_install[\"install_cursor()\"]\n        mcp_json_install[\"install_mcp_json()\"]\n    end\n    \n    subgraph \"Common Processing\"\n        process_common[\"process_common_args()\"]\n        uv_env[\"UVEnvironment.build_command()\"]\n        stdio_config[\"StdioMCPServer\"]\n    end\n    \n    claude_code_cmd --> process_common\n    claude_desktop_cmd --> process_common\n    cursor_cmd --> process_common\n    mcp_json_cmd --> process_common\n    \n    process_common --> uv_env\n    uv_env --> stdio_config\n    \n    claude_code_cmd --> claude_code_install\n    claude_desktop_cmd --> claude_desktop_install\n    cursor_cmd --> cursor_install\n    mcp_json_cmd --> mcp_json_install\n```\n**Sources:**\n[src/fastmcp/cli/cli.py:874](.)\n,\n[src/fastmcp/cli/install/claude_code.py:153-244](.)\n,\n[src/fastmcp/cli/install/claude_desktop.py:125-214](.)\n,\n[src/fastmcp/cli/install/cursor.py:234-331](.)\n,\n[src/fastmcp/cli/install/mcp_json.py:98-196](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 29,
+      "total_chunks": 53,
+      "char_count": 1372,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000249"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:30",
+    "content": "```\ngraph LR\n    subgraph \"Claude Desktop Install\"\n        find_config_path[\"get_claude_config_path()\"]\n        config_file[\"claude_desktop_config.json\"]\n        build_command[\"env_config.build_command()\"]\n        stdio_server[\"StdioMCPServer\"]\n        update_config[\"update_config_file()\"]\n    end\n    \n    subgraph \"Platform Paths\"\n        windows_path[\"AppData/Roaming/Claude\"]\n        macos_path[\"Library/Application Support/Claude\"]\n        linux_path[\"~/.config/Claude\"]\n    end\n    \n    find_config_path --> windows_path\n    find_config_path --> macos_path\n    find_config_path --> linux_path\n    find_config_path --> config_file\n    config_file --> update_config\n```\n**Sources:**\n[src/fastmcp/cli/install/claude_desktop.py:20-36](.)\n,\n[src/fastmcp/cli/install/claude_desktop.py:38-123](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 30,
+      "total_chunks": 53,
+      "char_count": 796,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000254"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:31",
+    "content": "```\ngraph LR\n    subgraph \"Cursor Install Flow\"\n        generate_deeplink[\"generate_cursor_deeplink()\"]\n        base64_encode[\"base64.urlsafe_b64encode()\"]\n        deeplink_url[\"cursor://anysphere.cursor-deeplink/mcp/install\"]\n        open_deeplink[\"open_deeplink()\"]\n    end\n    \n    subgraph \"Platform Commands\"\n        macos_open[\"subprocess.run(['open', deeplink])\"]\n        windows_start[\"subprocess.run(['start', deeplink])\"]\n        linux_xdg[\"subprocess.run(['xdg-open', deeplink])\"]\n    end\n    \n    generate_deeplink --> base64_encode\n    base64_encode --> deeplink_url\n    deeplink_url --> open_deeplink\n    \n    open_deeplink --> macos_open\n    open_deeplink --> windows_start\n    open_deeplink --> linux_xdg\n```\n**Sources:**\n[src/fastmcp/cli/install/cursor.py:21-43](.)\n,\n[src/fastmcp/cli/install/cursor.py:45-66](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 31,
+      "total_chunks": 53,
+      "char_count": 829,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000259"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:32",
+    "content": "The\n```\nproject prepare\n```\ncommand creates persistent environments for repeated server execution.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 32,
+      "total_chunks": 53,
+      "char_count": 98,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000265"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:33",
+    "content": "```\ngraph TB\n    subgraph \"prepare() Command\"\n        prepare_start[\"prepare()\"]\n        find_config[\"MCPServerConfig.find_config()\"]\n        load_config[\"MCPServerConfig.from_file()\"]\n        prepare_env[\"config.prepare()\"]\n    end\n    \n    subgraph \"Environment Creation\"\n        create_pyproject[\"pyproject.toml creation\"]\n        uv_sync[\"uv sync\"]\n        venv_setup[\".venv setup\"]\n        source_prep[\"source preparation\"]\n    end\n    \n    prepare_start --> find_config\n    find_config --> load_config\n    load_config --> prepare_env\n    prepare_env --> create_pyproject\n    prepare_env --> uv_sync\n    prepare_env --> venv_setup\n    prepare_env --> source_prep\n```\n**Sources:**\n[src/fastmcp/cli/cli.py:784-867](.)\n,\n[src/fastmcp/utilities/mcp_server_config/](.)\n[**init**](.)\n[.py:31](.)\n,\n[src/fastmcp/utilities/mcp_server_config/](.)\n[**init**](.)\n[.py:55-57](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 33,
+      "total_chunks": 53,
+      "char_count": 871,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000270"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:34",
+    "content": "The CLI integrates with the FastMCP configuration system to provide seamless operation across different deployment scenarios.\n```\ngraph LR\n    subgraph \"Config Resolution\"\n        cli_args[\"CLI arguments\"]\n        fastmcp_json[\"fastmcp.json\"]\n        auto_detect[\"MCPServerConfig.find_config()\"]\n        load_merge[\"load_and_merge_config()\"]\n    end\n    \n    subgraph \"Config Objects\"\n        mcp_server_config[\"MCPServerConfig\"]\n        filesystem_source[\"FileSystemSource\"]\n        uv_environment[\"UVEnvironment\"] \n        deployment[\"Deployment\"]\n    end\n    \n    subgraph \"Execution Modes\"\n        direct_import[\"Direct import\"]\n        uv_subprocess[\"uv run subprocess\"]\n        needs_uv_check[\"environment.build_command() != test_cmd\"]\n    end\n    \n    cli_args --> load_merge\n    fastmcp_json --> auto_detect\n    auto_detect --> load_merge\n    load_merge --> mcp_server_config\n    \n    mcp_server_config --> filesystem_source\n    mcp_server_config --> uv_environment\n    mcp_server_config --> deployment\n    \n    uv_environment --> needs_uv_check\n    needs_uv_check -->|true| uv_subprocess\n    needs_uv_check -->|false| direct_import\n```\n**Sources:**\n[src/fastmcp/utilities/cli.py:23](.)\n,\n[src/fastmcp/cli/cli.py:424-439](.)\n,\n[src/fastmcp/cli/cli.py:467-469](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 34,
+      "total_chunks": 53,
+      "char_count": 1270,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000275"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:35",
+    "content": "The CLI handles platform-specific differences for external tool detection and subprocess execution.\n```\ngraph TB\n    subgraph \"NPX Detection (_get_npx_command)\"\n        platform_check[\"sys.platform check\"]\n        windows_detection[\"Try npx.cmd, npx.exe, npx\"]\n        unix_detection[\"Use npx directly\"]\n        subprocess_test[\"subprocess.run(['cmd', '--version'])\"]\n    end\n    \n    subgraph \"Claude Code Detection (find_claude_command)\"\n        shutil_which[\"shutil.which('claude')\"]\n        common_paths[\"Check installation paths\"]\n        version_check[\"subprocess.run(['path', '--version'])\"]\n        claude_code_verify[\"'Claude Code' in stdout\"]\n    end\n    \n    subgraph \"Error Recovery\"\n        calledprocesserror[\"subprocess.CalledProcessError\"]\n        filenotfounderror[\"FileNotFoundError\"]\n        graceful_fallback[\"Return None or False\"]\n    end\n    \n    platform_check -->|win32| windows_detection\n    platform_check -->|unix-like| unix_detection\n    \n    subprocess_test --> calledprocesserror\n    subprocess_test --> filenotfounderror\n    calledprocesserror --> graceful_fallback\n    filenotfounderror --> graceful_fallback\n```\n**Sources:**\n[src/fastmcp/cli/cli.py:43-56](.)\n,\n[src/fastmcp/cli/install/claude_code.py:20-66](.)\n,\n[src/fastmcp/cli/install/cursor.py:45-66](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 35,
+      "total_chunks": 53,
+      "char_count": 1291,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000281"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:36",
+    "content": "The CLI leverages\n```\nuv\n```\nfor modern Python dependency management and isolated execution environments:\n```\ngraph LR\n    subgraph \"UV Command Construction\"\n        build_start[\"_build_uv_command()\"]\n        \n        build_start --> base_cmd[\"['uv', 'run']\"]\n        base_cmd --> add_python[\"--python version\"]\n        add_python --> add_project[\"--project path\"]\n        add_project --> add_fastmcp[\"--with fastmcp\"]\n        add_fastmcp --> add_packages[\"--with packages\"]\n        add_packages --> add_requirements[\"--with-requirements\"]\n        add_requirements --> add_fastmcp_run[\"['fastmcp', 'run', server_spec]\"]\n        add_fastmcp_run --> add_flags[\"Transport/logging flags\"]\n    end\n    \n    subgraph \"Execution Modes\"\n        direct_mode[\"Direct import<br/>run_command()\"]\n        uv_mode[\"UV subprocess<br/>run_with_uv()\"]\n        \n        condition[\"UV options provided?\"]\n        condition -->|true| uv_mode\n        condition -->|false| direct_mode\n    end\n    \n    style build_start fill:#f9f9f9,stroke:#333,stroke-width:2px\n    style condition fill:#e8f5e8,stroke:#333,stroke-width:2px\n```\n**Sources:**\n[src/fastmcp/cli/cli.py:60-100](.)\n,\n[src/fastmcp/cli/cli.py:389-413](.)\n,\n[src/fastmcp/cli/run.py:174-250](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 36,
+      "total_chunks": 53,
+      "char_count": 1229,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000286"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:37",
+    "content": "The CLI handles platform-specific differences, particularly for Windows systems:\n```\nnpx.cmd\n```\n,\n```\nnpx.exe\n```\n,\n```\nnpx\n```\n```\nshell=True\n```\n```\nnpx\n```\n```\nshell=False\n```\nWindows, NPX Detection = . Windows, Shell Usage = . Windows, Path Handling = \n**Sources:**\n[src/fastmcp/cli/cli.py:35-49](.)\n,\n[src/fastmcp/cli/cli.py:257-262](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 37,
+      "total_chunks": 53,
+      "char_count": 342,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000291"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:38",
+    "content": "The CLI implements comprehensive error handling with structured logging:\n- **File validation** : Checks for file existence and type during path parsing\n- **Module import errors** : Graceful handling of import failures with descriptive messages\n- **Server validation** : Ensures imported objects are valid FastMCP instances\n- **Subprocess errors** : Captures and reports subprocess execution failures\n- **Configuration validation** : Validates MCP config files using Pydantic models\nExit codes follow standard conventions:\n- `0` : Success\n- `1` : General errors (file not found, import failures, validation errors)\n**Sources:**\n[src/fastmcp/cli/run.py:52-57](.)\n,\n[src/fastmcp/cli/run.py:94-100](.)\n,\n[src/fastmcp/cli/run.py:118-124](.)\n,\n[src/fastmcp/cli/cli.py:265-282](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 38,
+      "total_chunks": 53,
+      "char_count": 773,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000296"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:39",
+    "content": "FastMCP's OpenAPI integration enables automatic generation of FastMCP servers from OpenAPI specifications, converting HTTP API definitions into MCP Tools, Resources, and ResourceTemplates. This system parses OpenAPI schemas and creates appropriate MCP components based on configurable route mapping rules.\nFor general FastMCP server functionality, see\n[FastMCP Server Core](#2)\n. For HTTP server deployment, see\n[HTTP Server and Deployment](#4)\n. For client-side API consumption, see\n[FastMCP Client System](#3)\n.",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 39,
+      "total_chunks": 53,
+      "char_count": 513,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000301"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:40",
+    "content": "The OpenAPI integration consists of three main layers: schema parsing, route mapping, and component generation. The system transforms OpenAPI specifications into FastMCP components through an intermediate representation.\n```\ngraph TB\n    subgraph \"Input Layer\"\n        OpenAPISpec[\"OpenAPI Specification<br/>(JSON/YAML)\"]\n    end\n    \n    subgraph \"Parsing Layer\"\n        OpenAPIParser[\"OpenAPIParser<br/>parse_openapi_to_http_routes()\"]\n        HTTPRoute[\"HTTPRoute<br/>Intermediate Representation\"]\n    end\n    \n    subgraph \"Mapping Layer\"\n        RouteMap[\"RouteMap Objects<br/>Mapping Rules\"]\n        DetermineType[\"_determine_route_type()\"]\n        MCPType[\"MCPType Enum<br/>(TOOL/RESOURCE/RESOURCE_TEMPLATE)\"]\n    end\n    \n    subgraph \"Generation Layer\"\n        FastMCPOpenAPI[\"FastMCPOpenAPI<br/>Main Server Class\"]\n        OpenAPITool[\"OpenAPITool\"]\n        OpenAPIResource[\"OpenAPIResource\"] \n        OpenAPIResourceTemplate[\"OpenAPIResourceTemplate\"]\n    end\n    \n    subgraph \"Execution Layer\"\n        HTTPClient[\"httpx.AsyncClient<br/>HTTP Execution\"]\n        MCPProtocol[\"MCP Protocol<br/>Tool/Resource Calls\"]\n    end\n    \n    OpenAPISpec --> OpenAPIParser\n    OpenAPIParser --> HTTPRoute\n    HTTPRoute --> DetermineType\n    RouteMap --> DetermineType\n    DetermineType --> MCPType\n    HTTPRoute --> FastMCPOpenAPI\n    MCPType --> FastMCPOpenAPI\n    FastMCPOpenAPI --> OpenAPITool\n    FastMCPOpenAPI --> OpenAPIResource\n    FastMCPOpenAPI --> OpenAPIResourceTemplate\n    OpenAPITool --> HTTPClient\n    OpenAPIResource --> HTTPClient\n    OpenAPIResourceTemplate --> HTTPClient\n    HTTPClient --> MCPProtocol\n```\n**Sources:**\n[src/fastmcp/server/openapi.py:1-100](.)\n,\n[src/fastmcp/utilities/openapi.py:200-250](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 40,
+      "total_chunks": 53,
+      "char_count": 1728,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000307"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:41",
+    "content": "The\n```\nFastMCPOpenAPI\n```\nclass extends\n```\nFastMCP\n```\nto provide OpenAPI-based server creation. It parses OpenAPI specifications and automatically generates appropriate MCP components.\n```\ngraph LR\n    FastMCPOpenAPI[\"FastMCPOpenAPI\"]\n    \n    subgraph \"Configuration\"\n        RouteMapsList[\"route_maps: list[RouteMap]\"]\n        RouteMapFn[\"route_map_fn: RouteMapFn\"]\n        MCPComponentFn[\"mcp_component_fn: ComponentFn\"]\n        MCPNames[\"mcp_names: dict[str, str]\"]\n    end\n    \n    subgraph \"Processing\"\n        HTTPRoutes[\"http_routes: list[HTTPRoute]\"]\n        UsedNames[\"_used_names: Counter\"]\n        GenerateDefaultName[\"_generate_default_name()\"]\n        GetUniqueName[\"_get_unique_name()\"]\n    end\n    \n    subgraph \"Component Creation\"\n        CreateOpenAPITool[\"_create_openapi_tool()\"]\n        CreateOpenAPIResource[\"_create_openapi_resource()\"]\n        CreateOpenAPITemplate[\"_create_openapi_template()\"]\n    end\n    \n    FastMCPOpenAPI --> RouteMapsList\n    FastMCPOpenAPI --> RouteMapFn\n    FastMCPOpenAPI --> MCPComponentFn\n    FastMCPOpenAPI --> MCPNames\n    FastMCPOpenAPI --> HTTPRoutes\n    FastMCPOpenAPI --> UsedNames\n    HTTPRoutes --> GenerateDefaultName\n    UsedNames --> GetUniqueName\n    FastMCPOpenAPI --> CreateOpenAPITool\n    FastMCPOpenAPI --> CreateOpenAPIResource\n    FastMCPOpenAPI --> CreateOpenAPITemplate\n```\n**Sources:**\n[src/fastmcp/server/openapi.py:696-831](.)\n,\n[src/fastmcp/server/openapi.py:833-887](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 41,
+      "total_chunks": 53,
+      "char_count": 1451,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000313"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:42",
+    "content": "Three specialized component classes handle different types of HTTP endpoints:\n```\nOpenAPITool\n```\n```\nOpenAPIResource\n```\n```\nOpenAPIResourceTemplate\n```\n, Purpose = . , HTTP Methods = . , Use Case = \n**Sources:**\n[src/fastmcp/server/openapi.py:229-521](.)\n,\n[src/fastmcp/server/openapi.py:523-640](.)\n,\n[src/fastmcp/server/openapi.py:642-694](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 42,
+      "total_chunks": 53,
+      "char_count": 346,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000319"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:43",
+    "content": "The\n```\nMCPType\n```\nenum defines the target component types for HTTP routes:\n```\nclass MCPType(enum.Enum):\n    TOOL = \"TOOL\"                    # Executable operations\n    RESOURCE = \"RESOURCE\"            # Static data endpoints  \n    RESOURCE_TEMPLATE = \"RESOURCE_TEMPLATE\"  # Parameterized endpoints\n    EXCLUDE = \"EXCLUDE\"              # Skip route conversion\n```\n**Sources:**\n[src/fastmcp/server/openapi.py:78-94](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 43,
+      "total_chunks": 53,
+      "char_count": 420,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000324"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:44",
+    "content": "```\nRouteMap\n```\nobjects define mapping rules from HTTP routes to MCP component types:\n```\ngraph TD\n    RouteMap[\"RouteMap Configuration\"]\n    \n    subgraph \"Matching Criteria\"\n        Methods[\"methods: list[HttpMethod] | '*'\"]\n        Pattern[\"pattern: Pattern[str] | str\"]\n        Tags[\"tags: set[str]\"]\n    end\n    \n    subgraph \"Target Configuration\"\n        MCPType[\"mcp_type: MCPType\"]\n        MCPTags[\"mcp_tags: set[str]\"]\n    end\n    \n    subgraph \"Matching Process\"\n        DetermineRouteType[\"_determine_route_type()\"]\n        MethodCheck[\"HTTP Method Match\"]\n        PatternCheck[\"Path Pattern Match\"]\n        TagCheck[\"Tag Match (AND)\"]\n    end\n    \n    RouteMap --> Methods\n    RouteMap --> Pattern\n    RouteMap --> Tags\n    RouteMap --> MCPType\n    RouteMap --> MCPTags\n    \n    Methods --> DetermineRouteType\n    Pattern --> DetermineRouteType\n    Tags --> DetermineRouteType\n    DetermineRouteType --> MethodCheck\n    DetermineRouteType --> PatternCheck\n    DetermineRouteType --> TagCheck\n```\n**Sources:**\n[src/fastmcp/server/openapi.py:110-182](.)\n,\n[src/fastmcp/server/openapi.py:184-227](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 44,
+      "total_chunks": 53,
+      "char_count": 1110,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000330"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:45",
+    "content": "By default, all routes are converted to Tools unless custom mappings specify otherwise:\n```\nDEFAULT_ROUTE_MAPPINGS = [\n    RouteMap(mcp_type=MCPType.TOOL),\n]\n```\n**Sources:**\n[src/fastmcp/server/openapi.py:177-181](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 45,
+      "total_chunks": 53,
+      "char_count": 217,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000335"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:46",
+    "content": "The parsing system converts OpenAPI specifications into\n```\nHTTPRoute\n```\nobjects that capture all necessary information for component generation:\n```\ngraph LR\n    subgraph \"OpenAPI Elements\"\n        Operation[\"OpenAPI Operation\"]\n        Parameters[\"Parameters[]\"]\n        RequestBody[\"RequestBody\"]\n        Responses[\"Responses{}\"]\n        Components[\"Components/Schemas\"]\n    end\n    \n    subgraph \"HTTPRoute IR\"\n        HTTPRouteObj[\"HTTPRoute\"]\n        ParameterInfo[\"ParameterInfo[]\"]\n        RequestBodyInfo[\"RequestBodyInfo\"]\n        ResponseInfo[\"ResponseInfo{}\"]\n        SchemaDefinitions[\"schema_definitions: dict\"]\n    end\n    \n    subgraph \"Parsing Functions\"\n        ParseOpenAPI[\"parse_openapi_to_http_routes()\"]\n        ExtractParameters[\"_extract_parameters()\"]\n        ExtractRequestBody[\"_extract_request_body()\"]\n        ExtractResponses[\"_extract_responses()\"]\n        ResolveRef[\"_resolve_ref()\"]\n    end\n    \n    Operation --> ParseOpenAPI\n    Parameters --> ExtractParameters\n    RequestBody --> ExtractRequestBody\n    Responses --> ExtractResponses\n    Components --> ResolveRef\n    \n    ParseOpenAPI --> HTTPRouteObj\n    ExtractParameters --> ParameterInfo\n    ExtractRequestBody --> RequestBodyInfo\n    ExtractResponses --> ResponseInfo\n    ResolveRef --> SchemaDefinitions\n```\n**Sources:**\n[src/fastmcp/utilities/openapi.py:201-253](.)\n,\n[src/fastmcp/utilities/openapi.py:379-477](.)\n,\n[src/fastmcp/utilities/openapi.py:479-543](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 46,
+      "total_chunks": 53,
+      "char_count": 1459,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000340"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:47",
+    "content": "The system handles complex parameter scenarios including location conflicts and array formatting:\n```\npath\n```\n```\n/users/{userId}\n```\n```\nquery\n```\n```\n?limit=10&offset=0\n```\n```\nheader\n```\n```\nX-API-Key: secret\n```\n```\ncookie\n```\n```\nsession=abc123\n```\n, Handling = . , Example = \n**Sources:**\n[src/fastmcp/utilities/openapi.py:124-135](.)\n,\n[src/fastmcp/server/openapi.py:264-418](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 47,
+      "total_chunks": 53,
+      "char_count": 386,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000345"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:48",
+    "content": "The\n```\n_combine_schemas\n```\nfunction merges parameter schemas with request body schemas, handling name collisions by suffixing parameter names with their location:\n```\ngraph TD\n    subgraph \"Input Schemas\"\n        RouteParameters[\"Route Parameters\"]\n        RequestBodySchema[\"Request Body Schema\"]\n    end\n    \n    subgraph \"Processing\"\n        CombineSchemas[\"_combine_schemas()\"]\n        DetectCollisions[\"Name Collision Detection\"]\n        SuffixParameters[\"Parameter Name Suffixing\"]\n        MergeProperties[\"Schema Property Merging\"]\n    end\n    \n    subgraph \"Output\"\n        CombinedSchema[\"Combined JSON Schema\"]\n        ParameterProperties[\"Parameter Properties\"]\n        BodyProperties[\"Body Properties\"]\n        RequiredFields[\"Required Fields Array\"]\n    end\n    \n    RouteParameters --> CombineSchemas\n    RequestBodySchema --> CombineSchemas\n    CombineSchemas --> DetectCollisions\n    DetectCollisions --> SuffixParameters\n    SuffixParameters --> MergeProperties\n    MergeProperties --> CombinedSchema\n    CombinedSchema --> ParameterProperties\n    CombinedSchema --> BodyProperties\n    CombinedSchema --> RequiredFields\n```\n**Sources:**\n[src/fastmcp/utilities/openapi.py:892-1050](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 48,
+      "total_chunks": 53,
+      "char_count": 1202,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000351"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:49",
+    "content": "The system generates unique component names using operation IDs, summaries, or path-based naming with collision detection:\n```\ndef _generate_default_name(self, route: HTTPRoute, mcp_names_map: dict[str, str] | None = None) -> str:\n    # Priority: custom mapping > operationId > summary > path-based\n    # Truncated to 56 characters maximum\n    # Processed through _slugify() for URL-safe names\n```\n**Sources:**\n[src/fastmcp/server/openapi.py:833-856](.)\n,\n[src/fastmcp/server/openapi.py:858-886](.)\n,\n[src/fastmcp/server/openapi.py:44-64](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 49,
+      "total_chunks": 53,
+      "char_count": 541,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000356"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:50",
+    "content": "OpenAPI components handle complex parameter serialization including arrays, objects, and style-specific formatting:\n```\ngraph TD\n    subgraph \"Parameter Types\"\n        PathParams[\"Path Parameters\"]\n        QueryParams[\"Query Parameters\"]\n        HeaderParams[\"Header Parameters\"]\n        BodyParams[\"Request Body\"]\n    end\n    \n    subgraph \"Serialization Strategies\"\n        SimpleStyle[\"Simple Style (path)\"]\n        FormStyle[\"Form Style (query)\"]\n        DeepObjectStyle[\"deepObject Style\"]\n        ArrayFormatting[\"Array Parameter Formatting\"]\n    end\n    \n    subgraph \"HTTP Request\"\n        URLConstruction[\"URL Construction\"]\n        QueryString[\"Query String Building\"]\n        HeaderMapping[\"Header Mapping\"]\n        JSONBody[\"JSON Body Serialization\"]\n    end\n    \n    PathParams --> SimpleStyle\n    QueryParams --> FormStyle\n    QueryParams --> DeepObjectStyle\n    QueryParams --> ArrayFormatting\n    HeaderParams --> HeaderMapping\n    BodyParams --> JSONBody\n    \n    SimpleStyle --> URLConstruction\n    FormStyle --> QueryString\n    DeepObjectStyle --> QueryString\n    ArrayFormatting --> QueryString\n    HeaderMapping --> HTTPRequest[\"HTTP Request\"]\n    JSONBody --> HTTPRequest\n    URLConstruction --> HTTPRequest\n    QueryString --> HTTPRequest\n```\n**Sources:**\n[src/fastmcp/server/openapi.py:288-417](.)\n,\n[src/fastmcp/utilities/openapi.py:41-121](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 50,
+      "total_chunks": 53,
+      "char_count": 1368,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000361"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:51",
+    "content": "The system handles various response types and content negotiation:\n```\napplication/json\n```\n```\nToolResult(structured_content=...)\n```\n```\ntext/*\n```\n```\nToolResult(content=...)\n```\n```\napplication/xml\n```\n```\nToolResult(content=...)\n```\n```\nToolResult(content=...)\n```\n, Processing = . , Output = \n**Sources:**\n[src/fastmcp/server/openapi.py:482-502](.)\n,\n[src/fastmcp/server/openapi.py:614-621](.)",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 51,
+      "total_chunks": 53,
+      "char_count": 399,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000367"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Middleware_System:chunk:52",
+    "content": "Advanced route mapping through\n```\nroute_map_fn\n```\nand\n```\nmcp_component_fn\n```\ncallbacks:",
+    "metadata": {
+      "source": "fastmcp\\Middleware_System.md",
+      "file_name": "Middleware_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 52,
+      "total_chunks": 53,
+      "char_count": 91,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.000372"
+    }
+  }
+]

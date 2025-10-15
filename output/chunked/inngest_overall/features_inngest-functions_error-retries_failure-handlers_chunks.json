@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_failure-handlers.md",
+  "title": "Failure handlers TypeScript only",
+  "num_chunks": 3,
+  "total_chars": 2020,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Failure handlers](\\docs\\features\\inngest-functions\\error-retries\\failure-handlers#failure-handlers)\n- [Examples](\\docs\\features\\inngest-functions\\error-retries\\failure-handlers#examples)\nFeatures\n[Inngest Functions](\\docs\\features\\inngest-functions)\n[Errors & Retries](\\docs\\guides\\error-handling)",
+      "char_count": 313,
+      "token_count": 89,
+      "metadata": {
+        "title": "Failure handlers TypeScript only",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_failure-handlers.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_failure-handlers.md",
+        "file_name": "features_inngest-functions_error-retries_failure-handlers.md",
+        "file_size": 2071,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "b0964ec4052b5ff92d673ae497fc2adca6c00530f9c422e94e51f09092f88c2d",
+        "author": null,
+        "created_at": "2025-10-12T23:58:47.980892",
+        "modified_at": "2025-10-12T23:58:47.980892",
+        "page_count": null,
+        "word_count": 244,
+        "extracted_at": "2025-10-13T20:03:22.020696",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 89,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Failure handlers TypeScript only\nIf your function exhausts all of its retries, it will be marked as \"Failed.\" You can handle this circumstance by either providing an\n[```\nonFailure/on_failure\n```](\\docs\\reference\\functions\\handling-failures)\nhandler when defining your function, or by listening for the\n[```\ninngest/function.failed\n```](\\docs\\reference\\system-events\\inngest-function-failed)\nsystem event.\nThe first approach is function-specific, while the second covers all function failures in a given Inngest environment.",
+      "char_count": 524,
+      "token_count": 117,
+      "metadata": {
+        "title": "Failure handlers TypeScript only",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_failure-handlers.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_failure-handlers.md",
+        "file_name": "features_inngest-functions_error-retries_failure-handlers.md",
+        "file_size": 2071,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "b0964ec4052b5ff92d673ae497fc2adca6c00530f9c422e94e51f09092f88c2d",
+        "author": null,
+        "created_at": "2025-10-12T23:58:47.980892",
+        "modified_at": "2025-10-12T23:58:47.980892",
+        "page_count": null,
+        "word_count": 244,
+        "extracted_at": "2025-10-13T20:03:22.020696",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 117,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Examples\nThe example below checks if a user's subscription is valid a total of six times. If you can't check the subscription after all retries, you'll unsubscribe the user:\nTypeScript Python Go\nCopy Copied\n```\n/* Option 1: give the inngest function an `onFailure` handler. */\ninngest .createFunction (\n{\nid : \"update-subscription\" ,\nretries : 5 ,\nonFailure : async ({ event , error }) => {\n// if the subscription check fails after all retries, unsubscribe the user\nawait unsubscribeUser ( event . data .userId);\n} ,\n} ,\n{ event : \"user/subscription.check\" } ,\nasync ({ event }) => { /* ... */ } ,\n);\n/* Option 2: Listens for the [`inngest/function.failed`](/docs/reference/functions/handling-failures#the-inngest-function-failed-event) system event to catch all failures in the inngest environment*/\ninngest .createFunction (\n{ id : \"handle-any-fn-failure\" } ,\n{ event : \"inngest/function.failed\" } ,\nasync ({ event }) => { /* ... */ } ,\n);\n```\nTo handle cancelled function runs, checkout out\n[this example](\\docs\\examples\\cleanup-after-function-cancellation)\nthat uses the\n[```\ninngest/function.cancelled\n```](\\docs\\reference\\system-events\\inngest-function-cancelled)\nsystem event.",
+      "char_count": 1183,
+      "token_count": 301,
+      "metadata": {
+        "title": "Failure handlers TypeScript only",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_failure-handlers.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_failure-handlers.md",
+        "file_name": "features_inngest-functions_error-retries_failure-handlers.md",
+        "file_size": 2071,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "b0964ec4052b5ff92d673ae497fc2adca6c00530f9c422e94e51f09092f88c2d",
+        "author": null,
+        "created_at": "2025-10-12T23:58:47.980892",
+        "modified_at": "2025-10-12T23:58:47.980892",
+        "page_count": null,
+        "word_count": 244,
+        "extracted_at": "2025-10-13T20:03:22.020696",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 301,
+        "has_context": true
+      }
+    }
+  ]
+}

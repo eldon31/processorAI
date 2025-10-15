@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\events_creating-an-event-key.md",
+  "title": "Creating an Event Key",
+  "num_chunks": 3,
+  "total_chars": 2893,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Creating an Event Key](\\docs\\events\\creating-an-event-key#creating-an-event-key)\n- [Creating a new Event Key](\\docs\\events\\creating-an-event-key#creating-a-new-event-key)\nPlatform\n[Deployment](\\docs\\platform\\deployment)",
+      "char_count": 235,
+      "token_count": 62,
+      "metadata": {
+        "title": "Creating an Event Key",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\events_creating-an-event-key.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\events_creating-an-event-key.md",
+        "file_name": "events_creating-an-event-key.md",
+        "file_size": 3038,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "5c87acbb1f340c5af80fe619fce0468f2101513e59c18e79d1c5edfe818e9655",
+        "author": null,
+        "created_at": "2025-10-12T23:58:19.968340",
+        "modified_at": "2025-10-12T23:58:19.968340",
+        "page_count": null,
+        "word_count": 448,
+        "extracted_at": "2025-10-13T20:03:12.110461",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 62,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Creating an Event Key\n\"Event Keys\" are unique keys that allow applications to send (aka publish) events to Inngest. When using Event Keys with the\n[Inngest SDK](\\docs\\events)\n, you can configure the\n```\nInngest\n```\nclient in 2 ways:\n1. Setting the key as an [`INNGEST_EVENT_KEY`](\\docs\\sdk\\environment-variables#inngest-event-key) environment variable in your application*\n2. Passing the key as an argument\nCopy Copied\n```\n// Recommended: Set an INNGEST_EVENT_KEY environment variable for automatic configuration:\nconst inngest = new Inngest ({ name : \"Your app name\" });\n\n// Or you can pass the eventKey explicitly to the constructor:\nconst inngest = new Inngest ({ name : \"Your app name\" , eventKey : \"xyz...\" });\n\n// With the Event Key, you're now ready to send data:\nawait inngest .send ({ ... })\n```\n- Our [Vercel integration](\\docs\\deploy\\vercel) automatically sets the [`INNGEST_EVENT_KEY`](\\docs\\sdk\\environment-variables#inngest-event-key) as an environment variable for you\n🙋 Event Keys should be unique to a given\n**environment**\n(e.g. production, branch environments) and a specific\n**application**\n(your API, your mobile app, etc.). Keeping keys separated by application makes it easier to manage keys and rotate them when necessary.\n🔐\n**Securing Event Keys**\n- As Event Keys are used to send data to your Inngest environment, you should take precautions to secure your keys. Avoid storing them in source code and store the keys as secrets in your chosen platform when possible.",
+      "char_count": 1491,
+      "token_count": 367,
+      "metadata": {
+        "title": "Creating an Event Key",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\events_creating-an-event-key.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\events_creating-an-event-key.md",
+        "file_name": "events_creating-an-event-key.md",
+        "file_size": 3038,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "5c87acbb1f340c5af80fe619fce0468f2101513e59c18e79d1c5edfe818e9655",
+        "author": null,
+        "created_at": "2025-10-12T23:58:19.968340",
+        "modified_at": "2025-10-12T23:58:19.968340",
+        "page_count": null,
+        "word_count": 448,
+        "extracted_at": "2025-10-13T20:03:12.110461",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 367,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Creating an Event Key\nCreating a new Event Key\nFrom the Inngest Cloud dashboard, Event Keys are listed in the \"Manage\" tab:\n1. Click on \"Manage\" ( [direct link](https://app.inngest.com/env/production/manage/keys) )\n2. Click the \"+ Create Event Key\" button at the top right\n3. Update the Event Key's name to something descriptive and click \"Save changes\"\n4. Copy the newly created key using the \"Copy\" button:\nA newly created Event Key in the Inngest Cloud dashboard\n🎉 You can now use this event key with the Inngest SDK to send events directly from any codebase. You can also:\n- Rename your event key at any time using the \"Name\" field so you and your team can identify it later\n- Delete the event key when your key is no longer needed\n- Filter events by name or IP addresses for increased control and security\n⚠️ While it is\n*possible*\nto use Event Keys to send events from the browser, this practice presents risks as anyone inspecting your client side code will be able to read your key and send events to your Inngest environment. If you'd like to send events from the client, we recommend creating an API endpoint or edge function to proxy the sending of events.",
+      "char_count": 1167,
+      "token_count": 270,
+      "metadata": {
+        "title": "Creating an Event Key",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\events_creating-an-event-key.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\events_creating-an-event-key.md",
+        "file_name": "events_creating-an-event-key.md",
+        "file_size": 3038,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "5c87acbb1f340c5af80fe619fce0468f2101513e59c18e79d1c5edfe818e9655",
+        "author": null,
+        "created_at": "2025-10-12T23:58:19.968340",
+        "modified_at": "2025-10-12T23:58:19.968340",
+        "page_count": null,
+        "word_count": 448,
+        "extracted_at": "2025-10-13T20:03:12.110461",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 270,
+        "has_context": true
+      }
+    }
+  ]
+}

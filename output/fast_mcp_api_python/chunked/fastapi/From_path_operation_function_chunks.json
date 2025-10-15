@@ -1,0 +1,122 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_path_operation_function:chunk:0",
+    "content": "background_tasks.add_task(task_function, *args, **kwargs)\n```\n### Task Function Parameter Handling\n\n```mermaid\ngraph TD\n    AddTaskCall[\".add_task(func, arg1, arg2, key=value)\"] --> ParseArgs[\"Parse Arguments\"]\n    ParseArgs --> StoreFunc[\"Store Function Reference\"]\n    ParseArgs --> StorePos[\"Store Positional Args\"]\n    ParseArgs --> StoreKW[\"Store Keyword Args\"]\n    \n    StoreFunc --> TaskObj[\"Background Task Object\"]\n    StorePos --> TaskObj\n    StoreKW --> TaskObj\n    \n    TaskObj --> QueueTask[\"Add to Execution Queue\"]\n```\nThe\n```\n.add_task()\n```\nmethod accepts:\n- A callable function as the first argument\n- Any positional arguments to pass to the function\n- Any keyword arguments to pass to the function\nSources:\n[docs/en/docs/tutorial/background-tasks.md:42-46](.)",
+    "metadata": {
+      "source": "fastapi\\From_path_operation_function.md",
+      "file_name": "From_path_operation_function.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 8,
+      "char_count": 778,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.880624"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_path_operation_function:chunk:1",
+    "content": "```\ngraph TD\n    PathOp[\"Path Operation Function\"] --> BGTasks1[\"BackgroundTasks Parameter\"]\n    Dependency[\"Dependency Function\"] --> BGTasks2[\"BackgroundTasks Parameter\"]\n    SubDep[\"Sub-Dependency\"] --> BGTasks3[\"BackgroundTasks Parameter\"]\n    \n    BGTasks1 --> Shared[\"Shared BackgroundTasks Instance\"]\n    BGTasks2 --> Shared\n    BGTasks3 --> Shared\n    \n    Shared --> MergedQueue[\"Merged Task Queue\"]\n    MergedQueue --> Execute[\"Execute All Tasks\"]\n```\nFastAPI automatically reuses the same\n```\nBackgroundTasks\n```\ninstance across all dependency levels within a single request, ensuring all background tasks are collected and executed together.",
+    "metadata": {
+      "source": "fastapi\\From_path_operation_function.md",
+      "file_name": "From_path_operation_function.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 8,
+      "char_count": 653,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.880638"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_path_operation_function:chunk:2",
+    "content": "```\nsequenceDiagram\n    participant Request\n    participant FastAPI\n    participant Dependency as \"write_log()\"\n    participant PathOp as \"send_notification()\"\n    participant BGTasks as \"BackgroundTasks\"\n\n    Request->>FastAPI: \"GET /send-notification/email\"\n    FastAPI->>BGTasks: \"Create instance\"\n    FastAPI->>Dependency: \"Call with BackgroundTasks\"\n    Dependency->>BGTasks: \"add_task(log_message)\"\n    FastAPI->>PathOp: \"Call with BackgroundTasks + email\"\n    PathOp->>BGTasks: \"add_task(write_notification)\"\n    PathOp->>Request: \"HTTP Response\"\n    \n    Note over BGTasks: After response sent\n    BGTasks->>BGTasks: \"Execute log_message\"\n    BGTasks->>BGTasks: \"Execute write_notification\"\n```\nSources:\n[docs/en/docs/tutorial/background-tasks.md:48-63](.)",
+    "metadata": {
+      "source": "fastapi\\From_path_operation_function.md",
+      "file_name": "From_path_operation_function.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 8,
+      "char_count": 764,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.880644"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_path_operation_function:chunk:3",
+    "content": "FastAPI's background task system is a thin wrapper around Starlette's implementation:\n```\nfrom fastapi import BackgroundTasks\n```\n```\nfrom starlette.background import BackgroundTasks\n```\n```\nBackgroundTask\n```\n```\nBackgroundTask\n```\nImport Path, FastAPI = . Import Path, Starlette = \nThe key difference is that FastAPI provides\n```\nBackgroundTasks\n```\n(plural) as a dependency injection parameter, while\n```\nBackgroundTask\n```\n(singular) requires manual instantiation and response handling.",
+    "metadata": {
+      "source": "fastapi\\From_path_operation_function.md",
+      "file_name": "From_path_operation_function.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 8,
+      "char_count": 490,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.880649"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_path_operation_function:chunk:4",
+    "content": "```\ngraph TD\n    PathOpReturn[\"Path Operation Returns\"] --> FastAPIProc[\"FastAPI Processing\"]\n    FastAPIProc --> CheckBG{\"BackgroundTasks Used?\"}\n    CheckBG -->|Yes| AttachBG[\"Attach Tasks to Response\"]\n    CheckBG -->|No| StandardResp[\"Standard Response\"]\n    \n    AttachBG --> SendResp[\"Send Response to Client\"]\n    StandardResp --> SendResp\n    \n    SendResp --> ExecuteBG[\"Execute Background Tasks\"]\n    ExecuteBG --> Cleanup[\"Cleanup Resources\"]\n```\nWhen\n```\nBackgroundTasks\n```\nis used as a parameter, FastAPI automatically attaches the queued tasks to the response object, ensuring they execute after the response is sent.\nSources:\n[docs/en/docs/tutorial/background-tasks.md:66-74](.)",
+    "metadata": {
+      "source": "fastapi\\From_path_operation_function.md",
+      "file_name": "From_path_operation_function.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 8,
+      "char_count": 694,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.880654"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_path_operation_function:chunk:5",
+    "content": "Background tasks are suitable for:\n- Email notifications after user actions\n- File processing that can be asynchronous\n- Logging and analytics\n- Cache warming\n- Cleanup operations",
+    "metadata": {
+      "source": "fastapi\\From_path_operation_function.md",
+      "file_name": "From_path_operation_function.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 8,
+      "char_count": 179,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.880659"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_path_operation_function:chunk:6",
+    "content": "```\ngraph LR\n    LightTasks[\"Light Background Tasks\"] --> BGTasks[\"BackgroundTasks\"]\n    HeavyTasks[\"Heavy Computation\"] --> Celery[\"External Queue (Celery)\"]\n    DistribTasks[\"Distributed Processing\"] --> Celery\n    \n    BGTasks --> SameProcess[\"Same Process Execution\"]\n    Celery --> MultiProcess[\"Multi-Process/Server\"]\n    \n    SameProcess --> SharedMem[\"Shared Memory Access\"]\n    MultiProcess --> ScalableArch[\"Scalable Architecture\"]\n```\nFor heavy computational tasks or distributed processing, external task queue systems like Celery are recommended over FastAPI's built-in background tasks.",
+    "metadata": {
+      "source": "fastapi\\From_path_operation_function.md",
+      "file_name": "From_path_operation_function.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 8,
+      "char_count": 600,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.880664"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:From_path_operation_function:chunk:7",
+    "content": "Background tasks in FastAPI:\n- Run in the same process as the web application\n- Have access to shared memory and variables\n- Are suitable for lightweight operations\n- Should not be used for long-running or resource-intensive tasks\nSources:\n[docs/en/docs/tutorial/background-tasks.md:76-87](.)",
+    "metadata": {
+      "source": "fastapi\\From_path_operation_function.md",
+      "file_name": "From_path_operation_function.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 8,
+      "char_count": 292,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.880669"
+    }
+  }
+]

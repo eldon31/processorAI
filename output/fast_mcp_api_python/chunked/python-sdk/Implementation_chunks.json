@@ -1,0 +1,32 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Implementation:chunk:0",
+    "content": "def version() -> None:\ntry:\nversion = importlib.metadata.version(\"mcp\")\nprint(f\"MCP version {version}\")\nexcept importlib.metadata.PackageNotFoundError:\nprint(\"MCP version unknown (package not installed)\")\nsys.exit(1)\n```\nSources: [src/mcp/cli/cli.py:211-219]()\n\n## Dependency Management Integration\n\nAll CLI commands integrate with `uv` for dependency management:\n\n### UV Command Construction\n\n```mermaid\ngraph LR\n    subgraph \"Package Collection\"\n        base_mcp[\"'mcp[cli]' base package\"]\n        server_deps[\"server.dependencies list\"]\n        with_packages[\"--with command args\"]\n        deduplicate[\"Remove duplicates via set()\"]\n    end\n    \n    subgraph \"Command Building\"\n        uv_run[\"['uv', 'run']\"]\n        add_with[\"Add --with for each package\"]\n        add_editable[\"Add --with-editable if specified\"]\n        add_mcp_run[\"Add ['mcp', 'run', file_spec]\"]\n    end\n    \n    base_mcp --> deduplicate\n    server_deps --> deduplicate\n    with_packages --> deduplicate\n    \n    deduplicate --> add_with\n    uv_run --> add_with\n    add_with --> add_editable\n    add_editable --> add_mcp_run\n```\nSources:\n[src/mcp/cli/cli.py:65-85](.)\n,\n[src/mcp/cli/claude.py:101-125](.)",
+    "metadata": {
+      "source": "python-sdk\\Implementation.md",
+      "file_name": "Implementation.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 2,
+      "char_count": 1179,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.943930"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Implementation:chunk:1",
+    "content": "The CLI automatically locates the\n```\nuv\n```\nexecutable using platform-appropriate methods:\n- Uses `shutil.which(\"uv\")` to find full path\n- Falls back to `\"uv\"` string if not found in PATH\n- Provides clear error messages for missing uv installation\nSources:\n[src/mcp/cli/claude.py:33-41](.)",
+    "metadata": {
+      "source": "python-sdk\\Implementation.md",
+      "file_name": "Implementation.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 2,
+      "char_count": 290,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.943941"
+    }
+  }
+]

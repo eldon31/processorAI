@@ -1,0 +1,272 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:0",
+    "content": "This document covers the client-side transport implementations in the MCP Python SDK that enable communication between MCP clients and servers. Client transports handle the low-level protocol communication, message serialization, and connection management for different communication channels.\nFor information about the high-level\n```\nClientSession\n```\nthat uses these transports, see\n[ClientSession Core](#3.1)\n. For server-side transport implementations, see the Transport Layer sections\n[StreamableHTTP Transport](#5.1)\n,\n[Server-Sent Events (SSE) Transport](#5.2)\n, and\n[STDIO Transport](#5.3)\n.",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 18,
+      "char_count": 599,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333183"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:1",
+    "content": "The MCP client framework provides three primary transport implementations, each designed for different deployment scenarios and communication patterns.\n```\ngraph TB\n    subgraph \"Client Application\"\n        ClientSession[\"ClientSession<br/>High-level API\"]\n    end\n    \n    subgraph \"Client Transports\"\n        StreamableHTTP[\"streamablehttp_client<br/>HTTP + SSE Transport\"]\n        SSE[\"sse_client<br/>Server-Sent Events\"]\n        STDIO[\"stdio_client<br/>Process Communication\"]\n    end\n    \n    subgraph \"Communication Protocols\"\n        HTTP[\"HTTP POST + SSE<br/>Bidirectional\"]\n        SSEProtocol[\"HTTP GET (SSE) + POST<br/>Real-time Events\"]\n        StdInOut[\"stdin/stdout<br/>JSON-RPC Lines\"]\n    end\n    \n    subgraph \"Server Processes\"\n        HTTPServer[\"HTTP MCP Server<br/>Web-based\"]\n        SSEServer[\"SSE MCP Server<br/>Event-driven\"]\n        StdioServer[\"Process MCP Server<br/>Command-line\"]\n    end\n    \n    ClientSession --> StreamableHTTP\n    ClientSession --> SSE\n    ClientSession --> STDIO\n    \n    StreamableHTTP --> HTTP\n    SSE --> SSEProtocol\n    STDIO --> StdInOut\n    \n    HTTP --> HTTPServer\n    SSEProtocol --> SSEServer\n    StdInOut --> StdioServer\n```\nSources:\n[src/mcp/client/streamable_http.py:1-514](.)\n,\n[src/mcp/client/sse.py:1-145](.)\n,\n[src/mcp/client/stdio/](.)\n[**init**](.)\n[.py:1-279](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 18,
+      "char_count": 1332,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333198"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:2",
+    "content": "The\n```\nStreamableHTTPTransport\n```\nis the most sophisticated client transport, supporting bidirectional HTTP communication with session management, resumption capabilities, and both JSON and Server-Sent Events responses.",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 18,
+      "char_count": 221,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333204"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:3",
+    "content": "The transport consists of the main\n```\nStreamableHTTPTransport\n```\nclass and the\n```\nstreamablehttp_client\n```\nasync context manager:\n```\nStreamableHTTPTransport\n```\n```\nstreamablehttp_client\n```\n```\nRequestContext\n```\n, Purpose = . , Location = ",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 18,
+      "char_count": 246,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333210"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:4",
+    "content": "```\nsequenceDiagram\n    participant Client as \"streamablehttp_client\"\n    participant Transport as \"StreamableHTTPTransport\"\n    participant PostWriter as \"post_writer\"\n    participant GetStream as \"handle_get_stream\"\n    participant Server as \"HTTP MCP Server\"\n    \n    Client->>Transport: Initialize with URL\n    Client->>PostWriter: Start post_writer task\n    \n    Note over PostWriter,Server: Initialization Sequence\n    PostWriter->>Server: POST /endpoint (initialize)\n    Server->>PostWriter: Response + session-id header\n    Transport->>Transport: Extract session_id\n    Transport->>Transport: Extract protocol_version\n    \n    Note over PostWriter,Server: Notification Triggers SSE\n    PostWriter->>Server: POST (notifications/initialized)\n    PostWriter->>GetStream: start_get_stream()\n    GetStream->>Server: GET /endpoint (SSE connection)\n    Server-->>GetStream: SSE events (server messages)\n    \n    Note over PostWriter,Server: Request-Response\n    PostWriter->>Server: POST /endpoint (tool call)\n    alt JSON Response\n        Server->>PostWriter: application/json response\n    else SSE Response\n        Server->>PostWriter: text/event-stream response\n        PostWriter->>PostWriter: Handle SSE events\n    end\n    \n    Note over Client,Server: Session Termination\n    Client->>Transport: terminate_session()\n    Transport->>Server: DELETE /endpoint\n```\nSources:\n[src/mcp/client/streamable_http.py:366-422](.)\n,\n[src/mcp/client/streamable_http.py:192-219](.)\n,\n[src/mcp/client/streamable_http.py:254-295](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 18,
+      "char_count": 1521,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333216"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:5",
+    "content": "The StreamableHTTP transport implements sophisticated session management with resumption support:\n- **Session ID Extraction** : Automatically extracts session IDs from response headers [src/mcp/client/streamable_http.py:126-135](.)\n- **Protocol Version Negotiation** : Parses and stores protocol version from initialization responses [src/mcp/client/streamable_http.py:136-150](.)\n- **Request Header Preparation** : Adds session ID and protocol version to subsequent requests [src/mcp/client/streamable_http.py:109-117](.)\n- **Session Termination** : Sends DELETE requests to clean up server resources [src/mcp/client/streamable_http.py:423-438](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 18,
+      "char_count": 648,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333222"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:6",
+    "content": "The transport supports resumption of interrupted sessions using resumption tokens:\n```\ngraph LR\n    subgraph \"Resumption Flow\"\n        ResumeReq[\"Resume Request<br/>with token\"]\n        GetSSE[\"GET + last-event-id<br/>header\"]\n        EventStream[\"SSE Event Stream<br/>from resume point\"]\n        TokenUpdate[\"Update resumption<br/>token callback\"]\n    end\n    \n    ResumeReq --> GetSSE\n    GetSSE --> EventStream\n    EventStream --> TokenUpdate\n```\nSources:\n[src/mcp/client/streamable_http.py:220-253](.)\n,\n[src/mcp/client/streamable_http.py:151-191](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 18,
+      "char_count": 554,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333228"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:7",
+    "content": "The\n```\nsse_client\n```\nprovides a simpler transport focused on real-time communication using Server-Sent Events for server-to-client messages and HTTP POST for client-to-server messages.",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 18,
+      "char_count": 186,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333233"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:8",
+    "content": "```\ngraph TB\n    subgraph \"sse_client Context\"\n        SSEReader[\"sse_reader task<br/>GET connection\"]\n        PostWriter[\"post_writer task<br/>POST messages\"]\n        EventSource[\"EventSource<br/>SSE connection\"]\n    end\n    \n    subgraph \"Communication Flow\"\n        GetSSE[\"GET /sse-url<br/>Receive events\"]\n        PostEndpoint[\"POST /endpoint<br/>Send messages\"]\n    end\n    \n    subgraph \"Event Types\"\n        EndpointEvent[\"endpoint event<br/>Discover POST URL\"]\n        MessageEvent[\"message event<br/>JSON-RPC messages\"]\n    end\n    \n    SSEReader --> GetSSE\n    PostWriter --> PostEndpoint\n    EventSource --> EndpointEvent\n    EventSource --> MessageEvent\n    \n    EndpointEvent --> PostWriter\n```\nSources:\n[src/mcp/client/sse.py:24-145](.)\n,\n[src/mcp/client/sse.py:68-113](.)\n,\n[src/mcp/client/sse.py:114-133](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 18,
+      "char_count": 824,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333239"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:9",
+    "content": "The SSE transport implements a discovery mechanism where the server provides the POST endpoint URL via SSE events:\n1. **Initial Connection** : Client connects to SSE endpoint via GET request [src/mcp/client/sse.py:60-67](.)\n2. **Endpoint Event** : Server sends `endpoint` event with POST URL [src/mcp/client/sse.py:75-92](.)\n3. **Security Validation** : Client validates endpoint origin matches connection origin [src/mcp/client/sse.py:79-90](.)\n4. **Post Writer Activation** : POST writer task starts with discovered endpoint [src/mcp/client/sse.py:134-136](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 18,
+      "char_count": 561,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333244"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:10",
+    "content": "The\n```\nstdio_client\n```\nmanages communication with MCP servers running as separate processes, using standard input/output streams for JSON-RPC message exchange.",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 18,
+      "char_count": 161,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333249"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:11",
+    "content": "```\ngraph TB\n    subgraph \"Process Creation\"\n        Params[\"StdioServerParameters<br/>command, args, env\"]\n        PlatformProcess[\"_create_platform_compatible_process<br/>Unix: start_new_session<br/>Windows: Job Objects\"]\n        Process[\"Process<br/>stdin/stdout/stderr\"]\n    end\n    \n    subgraph \"Communication Tasks\"\n        StdoutReader[\"stdout_reader<br/>JSON-RPC messages\"]\n        StdinWriter[\"stdin_writer<br/>Send messages\"]\n        Buffer[\"Line buffer<br/>Message parsing\"]\n    end\n    \n    subgraph \"Shutdown Sequence\"\n        CloseStdin[\"Close stdin<br/>Signal shutdown\"]\n        WaitGraceful[\"Wait for graceful exit<br/>PROCESS_TERMINATION_TIMEOUT\"]\n        ForceTerminate[\"_terminate_process_tree<br/>SIGTERM → SIGKILL\"]\n    end\n    \n    Params --> PlatformProcess\n    PlatformProcess --> Process\n    Process --> StdoutReader\n    Process --> StdinWriter\n    StdoutReader --> Buffer\n    \n    CloseStdin --> WaitGraceful\n    WaitGraceful --> ForceTerminate\n```\nSources:\n[src/mcp/client/stdio/](.)\n[**init**](.)\n[.py:106-217](.)\n,\n[src/mcp/client/stdio/](.)\n[**init**](.)\n[.py:235-279](.)\n,\n[src/mcp/client/stdio/](.)\n[**init**](.)\n[.py:139-165](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 18,
+      "char_count": 1162,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333254"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:12",
+    "content": "The STDIO transport implements platform-specific process creation and termination:\n```\nstart_new_session=True\n```\n```\nos.killpg()\n```\n```\ncreate_windows_process\n```\nUnix, Process Creation = . Unix, Termination Strategy = \nSources:\n[src/mcp/client/stdio/](.)\n[**init**](.)\n[.py:235-260](.)\n,\n[src/mcp/client/stdio/](.)\n[**init**](.)\n[.py:262-279](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 18,
+      "char_count": 348,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333259"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:13",
+    "content": "The transport handles JSON-RPC message processing with robust error handling:\n- **Line-based Parsing** : Buffers input and splits on newlines [src/mcp/client/stdio/](.) [**init**](.) [.py:144-153](.)\n- **JSON Validation** : Validates each line as JSON-RPC message [src/mcp/client/stdio/](.) [**init**](.) [.py:154-162](.)\n- **Encoding Support** : Configurable text encoding and error handling [src/mcp/client/stdio/](.) [**init**](.) [.py:89-103](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 13,
+      "total_chunks": 18,
+      "char_count": 449,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333265"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:14",
+    "content": "StreamableHTTP, Use Case = Web services, production deployments. StreamableHTTP, Pros = Session management, resumption, scalable. StreamableHTTP, Cons = Complex, requires HTTP server. SSE, Use Case = Real-time applications, event-driven. SSE, Pros = Simple, real-time events. SSE, Cons = Limited to web contexts. STDIO, Use Case = CLI tools, development, local processes. STDIO, Pros = Direct process control, simple setup. STDIO, Cons = Process management complexity",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 14,
+      "total_chunks": 18,
+      "char_count": 467,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333271"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:15",
+    "content": "All client transports follow the same interface pattern for integration with\n```\nClientSession\n```\n:\n```\ngraph LR\n    subgraph \"Common Interface\"\n        ReadStream[\"MemoryObjectReceiveStream<br/>SessionMessage | Exception\"]\n        WriteStream[\"MemoryObjectSendStream<br/>SessionMessage\"]\n        OptionalCallback[\"Optional Callback<br/>get_session_id\"]\n    end\n    \n    subgraph \"ClientSession\"\n        Session[\"ClientSession<br/>High-level API\"]\n    end\n    \n    ReadStream --> Session\n    WriteStream --> Session\n    OptionalCallback --> Session\n```\nSources:\n[src/mcp/client/streamable_http.py:453-459](.)\n,\n[src/mcp/client/sse.py:45-49](.)\n,\n[src/mcp/client/stdio/](.)\n[**init**](.)\n[.py:111-115](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 15,
+      "total_chunks": 18,
+      "char_count": 704,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333276"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:16",
+    "content": "Each transport implements specific error handling strategies:\n- **StreamableHTTP** : HTTP status code handling, session termination on 404, resumption error recovery [src/mcp/client/streamable_http.py:266-277](.)\n- **SSE** : Connection error recovery, origin validation errors [src/mcp/client/sse.py:108-110](.)\n- **STDIO** : Process creation failures, graceful shutdown with timeout escalation [src/mcp/client/stdio/](.) [**init**](.) [.py:191-217](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 16,
+      "total_chunks": 18,
+      "char_count": 452,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333281"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Transports:chunk:17",
+    "content": "Transport-specific timeout configurations:\n```\ntimeout\n```\n```\nsse_read_timeout\n```\n```\ntimeout\n```\n```\nsse_read_timeout\n```\n```\nPROCESS_TERMINATION_TIMEOUT\n```\nStreamableHTTP, Timeout Type = HTTP operations. StreamableHTTP, Default = 30s. StreamableHTTP, Configuration = \nSources:\n[src/mcp/client/streamable_http.py:77-100](.)\n,\n[src/mcp/client/sse.py:27-28](.)\n,\n[src/mcp/client/stdio/](.)\n[**init**](.)\n[.py:47-48](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Transports.md",
+      "file_name": "Client_Transports.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 17,
+      "total_chunks": 18,
+      "char_count": 420,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:12.333286"
+    }
+  }
+]

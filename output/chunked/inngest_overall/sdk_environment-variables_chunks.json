@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\sdk_environment-variables.md",
+  "title": "#### On this page",
+  "num_chunks": 3,
+  "total_chars": 12448,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Environment Variables](\\docs\\sdk\\environment-variables#environment-variables)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-base-url)\n[_](\\docs\\sdk\\environment-variables#inngest-base-url)\n[BASE](\\docs\\sdk\\environment-variables#inngest-base-url)\n[_](\\docs\\sdk\\environment-variables#inngest-base-url)\n[URL](\\docs\\sdk\\environment-variables#inngest-base-url)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-dev)\n[_](\\docs\\sdk\\environment-variables#inngest-dev)\n[DEV](\\docs\\sdk\\environment-variables#inngest-dev)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-env)\n[_](\\docs\\sdk\\environment-variables#inngest-env)\n[ENV](\\docs\\sdk\\environment-variables#inngest-env)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-event-key)\n[_](\\docs\\sdk\\environment-variables#inngest-event-key)\n[EVENT](\\docs\\sdk\\environment-variables#inngest-event-key)\n[_](\\docs\\sdk\\environment-variables#inngest-event-key)\n[KEY](\\docs\\sdk\\environment-variables#inngest-event-key)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-log-level)\n[_](\\docs\\sdk\\environment-variables#inngest-log-level)\n[LOG](\\docs\\sdk\\environment-variables#inngest-log-level)\n[_](\\docs\\sdk\\environment-variables#inngest-log-level)\n[LEVEL](\\docs\\sdk\\environment-variables#inngest-log-level)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[SERVE](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[HOST](\\docs\\sdk\\environment-variables#inngest-serve-host)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[SERVE](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[PATH](\\docs\\sdk\\environment-variables#inngest-serve-path)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[SIGNING](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[KEY](\\docs\\sdk\\environment-variables#inngest-signing-key)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[SIGNING](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[KEY](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[FALLBACK](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-streaming)\n[_](\\docs\\sdk\\environment-variables#inngest-streaming)\n[STREAMING](\\docs\\sdk\\environment-variables#inngest-streaming)\nReferences\n[TypeScript SDK](\\docs\\reference\\typescript)\n[Using the SDK](\\docs\\sdk\\environment-variables)",
+      "char_count": 2930,
+      "token_count": 927,
+      "metadata": {
+        "title": "#### On this page",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\sdk_environment-variables.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\sdk_environment-variables.md",
+        "file_name": "sdk_environment-variables.md",
+        "file_size": 7400,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "3b9f449ef8a22184985ad2127fe0727a81ac5abe0d1a814ca8c8b657ba045a15",
+        "author": null,
+        "created_at": "2025-10-13T00:01:37.771057",
+        "modified_at": "2025-10-13T00:01:37.771057",
+        "page_count": null,
+        "word_count": 790,
+        "extracted_at": "2025-10-13T20:05:00.848622",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 927,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Environment Variables\nYou can set environment variables to change various parts of Inngest's configuration.\nWe'll look at all available environment variables here, what to set them to, and what our recommendations are for their use.\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-base-url)\n[_](\\docs\\sdk\\environment-variables#inngest-base-url)\n[BASE](\\docs\\sdk\\environment-variables#inngest-base-url)\n[_](\\docs\\sdk\\environment-variables#inngest-base-url)\n[URL](\\docs\\sdk\\environment-variables#inngest-base-url)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-dev)\n[_](\\docs\\sdk\\environment-variables#inngest-dev)\n[DEV](\\docs\\sdk\\environment-variables#inngest-dev)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-env)\n[_](\\docs\\sdk\\environment-variables#inngest-env)\n[ENV](\\docs\\sdk\\environment-variables#inngest-env)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-event-key)\n[_](\\docs\\sdk\\environment-variables#inngest-event-key)\n[EVENT](\\docs\\sdk\\environment-variables#inngest-event-key)\n[_](\\docs\\sdk\\environment-variables#inngest-event-key)\n[KEY](\\docs\\sdk\\environment-variables#inngest-event-key)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-log-level)\n[_](\\docs\\sdk\\environment-variables#inngest-log-level)\n[LOG](\\docs\\sdk\\environment-variables#inngest-log-level)\n[_](\\docs\\sdk\\environment-variables#inngest-log-level)\n[LEVEL](\\docs\\sdk\\environment-variables#inngest-log-level)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[SERVE](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[HOST](\\docs\\sdk\\environment-variables#inngest-serve-host)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[SERVE](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[PATH](\\docs\\sdk\\environment-variables#inngest-serve-path)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[SIGNING](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[KEY](\\docs\\sdk\\environment-variables#inngest-signing-key)\n- [INNGEST](\\docs\\sdk\\environment-variables#inngest-streaming)\n[_](\\docs\\sdk\\environment-variables#inngest-streaming)\n[STREAMING](\\docs\\sdk\\environment-variables#inngest-streaming)\nWithin some frameworks and platforms such as Cloudflare Workers, environment\nvariables are not available in the global scope and are instead passed as\nruntime arguments to your handler. In this case, you can use\n```\ninngest.setEnvVars()\n```\nto ensure your client has the correct configuration\nbefore communicating with Inngest.\nCopy Copied\n```\n// For example, in Hono on Cloudflare Workers\napp .on ( \"POST\" , \"/my-api/send-some-event\" , async (c) => {\ninngest .setEnvVars ( c .env);\n\nawait inngest .send ({ name : \"test/event\" });\n\nreturn c .json ({ message : \"Done!\" });\n});\n\n// You can also chain the call to be succinct\nawait inngest .setEnvVars ( c .env) .send ({ name : \"test/event\" });\n```",
+      "char_count": 3175,
+      "token_count": 953,
+      "metadata": {
+        "title": "#### On this page",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\sdk_environment-variables.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\sdk_environment-variables.md",
+        "file_name": "sdk_environment-variables.md",
+        "file_size": 7400,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "3b9f449ef8a22184985ad2127fe0727a81ac5abe0d1a814ca8c8b657ba045a15",
+        "author": null,
+        "created_at": "2025-10-13T00:01:37.771057",
+        "modified_at": "2025-10-13T00:01:37.771057",
+        "page_count": null,
+        "word_count": 790,
+        "extracted_at": "2025-10-13T20:05:00.848622",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 953,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Environment Variables\nINNGEST\n[_](\\docs\\sdk\\environment-variables#inngest-base-url)\n[BASE](\\docs\\sdk\\environment-variables#inngest-base-url)\n[_](\\docs\\sdk\\environment-variables#inngest-base-url)\n[URL](\\docs\\sdk\\environment-variables#inngest-base-url)\nUse this to tell an SDK the host to use to communicate with Inngest.\nIf set, it should be the host including the protocol and port, e.g.\n```\nhttp://localhost:8288\n```\nor\n```\nhttps://my.tunnel.com\n```\n. Can be overwritten by manually specifying\n```\nbaseUrl\n```\nin\n```\nnew Inngest()\n```\nor\n```\nserve()\n```\n.\nIn most cases we recommend keeping this unset. A common case, though, is wanting\nto force a production build of your app to use the Inngest Dev Server instead of\nInngest Cloud for local integration testing or similar.\nIn this case, prefer using\n[INNGEST](\\docs\\sdk\\environment-variables#inngest-dev)\n[_](\\docs\\sdk\\environment-variables#inngest-dev)\n[DEV=1](\\docs\\sdk\\environment-variables#inngest-dev)\n. For Docker, it may be\nappropriate to also set\n```\nINNGEST_BASE_URL=http://host.docker.internal:8288\n```\n. Learn more in our\n[Docker guide](\\docs\\guides\\development-with-docker)\n.\n[_](\\docs\\sdk\\environment-variables#inngest-dev)\n[DEV](\\docs\\sdk\\environment-variables#inngest-dev)\nUse this to force an SDK to be in Dev Mode with\n```\nINNGEST_DEV=1\n```\n, or Cloud mode\nwith\n```\nINNGEST_DEV=0\n```\n. A URL for the dev server can be set at the same time with\n```\nINNGEST_DEV=http://localhost:8288\n```\n.\nCan be overwritten by manually specifying\n```\nisDev\n```\nin\n```\nnew Inngest()\n```\n.\nExplicitly setting either mode will change the URLs used to communicate with\nInngest, as well as turning\n**off**\nsignature verification in Dev mode, or\n**on**\nin\nCloud mode.\nIf neither the environment variable nor config option are specified, the SDK will\nattempt to infer which mode it should be in based on environment variables such\nas\n```\nNODE_ENV\n```\n.\n[_](\\docs\\sdk\\environment-variables#inngest-env)\n[ENV](\\docs\\sdk\\environment-variables#inngest-env)\nUse this to tell Inngest which\n[Inngest Environment](\\docs\\platform\\environments?ref=environment-variables)\nyou're wanting to send and receive events from.\nCan be overwritten by manually specifying\n```\nenv\n```\nin\n```\nnew Inngest()\n```\n.\nThis is detected and set automatically for some platforms, but others will need manual action. See\n[Configuring branch environments](\\docs\\platform\\environments#configuring-branch-environments?ref=environment-variables)\nto see if you need this.\n[_](\\docs\\sdk\\environment-variables#inngest-event-key)\n[EVENT](\\docs\\sdk\\environment-variables#inngest-event-key)\n[_](\\docs\\sdk\\environment-variables#inngest-event-key)\n[KEY](\\docs\\sdk\\environment-variables#inngest-event-key)\nThe key to use to send events to Inngest. See\n[Creating an Event Key](\\docs\\events\\creating-an-event-key?ref=environment-variables)\nfor more information.\nCan be overwritten by manually specifying\n```\neventKey\n```\nin\n```\nnew Inngest()\n```\n.\n[_](\\docs\\sdk\\environment-variables#inngest-log-level)\n[LOG](\\docs\\sdk\\environment-variables#inngest-log-level)\n[_](\\docs\\sdk\\environment-variables#inngest-log-level)\n[LEVEL](\\docs\\sdk\\environment-variables#inngest-log-level)\nThe log level to use for the SDK. Can be one of\n```\nfatal\n```\n,\n```\nerror\n```\n,\n```\nwarn\n```\n,\n```\ninfo\n```\n,\n```\ndebug\n```\n, or\n```\nsilent\n```\n.\nDefaults to\n```\ninfo\n```\n.\n[_](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[SERVE](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-host)\n[HOST](\\docs\\sdk\\environment-variables#inngest-serve-host)\nThe host used to access this application from Inngest Cloud.\nIf set, it should be the host including the protocol and port, e.g.\n```\nhttp://localhost:8288\n```\nor\n```\nhttps://my.tunnel.com\n```\n. Can be overwritten by manually specifying\n```\nserveHost\n```\nin\n```\nserve()\n```\n.\nBy default, an SDK will try to infer this using request details such as the\n```\nHost\n```\nheader, but sometimes this isn't possible (e.g. when running in a more controlled environment such as AWS Lambda or when dealing with proxies/redirects).\n[_](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[SERVE](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[_](\\docs\\sdk\\environment-variables#inngest-serve-path)\n[PATH](\\docs\\sdk\\environment-variables#inngest-serve-path)\nThe path used to access this application from Inngest Cloud.\nIf set, it should be a valid URL path with a leading\n```\n/\n```\n, e.g.\n```\n/api/inngest\n```\n.\nBy default, an SDK will try to infer this using request details, but sometimes this isn't possible (e.g. when running in a more controlled environment such as AWS Lambda or when dealing with proxies/redirects).\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[SIGNING](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key)\n[KEY](\\docs\\sdk\\environment-variables#inngest-signing-key)\nThe key used to sign requests to and from Inngest to ensure secure communication. See\n[Serve - Signing Key](\\docs\\learn\\serving-inngest-functions#signing-key?ref=environment-variables)\nfor more information.\nCan be overwritten by manually specifying\n```\nsigningKey\n```\nin\n```\nserve()\n```\n.\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[SIGNING](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[KEY](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[_](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\n[FALLBACK](\\docs\\sdk\\environment-variables#inngest-signing-key-fallback)\nOnly used during signing key rotation. When it's specified, the SDK will automatically retry signing key auth failures with the fallback key.\nAvailable in version\n```\n3.18.0\n```\nand above.\n[_](\\docs\\sdk\\environment-variables#inngest-streaming)\n[STREAMING](\\docs\\sdk\\environment-variables#inngest-streaming)\nSets an SDK's streaming support, potentially circumventing restrictive request timeouts and other limitations. See\n[Streaming](\\docs\\streaming?ref=environment-variables)\nfor more information.\nCan be one of\n```\nallow\n```\n,\n```\nforce\n```\n, or\n```\nfalse\n```\n.\nBy default, this is\n```\nfalse\n```\n, disabling streaming. It can also be overwritten by setting\n```\nstreaming\n```\nin\n```\nserve()\n```\nwith the same values.",
+      "char_count": 6343,
+      "token_count": 1813,
+      "metadata": {
+        "title": "#### On this page",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\sdk_environment-variables.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\sdk_environment-variables.md",
+        "file_name": "sdk_environment-variables.md",
+        "file_size": 7400,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "3b9f449ef8a22184985ad2127fe0727a81ac5abe0d1a814ca8c8b657ba045a15",
+        "author": null,
+        "created_at": "2025-10-13T00:01:37.771057",
+        "modified_at": "2025-10-13T00:01:37.771057",
+        "page_count": null,
+        "word_count": 790,
+        "extracted_at": "2025-10-13T20:05:00.848622",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 1813,
+        "has_context": true
+      }
+    }
+  ]
+}

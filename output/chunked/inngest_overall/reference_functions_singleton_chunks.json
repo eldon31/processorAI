@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_singleton.md",
+  "title": "Ensure exclusive execution of a function",
+  "num_chunks": 3,
+  "total_chars": 1047,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Ensure exclusive execution of a function](\\docs\\reference\\functions\\singleton#ensure-exclusive-execution-of-a-function)\n- [Configuration](\\docs\\reference\\functions\\singleton#configuration)\nReferences\n[TypeScript SDK](\\docs\\reference\\typescript)",
+      "char_count": 260,
+      "token_count": 60,
+      "metadata": {
+        "title": "Ensure exclusive execution of a function",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_singleton.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_singleton.md",
+        "file_name": "reference_functions_singleton.md",
+        "file_size": 1113,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "7f5a0655148bc39e60891b54e47fc4b5efb60a44d421995ba623226f35ec01c1",
+        "author": null,
+        "created_at": "2025-10-13T00:00:37.567762",
+        "modified_at": "2025-10-13T00:00:37.567762",
+        "page_count": null,
+        "word_count": 145,
+        "extracted_at": "2025-10-13T20:04:31.896341",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 60,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Ensure exclusive execution of a function\nEnsure that only a single run of a function (\n*or a set of specific functions, based on specific event properties*\n) is running at a time.\nSee the\n[Singleton Functions guide](\\docs\\guides\\singleton)\nfor more information about how this feature works.\nCopy Copied\n```\nexport default inngest .createFunction (\n{\nid : \"data-sync\" ,\nsingleton : {\nkey : \"event.data.user_id\" ,\nmode : \"skip\" ,\n} ,\n} ,\n{ event : \"data-sync.start\" } ,\nasync ({ event }) => {\n// This function will be skipped if another run of the same function is already running for the same user\n}\n);\n```",
+      "char_count": 605,
+      "token_count": 148,
+      "metadata": {
+        "title": "Ensure exclusive execution of a function",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_singleton.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_singleton.md",
+        "file_name": "reference_functions_singleton.md",
+        "file_size": 1113,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "7f5a0655148bc39e60891b54e47fc4b5efb60a44d421995ba623226f35ec01c1",
+        "author": null,
+        "created_at": "2025-10-13T00:00:37.567762",
+        "modified_at": "2025-10-13T00:00:37.567762",
+        "page_count": null,
+        "word_count": 145,
+        "extracted_at": "2025-10-13T20:04:31.896341",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 148,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Ensure exclusive execution of a function\nConfiguration\n- Name `singleton` Type object Required optional Description Options to configure exclusive execution of a function. Properties",
+      "char_count": 182,
+      "token_count": 29,
+      "metadata": {
+        "title": "Ensure exclusive execution of a function",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_singleton.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_singleton.md",
+        "file_name": "reference_functions_singleton.md",
+        "file_size": 1113,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "7f5a0655148bc39e60891b54e47fc4b5efb60a44d421995ba623226f35ec01c1",
+        "author": null,
+        "created_at": "2025-10-13T00:00:37.567762",
+        "modified_at": "2025-10-13T00:00:37.567762",
+        "page_count": null,
+        "word_count": 145,
+        "extracted_at": "2025-10-13T20:04:31.896341",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 29,
+        "has_context": true
+      }
+    }
+  ]
+}

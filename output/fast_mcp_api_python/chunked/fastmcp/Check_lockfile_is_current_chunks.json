@@ -1,0 +1,17 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Check_lockfile_is_current:chunk:0",
+    "content": "uv lock --check",
+    "metadata": {
+      "source": "fastmcp\\Check_lockfile_is_current.md",
+      "file_name": "Check_lockfile_is_current.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 1,
+      "char_count": 15,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.893779"
+    }
+  }
+]

@@ -1,0 +1,257 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:0",
+    "content": "Server composition and proxying enables FastMCP servers to combine functionality from multiple other servers, either through live delegation (mounting) or static copying (importing). This system allows complex applications to be built by composing smaller, focused servers while maintaining clean separation of concerns.\nFor information about the core FastMCP server architecture, see\n[2](#2)\n. For details about component management and registration, see\n[2.1](#2.1)\n.",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 17,
+      "char_count": 469,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302617"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:1",
+    "content": "FastMCP provides three primary mechanisms for server composition:\n- **Mounting** - Live delegation to child servers with automatic prefix handling\n- **Importing** - Static copying of components from other servers\n- **Proxying** - Transparent forwarding to remote MCP-compliant servers\nAll composition methods support automatic prefixing of component names to avoid conflicts and provide clear namespacing.",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 17,
+      "char_count": 405,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302632"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:2",
+    "content": "The mount system enables live delegation to child FastMCP servers. When a component is requested, the parent server forwards the request to the appropriate mounted server in real-time.",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 17,
+      "char_count": 184,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302639"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:3",
+    "content": "```\ngraph TB\n    subgraph \"Parent Server\"\n        ParentServer[\"FastMCP Parent Server\"]\n        MountedServers[\"_mounted_servers: list[MountedServer]\"]\n        ToolManager[\"ToolManager\"]\n        ResourceManager[\"ResourceManager\"] \n        PromptManager[\"PromptManager\"]\n    end\n    \n    subgraph \"MountedServer Dataclass\"\n        MountedServerData[\"MountedServer\"]\n        ServerRef[\"server: FastMCP\"]\n        PrefixField[\"prefix: str | None\"]\n    end\n    \n    subgraph \"Child Servers\"\n        ChildServer1[\"Child FastMCP Server 1\"]\n        ChildServer2[\"Child FastMCP Server 2\"]\n        ChildServer3[\"Child FastMCP Server 3\"]\n    end\n    \n    ParentServer --> MountedServers\n    MountedServers --> MountedServerData\n    MountedServerData --> ServerRef\n    MountedServerData --> PrefixField\n    \n    ServerRef -.->|\"Live Delegation\"| ChildServer1\n    ServerRef -.->|\"Live Delegation\"| ChildServer2  \n    ServerRef -.->|\"Live Delegation\"| ChildServer3\n    \n    ParentServer --> ToolManager\n    ParentServer --> ResourceManager\n    ParentServer --> PromptManager\n    \n    ToolManager -.->|\"get_tools()\"| MountedServers\n    ResourceManager -.->|\"get_resources()\"| MountedServers\n    PromptManager -.->|\"get_prompts()\"| MountedServers\n```\n**Sources:**\n[src/fastmcp/server/server.py:175](.)\n,\n[src/fastmcp/server/server.py:1260-1332](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 17,
+      "char_count": 1331,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302645"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:4",
+    "content": "The\n```\nmount\n```\nmethod in\n```\nFastMCP\n```\nregisters child servers for live delegation:\n```\nsequenceDiagram\n    participant Client\n    participant ParentServer as \"Parent FastMCP\"\n    participant MountedServers as \"_mounted_servers\"\n    participant ChildServer as \"Child FastMCP\"\n    \n    Client->>ParentServer: mount(child_server, \"prefix\")\n    ParentServer->>MountedServers: append(MountedServer)\n    Note over MountedServers: Store server + prefix\n    \n    Client->>ParentServer: call_tool(\"prefix_tool_name\", args)\n    ParentServer->>MountedServers: find server for \"prefix_tool_name\"\n    MountedServers->>ChildServer: call_tool(\"tool_name\", args)\n    ChildServer-->>Client: ToolResult\n```\n**Sources:**\n[src/fastmcp/server/server.py:1260-1332](.)\n,\n[tests/server/test_mount.py:16-68](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 17,
+      "char_count": 791,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302650"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:5",
+    "content": "The import system performs static copying of components from other servers. Components are copied once at import time and become part of the importing server.",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 17,
+      "char_count": 158,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302657"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:6",
+    "content": "```\ngraph LR\n    subgraph \"Mount System (Live Delegation)\"\n        ParentMountServer[\"Parent Server\"]\n        ChildMountServer[\"Child Server\"]\n        ParentMountServer -.->|\"Runtime calls\"| ChildMountServer\n    end\n    \n    subgraph \"Import System (Static Copy)\"\n        ParentImportServer[\"Parent Server\"]\n        CopiedComponents[\"Copied Components<br/>- Tools<br/>- Resources<br/>- Prompts\"]\n        SourceServer[\"Source Server\"]\n        SourceServer -->|\"One-time copy\"| CopiedComponents\n        ParentImportServer --> CopiedComponents\n    end\n```\n**Sources:**\n[src/fastmcp/server/server.py:1334-1421](.)\n,\n[tests/server/test_import_server.py:10-34](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 17,
+      "char_count": 657,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302662"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:7",
+    "content": "The\n```\nimport_server\n```\nmethod copies components with prefix handling:\n```\nflowchart TD\n    ImportCall[\"import_server(source, prefix)\"]\n    GetTools[\"source.get_tools()\"]\n    GetResources[\"source.get_resources()\"]  \n    GetPrompts[\"source.get_prompts()\"]\n    \n    ApplyToolPrefix[\"Apply prefix to tool names\"]\n    ApplyResourcePrefix[\"Apply prefix to resource URIs\"]\n    ApplyPromptPrefix[\"Apply prefix to prompt names\"]\n    \n    AddToManagers[\"Add to local managers\"]\n    \n    ImportCall --> GetTools\n    ImportCall --> GetResources\n    ImportCall --> GetPrompts\n    \n    GetTools --> ApplyToolPrefix\n    GetResources --> ApplyResourcePrefix\n    GetPrompts --> ApplyPromptPrefix\n    \n    ApplyToolPrefix --> AddToManagers\n    ApplyResourcePrefix --> AddToManagers\n    ApplyPromptPrefix --> AddToManagers\n```\n**Sources:**\n[src/fastmcp/server/server.py:1334-1421](.)\n,\n[tests/server/test_import_server.py:61-89](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 17,
+      "char_count": 915,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302668"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:8",
+    "content": "The proxy system enables FastMCP servers to act as transparent proxies to remote MCP-compliant servers. This is implemented through specialized managers and components.",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 17,
+      "char_count": 168,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302674"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:9",
+    "content": "```\ngraph TB\n    subgraph \"FastMCPProxy Server\"\n        ProxyServer[\"FastMCPProxy\"]\n        ClientFactory[\"client_factory: ClientFactoryT\"]\n    end\n    \n    subgraph \"Proxy Managers\"\n        ProxyToolManager[\"ProxyToolManager\"]\n        ProxyResourceManager[\"ProxyResourceManager\"]\n        ProxyPromptManager[\"ProxyPromptManager\"]\n    end\n    \n    subgraph \"Proxy Components\"\n        ProxyTool[\"ProxyTool\"]\n        ProxyResource[\"ProxyResource\"]  \n        ProxyPrompt[\"ProxyPrompt\"]\n        ProxyTemplate[\"ProxyTemplate\"]\n    end\n    \n    subgraph \"Remote Connection\"\n        Client[\"Client\"]\n        RemoteServer[\"Remote MCP Server\"]\n    end\n    \n    ProxyServer --> ClientFactory\n    ProxyServer --> ProxyToolManager\n    ProxyServer --> ProxyResourceManager\n    ProxyServer --> ProxyPromptManager\n    \n    ProxyToolManager --> ProxyTool\n    ProxyResourceManager --> ProxyResource\n    ProxyResourceManager --> ProxyTemplate\n    ProxyPromptManager --> ProxyPrompt\n    \n    ClientFactory --> Client\n    Client --> RemoteServer\n    \n    ProxyTool -.->|\"Forward calls\"| Client\n    ProxyResource -.->|\"Forward calls\"| Client\n    ProxyPrompt -.->|\"Forward calls\"| Client\n```\n**Sources:**\n[src/fastmcp/server/proxy.py:454-519](.)\n,\n[src/fastmcp/server/proxy.py:69-121](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 17,
+      "char_count": 1264,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302680"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:10",
+    "content": "FastMCP provides two ways to create proxy servers:\n```\ngraph LR\n    subgraph \"Direct FastMCPProxy Constructor\"\n        ProxyConstructor[\"FastMCPProxy(client_factory=...)\"]\n        ClientFactoryArg[\"Explicit client_factory\"]\n        ProxyConstructor --> ClientFactoryArg\n    end\n    \n    subgraph \"FastMCP.as_proxy() Class Method\"  \n        AsProxyMethod[\"FastMCP.as_proxy(backend=client)\"]\n        AutoClientFactory[\"Automatic client_factory creation\"]\n        AsProxyMethod --> AutoClientFactory\n    end\n    \n    ClientFactoryArg -.->|\"Manual session management\"| ProxyResult[\"FastMCPProxy Instance\"]\n    AutoClientFactory -.->|\"Simplified session strategy\"| ProxyResult\n```\n**Sources:**\n[src/fastmcp/server/server.py:1555-1610](.)\n,\n[src/fastmcp/server/proxy.py:460-508](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 17,
+      "char_count": 775,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302685"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:11",
+    "content": "All composition methods support automatic prefixing to avoid component name conflicts. The prefix handling varies by component type.",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 17,
+      "char_count": 132,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302690"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:12",
+    "content": "```\ngraph TD\n    ComponentType{\"Component Type\"}\n    \n    ComponentType -->|\"Tool\"| ToolPrefix[\"prefix + '_' + tool.name\"]\n    ComponentType -->|\"Resource\"| ResourcePrefix[\"protocol://prefix/path\"]\n    ComponentType -->|\"Resource Template\"| TemplatePrefix[\"protocol://prefix/{params}\"]\n    ComponentType -->|\"Prompt\"| PromptPrefix[\"prefix + '_' + prompt.name\"]\n    \n    ToolPrefix --> ToolExample[\"'api_get_user'\"]\n    ResourcePrefix --> ResourceExample[\"'data://api/users'\"]\n    TemplatePrefix --> TemplateExample[\"'users://api/{id}'\"]\n    PromptPrefix --> PromptExample[\"'api_greeting'\"]\n```\n**Sources:**\n[src/fastmcp/server/server.py:1423-1553](.)\n,\n[src/fastmcp/server/server.py:2157-2205](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 17,
+      "char_count": 696,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302696"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:13",
+    "content": "FastMCP provides utility functions for resource prefix manipulation:\n```\nadd_resource_prefix()\n```\n```\ndata://users\n```\n→\n```\ndata://api/users\n```\n```\nremove_resource_prefix()\n```\n```\ndata://api/users\n```\n→\n```\ndata://users\n```\n```\nhas_resource_prefix()\n```\n```\nTrue\n```\nfor\n```\ndata://api/users\n```\n, Purpose = . , Example = \n**Sources:**\n[src/fastmcp/server/server.py:2157-2205](.)\n,\n[tests/server/test_server.py:22-26](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 13,
+      "total_chunks": 17,
+      "char_count": 424,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302701"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:14",
+    "content": "The following diagram shows how requests flow through the composition system:\n```\nsequenceDiagram\n    participant Client\n    participant ParentServer as \"Parent FastMCP\"\n    participant ToolManager as \"ToolManager\"\n    participant MountedServer as \"Mounted Server\"\n    participant ProxyManager as \"ProxyToolManager\"\n    participant RemoteClient as \"Remote Client\"\n    \n    Client->>ParentServer: call_tool(\"api_get_user\", args)\n    ParentServer->>ToolManager: _call_tool(\"api_get_user\", args)\n    \n    alt Local Tool Found\n        ToolManager-->>ParentServer: Local tool result\n    else Mounted Server Tool\n        ToolManager->>MountedServer: call_tool(\"get_user\", args)\n        MountedServer-->>ToolManager: Tool result\n        ToolManager-->>ParentServer: Tool result\n    else Proxy Tool\n        ToolManager->>ProxyManager: call_tool(\"api_get_user\", args)\n        ProxyManager->>RemoteClient: call_tool(\"get_user\", args)\n        RemoteClient-->>ProxyManager: Remote result\n        ProxyManager-->>ToolManager: Tool result\n        ToolManager-->>ParentServer: Tool result\n    end\n    \n    ParentServer-->>Client: Final result\n```\n**Sources:**\n[src/fastmcp/server/server.py:729-752](.)\n,\n[src/fastmcp/server/proxy.py:107-121](.)\n,\n[src/fastmcp/server/proxy.py:280-296](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 14,
+      "total_chunks": 17,
+      "char_count": 1272,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302707"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:15",
+    "content": "Servers can be composed in multiple levels, with prefixes accumulating:\n```\ngraph TD\n    MainApp[\"Main App\"]\n    ServiceLayer[\"Service Layer<br/>(prefix: 'service')\"]\n    APILayer[\"API Layer<br/>(prefix: 'api')\"]\n    DataProvider[\"Data Provider\"]\n    \n    MainApp -->|\"mount('service')\"| ServiceLayer\n    ServiceLayer -->|\"mount('api')\"| APILayer\n    APILayer -->|\"import_server('data')\"| DataProvider\n    \n    FinalTool[\"Final Tool: 'service_api_data_get_user'\"]\n    MainApp -.-> FinalTool\n```\n**Sources:**\n[tests/server/test_import_server.py:249-283](.)\n,\n[tests/server/test_mount.py:466-509](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 15,
+      "total_chunks": 17,
+      "char_count": 597,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302713"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Server_Composition_and_Proxying:chunk:16",
+    "content": "A single parent server can use multiple composition strategies simultaneously:\n```\ngraph TB\n    ParentServer[\"Parent FastMCP Server\"]\n    \n    subgraph \"Mounted Servers (Live)\"\n        MountedAuth[\"Auth Server<br/>(mounted: 'auth')\"]\n        MountedAPI[\"API Server<br/>(mounted: 'api')\"]\n    end\n    \n    subgraph \"Imported Components (Static)\"\n        ImportedUtils[\"Utils Components<br/>(imported: 'utils')\"]\n        ImportedData[\"Data Components<br/>(imported: 'data')\"]\n    end\n    \n    subgraph \"Proxy Servers (Remote)\"\n        RemoteAnalytics[\"Analytics Server<br/>(proxy: 'analytics')\"]\n        RemoteML[\"ML Server<br/>(proxy: 'ml')\"]\n    end\n    \n    ParentServer --> MountedAuth\n    ParentServer --> MountedAPI\n    ParentServer --> ImportedUtils\n    ParentServer --> ImportedData\n    ParentServer --> RemoteAnalytics\n    ParentServer --> RemoteML\n```\n**Sources:**\n[tests/server/test_mount.py:210-238](.)\n,\n[tests/server/test_import_server.py:36-58](.)\n,\n[src/fastmcp/server/proxy.py:454-519](.)",
+    "metadata": {
+      "source": "fastmcp\\Server_Composition_and_Proxying.md",
+      "file_name": "Server_Composition_and_Proxying.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 16,
+      "total_chunks": 17,
+      "char_count": 1003,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:05.302718"
+    }
+  }
+]

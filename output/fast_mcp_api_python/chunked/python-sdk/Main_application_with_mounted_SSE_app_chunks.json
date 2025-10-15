@@ -1,0 +1,17 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Main_application_with_mounted_SSE_app:chunk:0",
+    "content": "main_app = Starlette(routes=[\nMount(\"/api/v1\", app=sse_app)\n])",
+    "metadata": {
+      "source": "python-sdk\\Main_application_with_mounted_SSE_app.md",
+      "file_name": "Main_application_with_mounted_SSE_app.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 1,
+      "char_count": 62,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:21.267605"
+    }
+  }
+]

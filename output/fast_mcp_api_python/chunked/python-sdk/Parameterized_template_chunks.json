@@ -1,0 +1,122 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Parameterized_template:chunk:0",
+    "content": "@server.resource(\"data://{user_id}/profile\")\ndef get_user_profile(user_id: str) -> str:\nreturn f\"Profile for user {user_id}\"\n```\nThe framework automatically detects whether a resource should be treated as a template based on URI parameters and function signature.\n\nSources: [src/mcp/server/fastmcp/server.py:479-578](), [tests/server/fastmcp/test_server.py:701-827]()\n\n### Prompt Registration\n\nPrompts are registered using the `@prompt()` decorator and return message structures:\n\n```python\n@server.prompt()\ndef analyze_data(dataset_name: str) -> str:\n    \"\"\"Generate analysis prompt for a dataset.\"\"\"\n    return f\"Please analyze the dataset: {dataset_name}\"\n```\nSources:\n[src/mcp/server/fastmcp/server.py:588-641](.)\n,\n[tests/server/fastmcp/test_server.py:1094-1284](.)",
+    "metadata": {
+      "source": "python-sdk\\Parameterized_template.md",
+      "file_name": "Parameterized_template.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 8,
+      "char_count": 770,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.097567"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Parameterized_template:chunk:1",
+    "content": "The\n```\nContext\n```\nclass provides access to MCP capabilities and is automatically injected into functions that declare it as a parameter:\n```\ngraph TB\n    subgraph \"Context Injection Flow\"\n        FunctionCall[\"Function Call\"]\n        ParameterDetection[\"find_context_parameter()\"]\n        ContextCreation[\"get_context()\"]\n        ContextInjection[\"Context Injection\"]\n        FunctionExecution[\"Function Execution\"]\n    end\n    \n    subgraph \"Context Capabilities\"\n        Logging[\"ctx.log(), ctx.info(), ctx.debug()\"]\n        Progress[\"ctx.report_progress()\"]\n        ResourceAccess[\"ctx.read_resource()\"]\n        RequestInfo[\"ctx.request_id, ctx.client_id\"]\n    end\n    \n    FunctionCall --> ParameterDetection\n    ParameterDetection --> ContextCreation\n    ContextCreation --> ContextInjection\n    ContextInjection --> FunctionExecution\n    \n    ContextInjection --> Logging\n    ContextInjection --> Progress\n    ContextInjection --> ResourceAccess\n    ContextInjection --> RequestInfo\n```",
+    "metadata": {
+      "source": "python-sdk\\Parameterized_template.md",
+      "file_name": "Parameterized_template.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 8,
+      "char_count": 994,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.097585"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Parameterized_template:chunk:2",
+    "content": "The\n```\nContext\n```\nclass provides several methods for interacting with the MCP session:\n```\nlog()\n```\n```\nlevel\n```\n,\n```\nmessage\n```\n,\n```\nlogger_name\n```\n```\nreport_progress()\n```\n```\nprogress\n```\n,\n```\ntotal\n```\n,\n```\nmessage\n```\n```\nread_resource()\n```\n```\nuri\n```\n```\nelicit()\n```\n```\nmessage\n```\n,\n```\nschema\n```\n, Purpose = . , Parameters = \nSources:\n[src/mcp/server/fastmcp/server.py:1043-1223](.)\n,\n[tests/server/fastmcp/test_server.py:835-1092](.)",
+    "metadata": {
+      "source": "python-sdk\\Parameterized_template.md",
+      "file_name": "Parameterized_template.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 8,
+      "char_count": 458,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.097592"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Parameterized_template:chunk:3",
+    "content": "FastMCP supports multiple transport protocols through dedicated application factories:",
+    "metadata": {
+      "source": "python-sdk\\Parameterized_template.md",
+      "file_name": "Parameterized_template.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 8,
+      "char_count": 86,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.097599"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Parameterized_template:chunk:4",
+    "content": "```\ngraph TB\n    subgraph \"FastMCP Transport Integration\"\n        FastMCPInstance[FastMCP]\n        \n        subgraph \"Transport Methods\"\n            RunStdio[\"run_stdio_async()\"]\n            RunSSE[\"run_sse_async()\"]\n            RunStreamable[\"run_streamable_http_async()\"]\n        end\n        \n        subgraph \"App Factories\"\n            SSEAppFactory[\"sse_app()\"]\n            StreamableAppFactory[\"streamable_http_app()\"]\n            StdioRunner[\"stdio_server()\"]\n        end\n        \n        subgraph \"Underlying Transports\"\n            SseServerTransport[SseServerTransport]\n            StreamableHTTPSessionManager[StreamableHTTPSessionManager]\n            StdioTransport[\"stdio transport\"]\n        end\n        \n        subgraph \"ASGI Applications\"\n            StarletteSSE[\"Starlette App (SSE)\"]\n            StarletteStreamable[\"Starlette App (StreamableHTTP)\"]\n        end\n    end\n    \n    FastMCPInstance --> RunStdio\n    FastMCPInstance --> RunSSE\n    FastMCPInstance --> RunStreamable\n    \n    RunStdio --> StdioRunner\n    RunSSE --> SSEAppFactory\n    RunStreamable --> StreamableAppFactory\n    \n    SSEAppFactory --> SseServerTransport\n    SSEAppFactory --> StarletteSSE\n    \n    StreamableAppFactory --> StreamableHTTPSessionManager\n    StreamableAppFactory --> StarletteStreamable\n    \n    StdioRunner --> StdioTransport\n```",
+    "metadata": {
+      "source": "python-sdk\\Parameterized_template.md",
+      "file_name": "Parameterized_template.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 8,
+      "char_count": 1338,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.097605"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Parameterized_template:chunk:5",
+    "content": "Each transport provides specific capabilities:\nstdio, Use Case = Process-based communication. stdio, Key Features = Simple stdin/stdout JSON-RPC. SSE, Use Case = Web-based real-time communication. SSE, Key Features = Server-sent events with HTTP POST. StreamableHTTP, Use Case = Resumable sessions. StreamableHTTP, Key Features = Bidirectional streaming, session persistence\nSources:\n[src/mcp/server/fastmcp/server.py:687-724](.)\n,\n[src/mcp/server/fastmcp/server.py:752-990](.)",
+    "metadata": {
+      "source": "python-sdk\\Parameterized_template.md",
+      "file_name": "Parameterized_template.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 8,
+      "char_count": 477,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.097611"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Parameterized_template:chunk:6",
+    "content": "The\n```\nSettings\n```\nclass provides comprehensive configuration management with environment variable support:\n```\nclass Settings(BaseSettings):\n    # Server settings\n    debug: bool\n    log_level: Literal[\"DEBUG\", \"INFO\", \"WARNING\", \"ERROR\", \"CRITICAL\"]\n    \n    # HTTP settings\n    host: str = \"127.0.0.1\"\n    port: int = 8000\n    mount_path: str = \"/\"\n    \n    # Authentication\n    auth: AuthSettings | None = None\n    \n    # Transport security\n    transport_security: TransportSecuritySettings | None = None\n```\nSettings can be configured via:\n- Environment variables with `FASTMCP_` prefix\n- `.env` files\n- Direct parameter passing",
+    "metadata": {
+      "source": "python-sdk\\Parameterized_template.md",
+      "file_name": "Parameterized_template.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 8,
+      "char_count": 635,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.097617"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Parameterized_template:chunk:7",
+    "content": "FastMCP supports OAuth 2.0 authentication through integrated middleware:\n```\ngraph LR\n    subgraph \"Authentication Flow\"\n        AuthSettings[AuthSettings]\n        AuthServerProvider[OAuthAuthorizationServerProvider]\n        TokenVerifier[TokenVerifier]\n        \n        subgraph \"Middleware Stack\"\n            AuthenticationMiddleware[AuthenticationMiddleware]\n            AuthContextMiddleware[AuthContextMiddleware]\n            RequireAuthMiddleware[RequireAuthMiddleware]\n        end\n        \n        subgraph \"Route Protection\"\n            SSERoutes[\"SSE Routes\"]\n            StreamableRoutes[\"StreamableHTTP Routes\"]\n            CustomRoutes[\"Custom Routes\"]\n        end\n    end\n    \n    AuthSettings --> AuthServerProvider\n    AuthSettings --> TokenVerifier\n    \n    AuthServerProvider --> AuthenticationMiddleware\n    TokenVerifier --> AuthenticationMiddleware\n    \n    AuthenticationMiddleware --> AuthContextMiddleware\n    AuthContextMiddleware --> RequireAuthMiddleware\n    \n    RequireAuthMiddleware --> SSERoutes\n    RequireAuthMiddleware --> StreamableRoutes\n    RequireAuthMiddleware --> CustomRoutes\n```\nSources:\n[src/mcp/server/fastmcp/server.py:56-108](.)\n,\n[src/mcp/server/fastmcp/server.py:152-170](.)\n,\n[src/mcp/server/fastmcp/server.py:792-982](.)",
+    "metadata": {
+      "source": "python-sdk\\Parameterized_template.md",
+      "file_name": "Parameterized_template.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 8,
+      "char_count": 1269,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:23.097624"
+    }
+  }
+]

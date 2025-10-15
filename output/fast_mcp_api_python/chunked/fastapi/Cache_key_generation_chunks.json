@@ -1,0 +1,32 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Cache_key_generation:chunk:0",
+    "content": "cache_key = (dependant.call, tuple(sorted(set(dependant.security_scopes or []))))\n```\nCache behavior is controlled by the `use_cache` parameter in `Depends()` and can be disabled for dependencies that should be called multiple times.\n\nSources: [fastapi/dependencies/models.py:36-37](), [fastapi/dependencies/utils.py:631-644]()\n\n### Generator Dependencies\n\nGenerator dependencies support resource management with automatic cleanup using context managers. The system distinguishes between sync and async generators:\n\n- **Sync Generators**: Wrapped with `contextmanager_in_threadpool`\n- **Async Generators**: Used directly as async context managers\n\nSources: [fastapi/dependencies/utils.py:553-560](), [fastapi/dependencies/utils.py:633-636]()\n\n### Security Dependencies\n\nSecurity dependencies integrate with FastAPI's security system through `SecurityRequirement` objects, which specify security schemes and required scopes.\n\nSources: [fastapi/dependencies/models.py:9-11](), [fastapi/dependencies/utils.py:150-171]()\n\n## Integration with Routing\n\n### Route Handler Integration\n\nThe routing system integrates dependency injection through the `get_request_handler` function, which creates request handlers that automatically resolve dependencies.\n\n```mermaid\ngraph LR\n    ROUTE[\"APIRoute.__init__()\"] --> GET_DEP[\"get_dependant()\"]\n    GET_DEP --> FLAT_DEP[\"get_flat_dependant()\"]\n    FLAT_DEP --> HANDLER[\"get_request_handler()\"]\n    \n    subgraph \"Request Processing\"\n        REQUEST[\"HTTP Request\"] --> SOLVE[\"solve_dependencies()\"]\n        SOLVE --> EXECUTE[\"run_endpoint_function()\"]\n        EXECUTE --> RESPONSE[\"HTTP Response\"]\n    end\n    \n    HANDLER --> REQUEST\n```\nThe route analysis phase extracts dependency information and creates optimized structures for runtime resolution.\nSources:\n[fastapi/routing.py:555-561](.)\n,\n[fastapi/routing.py:292-299](.)\n,\n[fastapi/routing.py:218-358](.)",
+    "metadata": {
+      "source": "fastapi\\Cache_key_generation.md",
+      "file_name": "Cache_key_generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 2,
+      "char_count": 1896,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.730519"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Cache_key_generation:chunk:1",
+    "content": "The system supports dependency overrides through the\n```\ndependency_overrides_provider\n```\n, allowing replacement of dependencies during testing or runtime configuration.\nSources:\n[fastapi/dependencies/utils.py:599-613](.)",
+    "metadata": {
+      "source": "fastapi\\Cache_key_generation.md",
+      "file_name": "Cache_key_generation.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 2,
+      "char_count": 222,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.730534"
+    }
+  }
+]

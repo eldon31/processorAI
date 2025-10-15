@@ -1,0 +1,126 @@
+#### On this page
+
+- [Multiple triggers &amp; wildcards](\docs\guides\multiple-triggers#multiple-triggers-and-wildcards)
+- [Multiple triggers](\docs\guides\multiple-triggers#multiple-triggers)
+- [Wildcard event triggers](\docs\guides\multiple-triggers#wildcard-event-triggers)
+- [Defining types for wildcard triggers](\docs\guides\multiple-triggers#defining-types-for-wildcard-triggers)
+- [Determining event types](\docs\guides\multiple-triggers#determining-event-types)
+- [Overlapping crons](\docs\guides\multiple-triggers#overlapping-crons)
+
+Features [Events &amp; Triggers](\docs\features\events-triggers)
+
+# Multiple triggers &amp; wildcards
+
+Inngest functions can be configured to trigger on multiple events or schedules.
+
+Using multiple triggers is useful for running the same logic for a wide array of events, or
+
+ensuring something also runs on a schedule, for example running an integrity
+
+check every morning, or when requested using an event.
+
+Multiple triggers can be configured using an [list of triggers](\docs\guides\multiple-triggers#multiple-triggers) , or [wildcard event triggers](\docs\guides\multiple-triggers#wildcard-event-triggers) .
+
+## [Multiple triggers](\docs\guides\multiple-triggers#multiple-triggers)
+
+Functions support up to 10 unique triggers. This allows you to explicitly match multiple events, or schedules. Multiple schedules that overlap will be de-duplicated - Learn more about [overlapping crons](\docs\guides\multiple-triggers#overlapping-crons) .
+
+TypeScript Go Python
+
+Copy Copied
+
+```
+inngest .createFunction (
+{ id : "resync-user-data" } ,
+[
+{ event : "user.created" } ,
+{ event : "user.updated" } ,
+{ cron : "0 5 * * *" } , // Every morning at 5am
+] ,
+async ({ event , step }) => {
+// ...
+} ,
+);
+```
+
+## [Wildcard event triggers](\docs\guides\multiple-triggers#wildcard-event-triggers)
+
+Event triggers can be configured using wildcards to match multiple events. This is useful for matching entire groups of events for cases like forwarding events to another system, like an real-time ETL.
+
+Wildcards can be used after any `/` or `.` character to match entire groups of events. Here are some examples:
+
+- `app/*` matches any event with the `app` prefix, like `app/user.created` and `app/blog.post.published` .
+- `app/user.*` matches any event with the `app/user.` prefix, like `app/user.created` and `app/user.updated` .
+- `app/blog.post.*` matches any event with the `app/blog.post.` prefix, like `app/blog.post.published` .
+
+Wildcards cannot be used following any characters other than `/` and `.` or in the middle of a pattern, so mid-word wildcards like `app/user.update*` and `app/blog.*.published` are not supported.
+
+### [Defining types for wildcard triggers](\docs\guides\multiple-triggers#defining-types-for-wildcard-triggers)
+
+To define types for wildcard triggers, you need to explicitly define
+
+Copy Copied
+
+```
+type WildcardEvents = {
+"app/blog.post.*" : {
+name : "app/blog.post.created" | "app/blog.post.published" ;
+data : {
+postId : string ;
+authorId : string ;
+createdAt : string ;
+} | {
+postId : string ;
+authorId : string ;
+publishedAt : string ;
+}
+}
+}
+const inngest = new Inngest ({
+id : "my-app" ,
+schemas : new EventSchemas () .fromRecord < WildcardEvents >()
+});
+
+inngest .createFunction (
+{ id : "blog-updates-to-slack" } ,
+{ event : "app/blog.post.*" } ,
+async ({ event , step }) => {
+// ...
+} ,
+);
+```
+
+## [Determining event types](\docs\guides\multiple-triggers#determining-event-types)
+
+In the handler for a function with multiple triggers, the event that triggered
+
+the function can be determined using the
+
+`event.name` property.
+
+TypeScript Go
+
+Copy Copied
+
+```
+async ({ event }) => {
+//      ^? type event: EventA | EventB | InngestScheduledEvent | InngestFnInvoked
+if ( event .name === "a" ) {
+// `event` is type narrowed to only the `a` event
+} else if ( event .name === "b" ) {
+// `event` is type narrowed to only the `b` event
+} else {
+// `event` is type narrowed to only the `inngest/function.invoked` event
+}
+}
+```
+
+Note that batches of `events` can contain many different events; you will need
+
+to assert the shape of each event in a batch individually.
+
+## [Overlapping crons](\docs\guides\multiple-triggers#overlapping-crons)
+
+If your function defines multiple cron triggers, the schedules may sometimes overlap. For example, a cron `0 * * * *` that runs every hour and a cron `*/30 * * * *` that runs every half hour would overlap at the start of each hour.
+
+Only one cron job will be run for each given second, so in this case above, one cron would run every half hour.

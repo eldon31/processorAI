@@ -1,0 +1,160 @@
+{
+  "source": "Docs\\inngest_overall\\apps.md",
+  "title": "apps",
+  "converter": "Docling DocumentConverter",
+  "chunker": "HybridChunker",
+  "config": {
+    "tokenizer": "sentence-transformers/all-MiniLM-L6-v2",
+    "max_tokens": 2048,
+    "merge_peers": true,
+    "heading_as_metadata": true
+  },
+  "num_chunks": 7,
+  "total_chars": 3452,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "- [Inngest Apps](\\docs\\apps#inngest-apps)\n- [Apps in SDK](\\docs\\apps#apps-in-sdk)\n- [Apps in Inngest Cloud](\\docs\\apps#apps-in-inngest-cloud)\n- [Apps in Inngest Dev Server](\\docs\\apps#apps-in-inngest-dev-server)\n- [Informing Inngest about your apps](\\docs\\apps#informing-inngest-about-your-apps)\n- [Next Steps](\\docs\\apps#next-steps)\nPlatform\n[Deployment](\\docs\\platform\\deployment)",
+      "meta": {
+        "doc_items": [
+          "self_ref='#/texts/2' parent=RefItem(cref='#/groups/3') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.LIST_ITEM: 'list_item'> prov=[]",
+          "self_ref='#/texts/3' parent=RefItem(cref='#/groups/3') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.LIST_ITEM: 'list_item'> prov=[]",
+          "self_ref='#/texts/4' parent=RefItem(cref='#/groups/3') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.LIST_ITEM: 'list_item'> prov=[]",
+          "self_ref='#/texts/5' parent=RefItem(cref='#/groups/3') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.LIST_ITEM: 'list_item'> prov=[]",
+          "self_ref='#/texts/6' parent=RefItem(cref='#/groups/3') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.LIST_ITEM: 'list_item'> prov=[]",
+          "self_ref='#/texts/7' parent=RefItem(cref='#/groups/3') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.LIST_ITEM: 'list_item'> prov=[]",
+          "self_ref='#/texts/8' parent=RefItem(cref='#/groups/4') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/9' parent=RefItem(cref='#/groups/4') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]"
+        ],
+        "headings": [
+          "On this page"
+        ]
+      },
+      "char_count": 382,
+      "token_count": 29
+    },
+    {
+      "index": 1,
+      "text": "In Inngest, apps map directly to your projects or services. When you serve your functions using our serve API handler, you are hosting a new Inngest app. With Inngest apps, your dashboard reflects your code organization better.\nIt's important to note that apps are synced to one environment. You can sync any number of apps to one single environment using different Inngest Clients.\nThe diagram below shows how each environment can have multiple apps which can have multiple functions each:\nDiagram showing multiple environments, each with various apps. Within these apps, there are numerous functions\nDiagram showing multiple environments, each with various apps. Within these apps, there are numerous functions",
+      "meta": {
+        "doc_items": [
+          "self_ref='#/texts/11' parent=RefItem(cref='#/texts/10') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/12' parent=RefItem(cref='#/texts/10') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/13' parent=RefItem(cref='#/texts/10') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/14' parent=RefItem(cref='#/texts/10') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/15' parent=RefItem(cref='#/texts/10') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]"
+        ],
+        "headings": [
+          "Inngest Apps"
+        ]
+      },
+      "char_count": 712,
+      "token_count": 110
+    },
+    {
+      "index": 2,
+      "text": "Each\n[```\nserve()\n```](\\docs\\learn\\serving-inngest-functions)\n[API handler](\\docs\\learn\\serving-inngest-functions)\nwill generate an app in Inngest upon syncing.\nThe app ID is determined by the ID passed to the serve handler from the Inngest client.\nFor example, the code below will create an Inngest app called \"example-app\" which contains one function:\nNode.js Python (Flask) Python (FastAPI) Go (HTTP)\nCopy Copied\n```\nimport { Inngest } from \"inngest\" ;\nimport { serve } from \"inngest/next\" ; // or your preferred framework\nimport { sendSignupEmail } from \"./functions\" ;\n\nconst inngest = new Inngest ({ id : \"example-app\" });\n\nserve ({\nclient : inngest ,\nfunctions : [sendSignupEmail] ,\n});\n```\nEach app ID is considered a persistent identifier. Changing your client ID will result in Inngest not recognizing the app ID during the next sync. As a result, Inngest will create a new app.",
+      "meta": {
+        "doc_items": [
+          "self_ref='#/texts/17' parent=RefItem(cref='#/groups/5') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/18' parent=RefItem(cref='#/groups/5') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.CODE: 'code'> prov=[]",
+          "self_ref='#/texts/19' parent=RefItem(cref='#/groups/5') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/20' parent=RefItem(cref='#/groups/5') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/21' parent=RefItem(cref='#/texts/16') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/22' parent=RefItem(cref='#/texts/16') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/23' parent=RefItem(cref='#/texts/16') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/24' parent=RefItem(cref='#/texts/16') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/25' parent=RefItem(cref='#/texts/16') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.CODE: 'code'> prov=[]",
+          "self_ref='#/texts/26' parent=RefItem(cref='#/texts/16') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]"
+        ],
+        "headings": [
+          "Inngest Apps",
+          "Apps in SDK"
+        ]
+      },
+      "char_count": 888,
+      "token_count": 139
+    },
+    {
+      "index": 3,
+      "text": "In the image below, you can see the apps page in Inngest Cloud. Check the\n[Working with Apps Guide](\\docs\\apps\\cloud)\nfor more information about how to sync apps in Inngest Cloud.\nInngest Cloud screen with apps",
+      "meta": {
+        "doc_items": [
+          "self_ref='#/texts/28' parent=RefItem(cref='#/groups/6') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/29' parent=RefItem(cref='#/groups/6') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/30' parent=RefItem(cref='#/groups/6') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/31' parent=RefItem(cref='#/texts/27') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]"
+        ],
+        "headings": [
+          "Inngest Apps",
+          "Apps in Inngest Cloud"
+        ]
+      },
+      "char_count": 210,
+      "token_count": 35
+    },
+    {
+      "index": 4,
+      "text": "In the image below, you can see the apps page in Inngest Dev Server. For more information on how to sync apps in Inngest Dev Server check the\n[Local Development Guide](\\docs\\local-development#connecting-apps-to-the-dev-server)\n.\nInngest Dev Server screen with no events recorded",
+      "meta": {
+        "doc_items": [
+          "self_ref='#/texts/33' parent=RefItem(cref='#/groups/7') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/34' parent=RefItem(cref='#/groups/7') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/35' parent=RefItem(cref='#/groups/7') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/36' parent=RefItem(cref='#/texts/32') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]"
+        ],
+        "headings": [
+          "Inngest Apps",
+          "Apps in Inngest Dev Server"
+        ]
+      },
+      "char_count": 278,
+      "token_count": 40
+    },
+    {
+      "index": 5,
+      "text": "To integrate your code hosted on another platform with Inngest, you need to inform Inngest about the location of your app and functions.\nFor example, imagine that your\n```\nserve()\n```\nhandler is located at\n```\n/api/inngest\n```\n, and your domain is\n```\nmyapp.com\n```\n. In this scenario, you will need to sync your app to inform Inngest that your apps and functions are hosted at\n```\nhttps://myapp.com/api/inngest\n```\n.\nTo ensure that your functions are up to date, you need to resync your app with Inngest whenever you deploy new function configurations to your hosted platform.\nInngest uses the\n[```\nINNGEST_SIGNING_KEY\n```](\\docs\\platform\\signing-keys?ref=deploy)\nto securely communicate with your application and identify the correct environment to sync your app.",
+      "meta": {
+        "doc_items": [
+          "self_ref='#/texts/38' parent=RefItem(cref='#/texts/37') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/39' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/40' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.CODE: 'code'> prov=[]",
+          "self_ref='#/texts/41' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/42' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.CODE: 'code'> prov=[]",
+          "self_ref='#/texts/43' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/44' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.CODE: 'code'> prov=[]",
+          "self_ref='#/texts/45' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/46' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.CODE: 'code'> prov=[]",
+          "self_ref='#/texts/47' parent=RefItem(cref='#/groups/8') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/48' parent=RefItem(cref='#/texts/37') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/49' parent=RefItem(cref='#/groups/9') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/50' parent=RefItem(cref='#/groups/9') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.CODE: 'code'> prov=[]",
+          "self_ref='#/texts/51' parent=RefItem(cref='#/groups/9') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]"
+        ],
+        "headings": [
+          "Inngest Apps",
+          "Informing Inngest about your apps"
+        ]
+      },
+      "char_count": 765,
+      "token_count": 120
+    },
+    {
+      "index": 6,
+      "text": "To continue your exploration, feel free to check out:\n- How to [work with Apps in the Dev Server](\\docs\\local-development#connecting-apps-to-the-dev-server)\n- How to [work with Apps in Inngest Cloud](\\docs\\apps\\cloud)",
+      "meta": {
+        "doc_items": [
+          "self_ref='#/texts/53' parent=RefItem(cref='#/texts/52') children=[] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.TEXT: 'text'> prov=[]",
+          "self_ref='#/texts/54' parent=RefItem(cref='#/groups/10') children=[RefItem(cref='#/groups/11')] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.LIST_ITEM: 'list_item'> prov=[]",
+          "self_ref='#/texts/57' parent=RefItem(cref='#/groups/10') children=[RefItem(cref='#/groups/12')] content_layer=<ContentLayer.BODY: 'body'> label=<DocItemLabel.LIST_ITEM: 'list_item'> prov=[]"
+        ],
+        "headings": [
+          "Inngest Apps",
+          "Next Steps"
+        ]
+      },
+      "char_count": 217,
+      "token_count": 28
+    }
+  ]
+}

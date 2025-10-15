@@ -1,0 +1,197 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:0",
+    "content": "The Client Framework provides the core client-side components for connecting to and interacting with MCP servers. This framework handles session management, protocol communication, request/response patterns, and server capability discovery. It abstracts the underlying transport mechanisms while providing a high-level API for MCP operations.\nFor information about server-side implementations, see\n[FastMCP Server Framework](#2)\nand\n[Low-Level Server Implementation](#6)\n. For transport-specific client implementations, see\n[Client Transports](#3.2)\n. For authentication details, see\n[Client Authentication](#3.3)\n.",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 13,
+      "char_count": 615,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328243"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:1",
+    "content": "The\n```\nClientSession\n```\nclass serves as the primary interface for MCP client applications, built on top of the\n```\nBaseSession\n```\nfoundation for session management and message handling.\n```\ngraph TB\n    subgraph \"Client Framework Architecture\"\n        ClientSession[\"ClientSession<br/>High-level Client API\"]\n        BaseSession[\"BaseSession<br/>Generic Session Management\"]\n        \n        subgraph \"Core Components\"\n            RequestResponder[\"RequestResponder<br/>Request Lifecycle Management\"]\n            MessageMetadata[\"MessageMetadata<br/>Message Context\"]\n            SessionMessage[\"SessionMessage<br/>Transport Abstraction\"]\n        end\n        \n        subgraph \"Protocol Types\"\n            ClientRequest[\"ClientRequest<br/>Outbound Requests\"]\n            ClientResult[\"ClientResult<br/>Response Types\"]\n            ServerRequest[\"ServerRequest<br/>Inbound Requests\"]\n            ServerNotification[\"ServerNotification<br/>Server Messages\"]\n        end\n        \n        subgraph \"Callback System\"\n            SamplingFnT[\"SamplingFnT<br/>LLM Sampling Handler\"]\n            ElicitationFnT[\"ElicitationFnT<br/>Content Elicitation\"]\n            ListRootsFnT[\"ListRootsFnT<br/>Root Directory Listing\"]\n            LoggingFnT[\"LoggingFnT<br/>Server Log Handler\"]\n            MessageHandlerFnT[\"MessageHandlerFnT<br/>Generic Message Handler\"]\n        end\n        \n        subgraph \"Stream Infrastructure\"\n            MemoryObjectReceiveStream[\"MemoryObjectReceiveStream<br/>Inbound Messages\"]\n            MemoryObjectSendStream[\"MemoryObjectSendStream<br/>Outbound Messages\"]\n        end\n    end\n    \n    ClientSession --> BaseSession\n    BaseSession --> RequestResponder\n    BaseSession --> SessionMessage\n    ClientSession --> SamplingFnT\n    ClientSession --> ElicitationFnT\n    ClientSession --> ListRootsFnT\n    ClientSession --> LoggingFnT\n    ClientSession --> MessageHandlerFnT\n    \n    BaseSession --> MemoryObjectReceiveStream\n    BaseSession --> MemoryObjectSendStream\n    \n    ClientSession --> ClientRequest\n    ClientSession --> ServerRequest\n    BaseSession --> MessageMetadata\n```\n**Sources:**\n[src/mcp/client/session.py:101-136](.)\n,\n[src/mcp/shared/session.py:159-200](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 13,
+      "char_count": 2201,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328267"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:2",
+    "content": "The client session follows a structured initialization process to establish protocol compatibility and exchange capability information with the server.\n```\nsequenceDiagram\n    participant Client as \"ClientSession\"\n    participant BaseSession as \"BaseSession\"\n    participant Server as \"MCP Server\"\n    participant Transport as \"Transport Layer\"\n    \n    Note over Client,Transport: Session Setup\n    Client->>BaseSession: \"__aenter__()\"\n    BaseSession->>BaseSession: \"start _receive_loop()\"\n    \n    Note over Client,Server: Protocol Negotiation\n    Client->>Server: \"InitializeRequest\"\n    Note right of Client: \"protocolVersion: LATEST_PROTOCOL_VERSION<br/>capabilities: ClientCapabilities<br/>clientInfo: Implementation\"\n    Server->>Client: \"InitializeResult\"\n    Note left of Server: \"protocolVersion: negotiated_version<br/>capabilities: ServerCapabilities<br/>serverInfo: Implementation\"\n    \n    Client->>Client: \"validate protocol version\"\n    Client->>Server: \"InitializedNotification\"\n    \n    Note over Client,Server: Ready for Operations\n    Client->>Server: \"ListToolsRequest\"\n    Client->>Server: \"CallToolRequest\"\n    Client->>Server: \"ListResourcesRequest\"\n```\n**Sources:**\n[src/mcp/client/session.py:137-174](.)\n,\n[tests/client/test_session.py:30-114](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 13,
+      "char_count": 1273,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328277"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:3",
+    "content": "The framework implements a sophisticated request/response system with progress tracking, timeout management, and structured validation.",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 13,
+      "char_count": 135,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328287"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:4",
+    "content": "```\ncall_tool()\n```\n```\nCallToolRequest\n```\n```\nCallToolResult\n```\n```\nlist_tools()\n```\n```\nListToolsRequest\n```\n```\nListToolsResult\n```\n```\nread_resource()\n```\n```\nReadResourceRequest\n```\n```\nReadResourceResult\n```\n```\nlist_resources()\n```\n```\nListResourcesRequest\n```\n```\nListResourcesResult\n```\n```\nget_prompt()\n```\n```\nGetPromptRequest\n```\n```\nGetPromptResult\n```\n```\ncomplete()\n```\n```\nCompleteRequest\n```\n```\nCompleteResult\n```\n, Purpose = . , Request Type = . , Response Type = \n**Sources:**\n[src/mcp/client/session.py:270-297](.)\n,\n[src/mcp/client/session.py:366-383](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 13,
+      "char_count": 578,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328299"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:5",
+    "content": "The client automatically validates structured tool outputs against server-provided schemas:\n```\ngraph LR\n    subgraph \"Tool Validation Process\"\n        CallTool[\"call_tool(name, args)\"]\n        ListTools[\"list_tools()\"]\n        SchemaCache[\"_tool_output_schemas<br/>dict[str, dict]\"]\n        ValidateResult[\"_validate_tool_result()\"]\n        JSONSchema[\"JSON Schema Validation\"]\n        \n        CallTool --> ValidateResult\n        ValidateResult --> SchemaCache\n        SchemaCache --> ListTools\n        ValidateResult --> JSONSchema\n        \n        ValidationError[\"ValidationError<br/>Invalid structured content\"]\n        SchemaError[\"SchemaError<br/>Invalid schema definition\"]\n        \n        JSONSchema --> ValidationError\n        JSONSchema --> SchemaError\n    end\n```\n**Sources:**\n[src/mcp/client/session.py:298-319](.)\n,\n[src/mcp/client/session.py:377-381](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 13,
+      "char_count": 870,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328311"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:6",
+    "content": "The client framework supports bidirectional progress reporting and server-initiated notifications through callback functions and progress tokens.",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 13,
+      "char_count": 145,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328322"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:7",
+    "content": "```\ngraph TB\n    subgraph \"Progress System\"\n        SendRequest[\"send_request()<br/>with progress_callback\"]\n        ProgressToken[\"Progress Token<br/>request_id as token\"]\n        CallbackStore[\"_progress_callbacks<br/>dict[RequestId, ProgressFnT]\"]\n        \n        subgraph \"Server Side\"\n            ServerProgress[\"Server sends<br/>ProgressNotification\"]\n        end\n        \n        subgraph \"Client Processing\"\n            ReceiveLoop[\"_receive_loop()\"]\n            HandleProgress[\"Handle ProgressNotification\"]\n            InvokeCallback[\"Invoke progress_callback()\"]\n        end\n        \n        SendRequest --> ProgressToken\n        ProgressToken --> CallbackStore\n        ServerProgress --> ReceiveLoop\n        ReceiveLoop --> HandleProgress\n        HandleProgress --> CallbackStore\n        CallbackStore --> InvokeCallback\n    end\n```\n**Sources:**\n[src/mcp/shared/session.py:242-253](.)\n,\n[src/mcp/shared/session.py:389-399](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 13,
+      "char_count": 938,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328333"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:8",
+    "content": "The client can handle server-initiated requests through configurable callback functions:\n```\nSamplingFnT\n```\n```\nElicitationFnT\n```\n```\nListRootsFnT\n```\n```\nLoggingFnT\n```\n```\nMessageHandlerFnT\n```\n, Purpose = . , Default Behavior = \n**Sources:**\n[src/mcp/client/session.py:21-96](.)\n,\n[src/mcp/client/session.py:388-434](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 13,
+      "char_count": 324,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328343"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:9",
+    "content": "The client framework abstracts transport details through stream-based interfaces, allowing it to work with various transport mechanisms.\n```\ngraph TB\n    subgraph \"Transport Abstraction Layer\"\n        subgraph \"Client Session\"\n            ClientSession_transport[\"ClientSession\"]\n            StreamInterfaces[\"Stream Interfaces<br/>MemoryObjectReceiveStream<br/>MemoryObjectSendStream\"]\n        end\n        \n        subgraph \"Transport Implementations\"\n            StdioClient[\"stdio_client<br/>Process Communication\"]\n            SSEClient[\"sse_client<br/>HTTP Server-Sent Events\"]\n            StreamableHTTPClient[\"streamablehttp_client<br/>Bidirectional HTTP\"]\n        end\n        \n        subgraph \"Message Layer\"\n            SessionMessage_transport[\"SessionMessage<br/>Transport Envelope\"]\n            JSONRPCMessage[\"JSONRPCMessage<br/>Protocol Content\"]\n            MessageMetadata_transport[\"MessageMetadata<br/>Transport Context\"]\n        end\n        \n        ClientSession_transport --> StreamInterfaces\n        StdioClient --> StreamInterfaces\n        SSEClient --> StreamInterfaces\n        StreamableHTTPClient --> StreamInterfaces\n        \n        StreamInterfaces --> SessionMessage_transport\n        SessionMessage_transport --> JSONRPCMessage\n        SessionMessage_transport --> MessageMetadata_transport\n    end\n```\n**Sources:**\n[src/mcp/client/session.py:110-128](.)\n,\n[src/mcp/client/](.)\n[**main**](.)\n[.py:36-64](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 13,
+      "char_count": 1438,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328354"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:10",
+    "content": "The framework includes memory-based transport utilities for testing and development scenarios.",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 13,
+      "char_count": 94,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328364"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:11",
+    "content": "The\n```\ncreate_connected_server_and_client_session()\n```\nfunction provides a complete testing environment with in-memory communication:\n```\ngraph LR\n    subgraph \"Memory Transport Setup\"\n        CreateStreams[\"create_client_server_memory_streams()\"]\n        ClientStreams[\"Client Streams<br/>read: server_to_client_receive<br/>write: client_to_server_send\"]\n        ServerStreams[\"Server Streams<br/>read: client_to_server_receive<br/>write: server_to_client_send\"]\n        \n        ClientSession_memory[\"ClientSession<br/>connected to memory streams\"]\n        ServerInstance[\"Server Instance<br/>running in task group\"]\n        \n        CreateStreams --> ClientStreams\n        CreateStreams --> ServerStreams\n        ClientStreams --> ClientSession_memory\n        ServerStreams --> ServerInstance\n    end\n```\n**Sources:**\n[src/mcp/shared/memory.py:28-50](.)\n,\n[src/mcp/shared/memory.py:53-99](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 13,
+      "char_count": 896,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328374"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Client_Framework:chunk:12",
+    "content": "The client framework provides comprehensive error handling for various failure scenarios:\n```\nTimeoutError\n```\n```\nMcpError\n```\n```\nJSONRPCError\n```\n```\nMcpError\n```\n```\nValidationError\n```\n```\nanyio.ClosedResourceError\n```\n```\nRuntimeError\n```\n, Source = . , Handling = \n**Sources:**\n[src/mcp/shared/session.py:273-283](.)\n,\n[src/mcp/shared/session.py:416-436](.)\n,\n[src/mcp/client/session.py:314-318](.)",
+    "metadata": {
+      "source": "python-sdk\\Client_Framework.md",
+      "file_name": "Client_Framework.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 13,
+      "char_count": 405,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:10.328384"
+    }
+  }
+]

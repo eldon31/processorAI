@@ -1,0 +1,64 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_realtime_subscribe.md",
+  "title": "#### On this page",
+  "num_chunks": 2,
+  "total_chars": 2913,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Subscribing](\\docs\\features\\realtime\\subscribe#subscribing)",
+      "char_count": 75,
+      "token_count": 24,
+      "metadata": {
+        "title": "#### On this page",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_realtime_subscribe.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_realtime_subscribe.md",
+        "file_name": "features_realtime_subscribe.md",
+        "file_size": 3051,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "72b4cab2c794ab62e5f19d6439ee8ed44567571743fdccbe10a48a1fc0454b0b",
+        "author": null,
+        "created_at": "2025-10-12T23:59:09.341020",
+        "modified_at": "2025-10-12T23:59:09.341729",
+        "page_count": null,
+        "word_count": 465,
+        "extracted_at": "2025-10-13T20:03:29.695771",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 24,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Subscribing\nTo subscribe to data on the client (browser), you'll need to create a subscription token and use the\n```\nsubscribe()\n```\nfunction which also requires\n```\nchannel\n```\nand\n```\ntopic\n```\nto be specified.\nYour application uses the Inngest SDK to create a token, which is then used by the subscribe function to connect to the Inngest WebSocket server.\n1\nCreate a subscription token\nSubscription tokens are required to securely establish a connection to the Inngest WebSocket server.\nYour application must create tokens on the server and pass them to the client. You can create a new endpoint to generate a token, ensuring that the user is authorized to subscribe to a given channel and topics.\nHere's an example of a server endpoint that creates a token, scoped to a user's channel and specific topics.\nNext.js - Server action Express Python - Fast API\nCopy Copied\n```\n// ex. /app/actions/get-subscribe-token.ts\n\"use server\" ;\n\nimport { inngest } from \"@/inngest/client\" ;\n// See the \"Typed channels (recommended)\" section above for more details:\nimport { userChannel } from \"@/inngest/functions/helloWorld\" ;\nimport { getSubscriptionToken , Realtime } from \"@inngest/realtime\" ;\nimport { getSession } from \"@/app/lib/session\" ; // this could be any auth provider\n\nexport type UserChannelToken = Realtime . Token < typeof userChannel , [ \"ai\" ]>;\n\nexport async function fetchRealtimeSubscriptionToken () : Promise < UserChannelToken > {\nconst { userId } = await getSession ();\n\n// This creates a token using the Inngest API that is bound to the channel and topic:\nconst token = await getSubscriptionToken (inngest , {\nchannel : `user: ${ userId } ` ,\ntopics : [ \"ai\" ] ,\n});\n\nreturn token;\n}\n```\n2\nSubscribe to a channel\nOnce you have a token, you can subscribe to a channel by calling the\n```\nsubscribe\n```\nfunction with the token. You can also subscribe using the\n```\nuseInngestSubscription\n```\nReact hook. Read more about the\n[React hook here](\\docs\\features\\realtime\\react-hooks)\n.\nReact hook - useInngestSubscription() Basic subscribe\nCopy Copied\n```\n// ex: ./app/page.tsx\n\"use client\" ;\n\n// ℹ️ Import the hook from the hooks sub-package:\nimport { useInngestSubscription } from \"@inngest/realtime/hooks\" ;\nimport { useState } from \"react\" ;\nimport { fetchRealtimeSubscriptionToken } from \"./actions\" ;\n\nexport default function Home () {\n// The hook automatically fetches the token from the server.\n// The server checks that the user is authorized to subscribe to\n// the channel and topic, then returns a token:\nconst { data , error , freshData , state , latestData } = useInngestSubscription ({\nrefreshToken : fetchRealtimeSubscriptionToken ,\n});\n\nreturn (\n< div >\n{data.map((message , i) => (\n< div key = {i} > {message.data} </ div >\n))}\n</ div >\n);\n}\n```\nThat's all you need to do to subscribe to a channel from the client!",
+      "char_count": 2838,
+      "token_count": 682,
+      "metadata": {
+        "title": "#### On this page",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_realtime_subscribe.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_realtime_subscribe.md",
+        "file_name": "features_realtime_subscribe.md",
+        "file_size": 3051,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "72b4cab2c794ab62e5f19d6439ee8ed44567571743fdccbe10a48a1fc0454b0b",
+        "author": null,
+        "created_at": "2025-10-12T23:59:09.341020",
+        "modified_at": "2025-10-12T23:59:09.341729",
+        "page_count": null,
+        "word_count": 465,
+        "extracted_at": "2025-10-13T20:03:29.695771",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 682,
+        "has_context": true
+      }
+    }
+  ]
+}

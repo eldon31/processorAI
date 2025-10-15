@@ -1,0 +1,227 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:0",
+    "content": "This document covers FastAPI's application and routing system, including the core\n```\nFastAPI\n```\napplication class, route organization through\n```\nAPIRouter\n```\n, individual route handling via\n```\nAPIRoute\n```\nand\n```\nAPIWebSocketRoute\n```\n, and the request processing pipeline. For information about dependency injection mechanics, see\n[Dependency Injection](#2.2)\n. For details about parameter validation and handling, see\n[Parameter Validation and Handling](#2.3)\n.",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 15,
+      "char_count": 469,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660207"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:1",
+    "content": "The\n```\nFastAPI\n```\nclass serves as the main application entry point, inheriting from Starlette's\n```\nStarlette\n```\nclass while adding FastAPI-specific functionality including automatic API documentation, dependency injection, and enhanced routing capabilities.",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 15,
+      "char_count": 261,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660228"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:2",
+    "content": "```\ngraph TD\n    FastAPI[\"FastAPI\"] --> Starlette[\"starlette.Starlette\"]\n    FastAPI --> router[\"self.router: APIRouter\"]\n    FastAPI --> openapi_schema[\"openapi_schema: Dict\"]\n    FastAPI --> docs_url[\"docs_url: str\"]\n    FastAPI --> redoc_url[\"redoc_url: str\"]\n    \n    router --> routes[\"List[BaseRoute]\"]\n    routes --> APIRoute[\"APIRoute\"]\n    routes --> APIWebSocketRoute[\"APIWebSocketRoute\"]\n    routes --> Mount[\"starlette.Mount\"]\n    \n    FastAPI --> middleware[\"middleware: List[Middleware]\"]\n    FastAPI --> exception_handlers[\"exception_handlers: Dict\"]\n```\nThe\n```\nFastAPI\n```\nconstructor accepts extensive configuration options for OpenAPI documentation, CORS, middleware, and routing behavior. Key configuration includes\n```\ntitle\n```\n,\n```\ndescription\n```\n,\n```\nversion\n```\nfor API metadata,\n```\ndocs_url\n```\nand\n```\nredoc_url\n```\nfor documentation endpoints, and\n```\ndefault_response_class\n```\nfor response handling.\nSources:\n[fastapi/applications.py:48-640](.)\n,\n[fastapi/](.)\n[**init**](.)\n[.py:7](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 15,
+      "char_count": 1019,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660236"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:3",
+    "content": "The\n```\nFastAPI\n```\nclass provides HTTP method decorators that create\n```\nAPIRoute\n```\ninstances:\n```\ngraph LR\n    FastAPI --> get[\"@app.get()\"]\n    FastAPI --> post[\"@app.post()\"]\n    FastAPI --> put[\"@app.put()\"]\n    FastAPI --> delete[\"@app.delete()\"]\n    FastAPI --> patch[\"@app.patch()\"]\n    FastAPI --> head[\"@app.head()\"]\n    FastAPI --> options[\"@app.options()\"]\n    FastAPI --> trace[\"@app.trace()\"]\n    \n    get --> APIRoute[\"APIRoute\"]\n    post --> APIRoute\n    put --> APIRoute\n    delete --> APIRoute\n    patch --> APIRoute\n    head --> APIRoute\n    options --> APIRoute\n    trace --> APIRoute\n```\nEach decorator method creates an\n```\nAPIRoute\n```\ninstance with the specified HTTP method, path, and endpoint function, then adds it to the application's router.\nSources:\n[fastapi/applications.py:697-1007](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 15,
+      "char_count": 819,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660242"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:4",
+    "content": "The\n```\nAPIRouter\n```\nclass enables modular route organization by grouping related path operations that can be included in the main application or other routers.",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 15,
+      "char_count": 161,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660248"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:5",
+    "content": "```\ngraph TD\n    FastAPI --> include_router[\"app.include_router()\"]\n    include_router --> APIRouter1[\"APIRouter(prefix='/users')\"]\n    include_router --> APIRouter2[\"APIRouter(prefix='/items')\"]\n    \n    APIRouter1 --> user_routes[\"User Routes\"]\n    APIRouter2 --> item_routes[\"Item Routes\"]\n    \n    user_routes --> get_users[\"@router.get('/')\"]\n    user_routes --> create_user[\"@router.post('/')\"]\n    \n    item_routes --> get_items[\"@router.get('/')\"]\n    item_routes --> create_item[\"@router.post('/')\"]\n    \n    get_users --> final_path1[\"Final: GET /users/\"]\n    create_user --> final_path2[\"Final: POST /users/\"]\n    get_items --> final_path3[\"Final: GET /items/\"]\n    create_item --> final_path4[\"Final: POST /items/\"]\n```\nThe\n```\nAPIRouter\n```\nconstructor accepts parameters including\n```\nprefix\n```\nfor path prefixing,\n```\ntags\n```\nfor OpenAPI organization,\n```\ndependencies\n```\nfor shared dependencies, and\n```\ndefault_response_class\n```\nfor response handling.\nSources:\n[fastapi/routing.py:596-621](.)\n,\n[fastapi/routing.py:623-740](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 15,
+      "char_count": 1047,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660253"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:6",
+    "content": "The\n```\ninclude_router\n```\nmethod merges an\n```\nAPIRouter\n```\ninto the application by copying its routes and applying prefix, tag, and dependency transformations:\n```\nrouter\n```\n```\nuser_router\n```\n```\nprefix\n```\n```\n\"/api/v1\"\n```\n```\ntags\n```\n```\n[\"users\"]\n```\n```\ndependencies\n```\n```\n[Depends(get_current_user)]\n```\n, Purpose = . , Example = \nSources:\n[fastapi/applications.py:1009-1106](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 15,
+      "char_count": 393,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660259"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:7",
+    "content": "The\n```\nAPIRoute\n```\nclass represents individual HTTP endpoints, handling path compilation, dependency analysis, and request processing setup.\n```\ngraph TD\n    APIRoute --> path[\"path: str\"]\n    APIRoute --> endpoint[\"endpoint: Callable\"]\n    APIRoute --> methods[\"methods: Set[str]\"]\n    APIRoute --> dependant[\"dependant: Dependant\"]\n    APIRoute --> response_model[\"response_model: Any\"]\n    APIRoute --> status_code[\"status_code: int\"]\n    \n    dependant --> path_params[\"path_params: List[ModelField]\"]\n    dependant --> query_params[\"query_params: List[ModelField]\"]\n    dependant --> header_params[\"header_params: List[ModelField]\"]\n    dependant --> body_params[\"body_params: List[ModelField]\"]\n    dependant --> dependencies_list[\"dependencies: List[Dependant]\"]\n    \n    APIRoute --> get_route_handler[\"get_route_handler()\"]\n    get_route_handler --> request_handler[\"Callable[[Request], Response]\"]\n```\nThe\n```\nAPIRoute\n```\nconstructor analyzes the endpoint function signature using\n```\nget_dependant()\n```\nto extract parameter information and build the dependency tree.\nSources:\n[fastapi/routing.py:429-593](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 15,
+      "char_count": 1122,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660265"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:8",
+    "content": "The\n```\nAPIWebSocketRoute\n```\nclass handles WebSocket connections with similar dependency resolution but different connection lifecycle:\n```\nsequenceDiagram\n    participant Client\n    participant APIWebSocketRoute\n    participant get_websocket_app\n    participant solve_dependencies\n    participant endpoint\n    \n    Client->>APIWebSocketRoute: WebSocket connection\n    APIWebSocketRoute->>get_websocket_app: Create WebSocket app\n    get_websocket_app->>solve_dependencies: Resolve dependencies\n    solve_dependencies->>endpoint: Call with resolved values\n    endpoint->>Client: WebSocket communication\n```\nSources:\n[fastapi/routing.py:389-427](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 15,
+      "char_count": 647,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660270"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:9",
+    "content": "The\n```\nget_request_handler\n```\nfunction creates the actual ASGI application that processes HTTP requests:\n```\ngraph TD\n    get_request_handler --> dependant_analysis[\"Analyze Dependant\"]\n    get_request_handler --> body_field[\"Create body_field\"]\n    get_request_handler --> response_config[\"Configure response\"]\n    \n    dependant_analysis --> async_check[\"Check if async\"]\n    body_field --> form_check[\"Check if form data\"]\n    response_config --> response_class[\"Set response_class\"]\n    \n    get_request_handler --> request_app[\"async def app(request)\"]\n    \n    request_app --> parse_body[\"Parse request body\"]\n    request_app --> solve_dependencies_call[\"solve_dependencies()\"]\n    request_app --> run_endpoint[\"run_endpoint_function()\"]\n    request_app --> serialize_response[\"serialize_response()\"]\n    request_app --> create_response[\"Create Response object\"]\n```\nSources:\n[fastapi/routing.py:218-358](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 15,
+      "char_count": 915,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660276"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:10",
+    "content": "The generated request handler follows this processing sequence:\n```\nsequenceDiagram\n    participant Request\n    participant Handler as \"Request Handler\"\n    participant Dependencies as \"Dependency Resolver\" \n    participant Endpoint as \"Endpoint Function\"\n    participant Response as \"Response Serializer\"\n    \n    Request->>Handler: HTTP Request\n    Handler->>Handler: Parse body (JSON/Form)\n    Handler->>Dependencies: solve_dependencies()\n    Dependencies->>Dependencies: Resolve path/query/header params\n    Dependencies->>Dependencies: Resolve function dependencies\n    Dependencies->>Handler: Resolved values + errors\n    \n    alt No validation errors\n        Handler->>Endpoint: Call with resolved values\n        Endpoint->>Handler: Return value\n        Handler->>Response: serialize_response()\n        Response->>Handler: Serialized content\n        Handler->>Request: HTTP Response\n    else Validation errors\n        Handler->>Request: 422 Validation Error\n    end\n```\nSources:\n[fastapi/routing.py:241-356](.)\n,\n[fastapi/dependencies/utils.py:572-689](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 15,
+      "char_count": 1062,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660282"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:11",
+    "content": "When routes are defined using decorators, the following process occurs:\n```\ngraph TD\n    decorator[\"@app.get('/items/{item_id}')\"] --> create_route[\"Create APIRoute\"]\n    create_route --> compile_path[\"compile_path()\"]\n    create_route --> get_dependant_call[\"get_dependant()\"]\n    create_route --> analyze_signature[\"Analyze function signature\"]\n    \n    compile_path --> path_regex[\"path_regex: Pattern\"]\n    compile_path --> param_convertors[\"param_convertors: Dict\"]\n    \n    get_dependant_call --> extract_params[\"Extract parameters\"]\n    extract_params --> path_params_list[\"path_params: List[ModelField]\"]\n    extract_params --> query_params_list[\"query_params: List[ModelField]\"]\n    extract_params --> body_params_list[\"body_params: List[ModelField]\"]\n    \n    analyze_signature --> response_model_field[\"Create response_field\"]\n    analyze_signature --> unique_id[\"Generate unique_id\"]\n    \n    create_route --> add_to_router[\"Add to router.routes\"]\n```\nThe route registration process includes path compilation using Starlette's\n```\ncompile_path\n```\n, dependency analysis via\n```\nget_dependant\n```\n, and OpenAPI schema preparation.\nSources:\n[fastapi/routing.py:430-571](.)\n,\n[fastapi/dependencies/utils.py:265-314](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 15,
+      "char_count": 1227,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660288"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:12",
+    "content": "The\n```\nget_dependant\n```\nfunction recursively builds a dependency tree by analyzing function signatures:\n```\npath_params\n```\n```\ndependant.path_params\n```\n```\nquery_params\n```\n```\ndependant.query_params\n```\n```\nheader_params\n```\n```\ndependant.header_params\n```\n```\ncookie_params\n```\n```\ndependant.cookie_params\n```\n```\nbody_params\n```\n```\ndependant.body_params\n```\n```\ndependencies\n```\n```\ndependant.dependencies\n```\n, Purpose = . , Location = \nSources:\n[fastapi/dependencies/utils.py:265-314](.)\n,\n[fastapi/dependencies/models.py:15-37](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 15,
+      "char_count": 541,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660293"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:13",
+    "content": "The routing system automatically generates OpenAPI schemas through the\n```\nget_openapi_path\n```\nfunction:\n```\ngraph TD\n    APIRoute --> get_openapi_path[\"get_openapi_path()\"]\n    get_openapi_path --> operation_metadata[\"get_openapi_operation_metadata()\"]\n    get_openapi_path --> parameters_schema[\"_get_openapi_operation_parameters()\"]\n    get_openapi_path --> request_body_schema[\"get_openapi_operation_request_body()\"]\n    get_openapi_path --> security_schemes[\"get_openapi_security_definitions()\"]\n    \n    operation_metadata --> operation_id[\"operationId\"]\n    operation_metadata --> summary[\"summary\"]\n    operation_metadata --> description[\"description\"]\n    operation_metadata --> tags[\"tags\"]\n    \n    parameters_schema --> path_parameters[\"Path parameters\"]\n    parameters_schema --> query_parameters[\"Query parameters\"]  \n    parameters_schema --> header_parameters[\"Header parameters\"]\n    \n    request_body_schema --> body_schema[\"Request body schema\"]\n    security_schemes --> security_definitions[\"Security definitions\"]\n```\nEach\n```\nAPIRoute\n```\ncontributes to the OpenAPI schema by providing operation metadata, parameter schemas, request/response body schemas, and security definitions.\nSources:\n[fastapi/openapi/utils.py:254-439](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 15,
+      "char_count": 1251,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660299"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Application_and_Routing_System:chunk:14",
+    "content": "The route matching process uses Starlette's routing system with FastAPI enhancements:\n```\nsequenceDiagram\n    participant Request\n    participant Router\n    participant Route as \"APIRoute/APIWebSocketRoute\"\n    participant Handler\n    \n    Request->>Router: Incoming request\n    Router->>Router: Iterate through routes\n    Router->>Route: route.matches(scope)\n    Route->>Route: Check path_regex\n    Route->>Route: Check HTTP method\n    \n    alt Route matches\n        Route->>Router: Match.FULL + child_scope\n        Router->>Handler: route.app(scope, receive, send)\n        Handler->>Request: Process request\n    else No match\n        Route->>Router: Match.NONE\n        Router->>Router: Try next route\n    end\n```\nThe\n```\nmatches\n```\nmethod on\n```\nAPIRoute\n```\nand\n```\nAPIWebSocketRoute\n```\ndetermines if a route should handle a specific request based on path pattern and HTTP method.\nSources:\n[fastapi/routing.py:589-593](.)\n,\n[fastapi/routing.py:422-426](.)",
+    "metadata": {
+      "source": "fastapi\\Application_and_Routing_System.md",
+      "file_name": "Application_and_Routing_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 15,
+      "char_count": 960,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:29.660304"
+    }
+  }
+]

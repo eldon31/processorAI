@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_send.md",
+  "title": "Send events",
+  "num_chunks": 3,
+  "total_chars": 1608,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Send events](\\docs\\reference\\python\\client\\send#send-events)\n- [send](\\docs\\reference\\python\\client\\send#send)\n- [send](\\docs\\reference\\python\\client\\send#send-sync)\n[_](\\docs\\reference\\python\\client\\send#send-sync)\n[sync](\\docs\\reference\\python\\client\\send#send-sync)\nReferences\n[Python SDK](\\docs\\reference\\python)",
+      "char_count": 332,
+      "token_count": 104,
+      "metadata": {
+        "title": "Send events",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_send.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_send.md",
+        "file_name": "reference_python_client_send.md",
+        "file_size": 1574,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "cc24646210572947577515ec1c4079eaa991e756b1cb57ef819fa8cd1db290fa",
+        "author": null,
+        "created_at": "2025-10-13T00:00:53.842623",
+        "modified_at": "2025-10-13T00:00:53.842811",
+        "page_count": null,
+        "word_count": 218,
+        "extracted_at": "2025-10-13T20:04:37.724239",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 104,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Send events\n💡️ This guide is for sending events from\n*outside*\nan Inngest function. To send events within an Inngest function, refer to the\n[step.send](\\docs\\reference\\python\\steps\\send-event)\n[_](\\docs\\reference\\python\\steps\\send-event)\n[event](\\docs\\reference\\python\\steps\\send-event)\nguide.\nSends 1 or more events to the Inngest server. Returns a list of the event IDs.\nCopy Copied\n```\nimport inngest\n\ninngest_client = inngest . Inngest (app_id = \"my_app\" )\n\n# Call the `send` method if you're using async/await\nids = await inngest_client . send (\ninngest. Event (name = \"my_event\" , data = { \"msg\" : \"Hello!\" })\n)\n\n# Call the `send_sync` method if you aren't using async/await\nids = inngest_client . send_sync (\ninngest. Event (name = \"my_event\" , data = { \"msg\" : \"Hello!\" })\n)\n\n# Can pass a list of events\nids = await inngest_client . send (\n[\ninngest. Event (name = \"my_event\" , data = { \"msg\" : \"Hello!\" }),\ninngest. Event (name = \"my_other_event\" , data = { \"name\" : \"Alice\" }),\n]\n)\n```",
+      "char_count": 995,
+      "token_count": 309,
+      "metadata": {
+        "title": "Send events",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_send.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_send.md",
+        "file_name": "reference_python_client_send.md",
+        "file_size": 1574,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "cc24646210572947577515ec1c4079eaa991e756b1cb57ef819fa8cd1db290fa",
+        "author": null,
+        "created_at": "2025-10-13T00:00:53.842623",
+        "modified_at": "2025-10-13T00:00:53.842811",
+        "page_count": null,
+        "word_count": 218,
+        "extracted_at": "2025-10-13T20:04:37.724239",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 309,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Send events\nsend\nOnly for async/await code.\n- Name `events`\n[_](\\docs\\reference\\python\\client\\send#send-sync)\n[sync](\\docs\\reference\\python\\client\\send#send-sync)\nBlocks the thread. If you're using async/await then use\n```\nsend\n```\ninstead.\nArguments are the same as\n```\nsend\n```\n.",
+      "char_count": 281,
+      "token_count": 85,
+      "metadata": {
+        "title": "Send events",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_send.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_send.md",
+        "file_name": "reference_python_client_send.md",
+        "file_size": 1574,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "cc24646210572947577515ec1c4079eaa991e756b1cb57ef819fa8cd1db290fa",
+        "author": null,
+        "created_at": "2025-10-13T00:00:53.842623",
+        "modified_at": "2025-10-13T00:00:53.842811",
+        "page_count": null,
+        "word_count": 218,
+        "extracted_at": "2025-10-13T20:04:37.724239",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 85,
+        "has_context": true
+      }
+    }
+  ]
+}

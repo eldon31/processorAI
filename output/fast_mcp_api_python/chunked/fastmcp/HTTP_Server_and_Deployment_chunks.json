@@ -1,0 +1,452 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:0",
+    "content": "This page covers the HTTP server architecture and deployment patterns in FastMCP. It explains how FastMCP servers expose MCP protocols over HTTP using Starlette/ASGI applications, including support for Server-Sent Events (SSE) and Streamable HTTP transports. For client-side HTTP communication, see\n[Transport Mechanisms](#3.1)\n. For authentication and security configuration, see\n[Authentication and Security](#4.1)\n.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 30,
+      "char_count": 418,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291720"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:1",
+    "content": "FastMCP provides HTTP server functionality through ASGI applications built on Starlette. The system supports two primary HTTP transport mechanisms for the MCP protocol: SSE (Server-Sent Events) and Streamable HTTP.\n```\ngraph TB\n    subgraph \"FastMCP HTTP Server\"\n        FastMCPInstance[\"FastMCP Instance\"]\n        HTTPAppMethod[\"http_app() method\"]\n    end\n    \n    subgraph \"Transport Selection\"\n        SSETransport[\"SSE Transport<br/>create_sse_app()\"]\n        StreamableTransport[\"Streamable HTTP<br/>create_streamable_http_app()\"]\n    end\n    \n    subgraph \"ASGI Layer\"\n        StarletteApp[\"StarletteWithLifespan\"]\n        BaseApp[\"create_base_app()\"]\n        RequestMiddleware[\"RequestContextMiddleware\"]\n    end\n    \n    subgraph \"MCP Protocol Layer\"\n        SseServerTransport[\"SseServerTransport\"]\n        StreamableManager[\"StreamableHTTPSessionManager\"]\n        StreamableASGI[\"StreamableHTTPASGIApp\"]\n    end\n    \n    subgraph \"External Integration\"\n        ASGIServer[\"ASGI Server<br/>(uvicorn, hypercorn)\"]\n        FastAPIApp[\"FastAPI App<br/>(optional parent)\"]\n    end\n    \n    FastMCPInstance --> HTTPAppMethod\n    HTTPAppMethod --> SSETransport\n    HTTPAppMethod --> StreamableTransport\n    \n    SSETransport --> BaseApp\n    StreamableTransport --> BaseApp\n    BaseApp --> StarletteApp\n    StarletteApp --> RequestMiddleware\n    \n    SSETransport --> SseServerTransport\n    StreamableTransport --> StreamableManager\n    StreamableManager --> StreamableASGI\n    \n    StarletteApp --> ASGIServer\n    StarletteApp --> FastAPIApp\n```\nSources:\n[src/fastmcp/server/http.py:98-123](.)\n,\n[src/fastmcp/server/http.py:126-228](.)\n,\n[src/fastmcp/server/http.py:231-321](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 30,
+      "char_count": 1681,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291738"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:2",
+    "content": "SSE transport provides real-time bidirectional communication using Server-Sent Events for server-to-client messages and HTTP POST for client-to-server messages.\n```\ngraph LR\n    subgraph \"SSE Transport Components\"\n        CreateSSEApp[\"create_sse_app()\"]\n        SseTransport[\"SseServerTransport\"]\n        MessagePath[\"message_path<br/>(POST endpoint)\"]\n        SSEPath[\"sse_path<br/>(GET endpoint)\"]\n    end\n    \n    subgraph \"Request Flow\"\n        ClientSSE[\"Client SSE Connection<br/>(GET /mcp/sse)\"]\n        ClientPost[\"Client Messages<br/>(POST /mcp/messages)\"]\n        HandleSSE[\"handle_sse()\"]\n        PostMessage[\"sse.handle_post_message\"]\n    end\n    \n    subgraph \"MCP Integration\"\n        MCPServer[\"server._mcp_server\"]\n        MCPRun[\"_mcp_server.run()\"]\n        MCPStreams[\"streams[0], streams[1]\"]\n    end\n    \n    CreateSSEApp --> SseTransport\n    SseTransport --> MessagePath\n    SseTransport --> SSEPath\n    \n    ClientSSE --> HandleSSE\n    ClientPost --> PostMessage\n    HandleSSE --> MCPRun\n    MCPRun --> MCPStreams\n    \n    PostMessage --> SseTransport\n```\nSources:\n[src/fastmcp/server/http.py:126-228](.)\n,\n[src/fastmcp/server/http.py:152-163](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 30,
+      "char_count": 1169,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291745"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:3",
+    "content": "Streamable HTTP transport provides session-based communication over standard HTTP requests with optional JSON response formatting.\n```\ngraph LR\n    subgraph \"Streamable HTTP Components\"\n        CreateStreamable[\"create_streamable_http_app()\"]\n        SessionManager[\"StreamableHTTPSessionManager\"]\n        EventStore[\"EventStore<br/>(optional)\"]\n        ASGIWrapper[\"StreamableHTTPASGIApp\"]\n    end\n    \n    subgraph \"Configuration Options\"\n        JSONResponse[\"json_response<br/>(bool)\"]\n        StatelessHTTP[\"stateless_http<br/>(bool)\"]\n        DebugMode[\"debug<br/>(bool)\"]\n    end\n    \n    subgraph \"Session Management\"\n        SessionRun[\"session_manager.run()\"]\n        LifespanManager[\"lifespan context\"]\n        TaskGroup[\"Task group initialization\"]\n    end\n    \n    CreateStreamable --> SessionManager\n    SessionManager --> EventStore\n    SessionManager --> ASGIWrapper\n    \n    JSONResponse --> SessionManager\n    StatelessHTTP --> SessionManager\n    DebugMode --> CreateStreamable\n    \n    SessionManager --> SessionRun\n    SessionRun --> LifespanManager\n    LifespanManager --> TaskGroup\n```\nSources:\n[src/fastmcp/server/http.py:231-321](.)\n,\n[src/fastmcp/server/http.py:261-267](.)\n,\n[src/fastmcp/server/http.py:304-314](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 30,
+      "char_count": 1240,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291751"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:4",
+    "content": "The\n```\ncreate_base_app()\n```\nfunction creates the foundational Starlette application with common middleware and routing.\n```\nStarletteWithLifespan\n```\n```\nRequestContextMiddleware\n```\n, Purpose = . , Implementation = \nMiddleware stack, src/fastmcp/server/http.py:82-95 = Authentication and custom middleware",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 30,
+      "char_count": 308,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291757"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:5",
+    "content": "FastMCP maintains HTTP request context through context variables for dependency injection in tools and resources.\n```\ngraph TB\n    subgraph \"Context Management\"\n        ContextVar[\"_current_http_request<br/>ContextVar[Request | None]\"]\n        SetRequest[\"set_http_request()<br/>context manager\"]\n        RequestMiddleware[\"RequestContextMiddleware\"]\n    end\n    \n    subgraph \"Dependency Access\"\n        GetHTTPRequest[\"get_http_request()\"]\n        GetHTTPHeaders[\"get_http_headers()\"]\n        RequestCtx[\"request_ctx.get().request\"]\n    end\n    \n    subgraph \"Tool/Resource Functions\"\n        ToolFunction[\"@server.tool<br/>def my_tool()\"]\n        GetHeaders[\"headers = get_http_headers()\"]\n        GetRequest[\"request = get_http_request()\"]\n    end\n    \n    RequestMiddleware --> SetRequest\n    SetRequest --> ContextVar\n    \n    GetHTTPRequest --> RequestCtx\n    GetHTTPHeaders --> GetHTTPRequest\n    \n    ToolFunction --> GetHeaders\n    ToolFunction --> GetRequest\n    \n    ContextVar --> GetHTTPRequest\n```\nSources:\n[src/fastmcp/server/http.py:61-79](.)\n,\n[src/fastmcp/server/dependencies.py:42-53](.)\n,\n[src/fastmcp/server/dependencies.py:56-99](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 30,
+      "char_count": 1155,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291763"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:6",
+    "content": "Authentication providers integrate with HTTP apps through route and middleware systems.\n```\ngraph TB\n    subgraph \"AuthProvider Integration\"\n        AuthProvider[\"AuthProvider.get_routes()\"]\n        AuthMiddleware[\"AuthProvider.get_middleware()\"]\n        MCPPath[\"mcp_path parameter\"]\n        MCPEndpoint[\"mcp_endpoint handler\"]\n    end\n    \n    subgraph \"Route Protection\"\n        RequireAuth[\"RequireAuthMiddleware\"]\n        ProtectedRoute[\"Protected MCP Route\"]\n        ResourceMetadata[\"Resource Metadata Routes\"]\n        OAuthRoutes[\"OAuth Server Routes\"]\n    end\n    \n    subgraph \"Middleware Stack\"\n        AuthenticationMW[\"AuthenticationMiddleware\"]\n        BearerBackend[\"BearerAuthBackend\"]\n        AuthContextMW[\"AuthContextMiddleware\"]\n    end\n    \n    AuthProvider --> AuthMiddleware\n    AuthProvider --> MCPPath\n    AuthProvider --> MCPEndpoint\n    \n    MCPEndpoint --> RequireAuth\n    RequireAuth --> ProtectedRoute\n    AuthProvider --> ResourceMetadata\n    AuthProvider --> OAuthRoutes\n    \n    AuthMiddleware --> AuthenticationMW\n    AuthenticationMW --> BearerBackend\n    AuthMiddleware --> AuthContextMW\n```\nSources:\n[src/fastmcp/server/auth/auth.py:81-119](.)\n,\n[src/fastmcp/server/auth/auth.py:121-133](.)\n,\n[src/fastmcp/server/http.py:166-189](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 30,
+      "char_count": 1269,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291768"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:7",
+    "content": "```\nRequestContextMiddleware\n```\n```\nTokenVerifier\n```\n```\nBearerAuthBackend\n```\n+\n```\nAuthContextMiddleware\n```\n```\nRemoteAuthProvider\n```\n```\nOAuthProvider\n```\nNo Auth, Route Creation = Direct route creation. No Auth, Middleware = . No Auth, Protected Endpoints = \nSources:\n[src/fastmcp/server/http.py:190-207](.)\n,\n[src/fastmcp/server/http.py:273-284](.)\n,\n[src/fastmcp/server/auth/auth.py:225-252](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 30,
+      "char_count": 404,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291773"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:8",
+    "content": "FastMCP HTTP apps can be deployed directly with ASGI servers:\n```\ngraph LR\n    subgraph \"FastMCP Application\"\n        Server[\"FastMCP('my-server')\"]\n        HTTPApp[\"server.http_app()\"]\n        StarletteApp[\"StarletteWithLifespan\"]\n    end\n    \n    subgraph \"ASGI Server\"\n        Uvicorn[\"uvicorn\"]\n        Hypercorn[\"hypercorn\"]\n        Gunicorn[\"gunicorn + uvicorn workers\"]\n    end\n    \n    subgraph \"Configuration\"\n        Host[\"host='0.0.0.0'\"]\n        Port[\"port=8000\"]\n        Workers[\"workers=4\"]\n    end\n    \n    Server --> HTTPApp\n    HTTPApp --> StarletteApp\n    \n    StarletteApp --> Uvicorn\n    StarletteApp --> Hypercorn\n    StarletteApp --> Gunicorn\n    \n    Host --> Uvicorn\n    Port --> Uvicorn\n    Workers --> Gunicorn\n```",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 30,
+      "char_count": 740,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291779"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:9",
+    "content": "FastMCP apps can be mounted within larger ASGI applications like FastAPI:\n```\ngraph TB\n    subgraph \"Parent Application\"\n        FastAPIApp[\"FastAPI()\"]\n        ParentRoutes[\"API routes\"]\n        ParentMiddleware[\"Parent middleware\"]\n    end\n    \n    subgraph \"FastMCP Integration\"\n        FastMCPApp[\"fastmcp_server.http_app()\"]\n        MCPLifespan[\"mcp_app.lifespan\"]\n        MountPoint[\"app.mount('/mcp', mcp_app)\"]\n    end\n    \n    subgraph \"Lifespan Management\"\n        ParentLifespan[\"FastAPI lifespan\"]\n        MCPLifespanContext[\"MCP lifespan context\"]\n        TaskGroupInit[\"Task group initialization\"]\n    end\n    \n    subgraph \"Critical Error Handling\"\n        LifespanError[\"RuntimeError: Task group not initialized\"]\n        ErrorMessage[\"Helpful error message\"]\n        DocReference[\"Documentation reference\"]\n    end\n    \n    FastAPIApp --> ParentRoutes\n    FastAPIApp --> ParentMiddleware\n    FastAPIApp --> MountPoint\n    \n    MountPoint --> FastMCPApp\n    FastMCPApp --> MCPLifespan\n    \n    ParentLifespan --> MCPLifespanContext\n    MCPLifespanContext --> TaskGroupInit\n    \n    TaskGroupInit --> LifespanError\n    LifespanError --> ErrorMessage\n    ErrorMessage --> DocReference\n```\nSources:\n[src/fastmcp/server/http.py:29-58](.)\n,\n[src/fastmcp/server/http.py:304-314](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 30,
+      "char_count": 1291,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291785"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:10",
+    "content": "The\n```\nStreamableHTTPASGIApp\n```\nprovides detailed error messages for common deployment issues:\n`lifespan=mcp_app.lifespan`\nTask group not initialized, Root Cause = Parent app doesn't use MCP lifespan. Task group not initialized, Error Message = \"FastMCP's StreamableHTTPSessionManager task group was not initialized\". Task group not initialized, Solution = \nSources:\n[src/fastmcp/server/http.py:35-58](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 30,
+      "char_count": 406,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291791"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:11",
+    "content": "```\nget_http_request()\n```\n```\nRuntimeError\n```\n```\nget_http_headers()\n```\n```\nget_context()\n```\n```\nRuntimeError\n```\n, Error Condition = . , Exception = . , Solution = \nSources:\n[src/fastmcp/server/dependencies.py:42-53](.)\n,\n[src/fastmcp/server/dependencies.py:56-99](.)\n,\n[src/fastmcp/server/dependencies.py:30-36](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 30,
+      "char_count": 320,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291797"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:12",
+    "content": "This document covers FastMCP's comprehensive authentication and security system, including OAuth integration, token verification, and security mechanisms. The system enables FastMCP servers to authenticate with traditional OAuth providers (GitHub, Google, Azure, etc.) while maintaining compatibility with MCP's Dynamic Client Registration requirements.\nFor HTTP server deployment patterns, see\n[HTTP Server and Deployment](#4)\n. For middleware-based security features like rate limiting and request validation, see\n[Middleware System](#4.2)\n.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 30,
+      "char_count": 543,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291802"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:13",
+    "content": "FastMCP's authentication system centers around the\n**OAuth Proxy**\npattern, which bridges the gap between traditional OAuth providers (that require pre-registered applications) and MCP clients (that expect Dynamic Client Registration). The system consists of several key components working together to provide secure, transparent authentication.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 13,
+      "total_chunks": 30,
+      "char_count": 345,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291808"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:14",
+    "content": "```\ngraph TB\n    subgraph \"MCP Client Layer\"\n        MCPClient[\"MCP Client\"]\n        DCRRequest[\"DCR Registration Request\"]\n        AuthFlow[\"OAuth Authorization Flow\"]\n    end\n    \n    subgraph \"FastMCP Authentication Layer\"\n        OAuthProxy[\"OAuthProxy\"]\n        TokenVerifier[\"TokenVerifier\"]\n        ClientStorage[\"KVStorage\"]\n        ProxyDCRClient[\"ProxyDCRClient\"]\n    end\n    \n    subgraph \"Provider Layer\"\n        GitHubProvider[\"GitHubProvider\"] \n        GoogleProvider[\"GoogleProvider\"]\n        AzureProvider[\"AzureProvider\"]\n        CustomProvider[\"Custom OAuth Provider\"]\n    end\n    \n    subgraph \"External Services\"\n        GitHubAPI[\"GitHub OAuth API\"]\n        GoogleAPI[\"Google OAuth API\"] \n        AzureAPI[\"Azure OAuth API\"]\n        JWKS[\"JWKS Endpoints\"]\n    end\n    \n    MCPClient --> DCRRequest\n    DCRRequest --> OAuthProxy\n    OAuthProxy --> ProxyDCRClient\n    ProxyDCRClient --> ClientStorage\n    \n    MCPClient --> AuthFlow\n    AuthFlow --> OAuthProxy\n    OAuthProxy --> TokenVerifier\n    \n    GitHubProvider --> GitHubAPI\n    GoogleProvider --> GoogleAPI\n    AzureProvider --> AzureAPI\n    \n    TokenVerifier --> JWKS\n    TokenVerifier --> GitHubAPI\n    TokenVerifier --> GoogleAPI\n    TokenVerifier --> AzureAPI\n```\nSources:\n[src/fastmcp/server/auth/oauth_proxy.py:125-231](.)\n,\n[src/fastmcp/server/auth/providers/github.py:167-193](.)\n,\n[src/fastmcp/server/auth/providers/google.py:183-209](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 14,
+      "total_chunks": 30,
+      "char_count": 1424,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291814"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:15",
+    "content": "The\n```\nOAuthProxy\n```\nclass is the cornerstone of FastMCP's authentication system, implementing a transparent proxy that presents a DCR-compliant interface to MCP clients while using pre-registered credentials with upstream OAuth providers.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 15,
+      "total_chunks": 30,
+      "char_count": 241,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291819"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:16",
+    "content": "```\ngraph LR\n    subgraph \"Client Side\"\n        MCPClient[\"MCP Client<br/>localhost:random\"]\n        ClientPKCE[\"Client PKCE<br/>code_challenge\"]\n        ClientCallback[\"Client Callback<br/>localhost:54321/callback\"]\n    end\n    \n    subgraph \"OAuth Proxy Core\"\n        OAuthProxy[\"OAuthProxy\"]\n        TransactionStorage[\"_oauth_transactions<br/>dict[str, dict]\"]\n        ClientCodes[\"_client_codes<br/>dict[str, dict]\"]\n        AccessTokens[\"_access_tokens<br/>dict[str, AccessToken]\"]\n        RefreshTokens[\"_refresh_tokens<br/>dict[str, RefreshToken]\"]\n    end\n    \n    subgraph \"Upstream Provider\"\n        UpstreamAuth[\"Upstream Authorization<br/>github.com/login/oauth/authorize\"]\n        UpstreamToken[\"Upstream Token<br/>github.com/login/oauth/access_token\"]\n        ProxyPKCE[\"Proxy PKCE<br/>proxy_code_verifier\"]\n        FixedCallback[\"Fixed Callback<br/>server.com/auth/callback\"]\n    end\n    \n    MCPClient --> ClientPKCE\n    ClientPKCE --> OAuthProxy\n    OAuthProxy --> TransactionStorage\n    OAuthProxy --> ProxyPKCE\n    ProxyPKCE --> UpstreamAuth\n    \n    UpstreamAuth --> FixedCallback\n    FixedCallback --> OAuthProxy\n    OAuthProxy --> UpstreamToken\n    UpstreamToken --> ClientCodes\n    ClientCodes --> AccessTokens\n    AccessTokens --> RefreshTokens\n    \n    OAuthProxy --> ClientCallback\n```\nSources:\n[src/fastmcp/server/auth/oauth_proxy.py:125-371](.)\n,\n[src/fastmcp/server/auth/oauth_proxy.py:464-559](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 16,
+      "total_chunks": 30,
+      "char_count": 1427,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291825"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:17",
+    "content": "The proxy implements local DCR through the\n```\nProxyDCRClient\n```\nclass, which validates redirect URIs against configurable patterns while maintaining compatibility with upstream providers that only accept fixed redirect URIs.\n```\ngraph TB\n    subgraph \"DCR Registration Flow\"\n        ClientRegister[\"`register_client()`<br/>OAuthClientInformationFull\"]\n        ProxyDCRClient[\"`ProxyDCRClient`<br/>allowed_redirect_uri_patterns\"]\n        ClientStorage[\"`_client_storage`<br/>JSONFileStorage\"]\n        RedirectValidation[\"`validate_redirect_uri()`<br/>Pattern Matching\"]\n    end\n    \n    subgraph \"Storage Structure\"\n        StorageData[\"`storage_data`<br/>client: ProxyDCRClient<br/>allowed_redirect_uri_patterns\"]\n        FileSystem[\"`~/.fastmcp/oauth-proxy-clients/`<br/>client_id.json\"]\n    end\n    \n    ClientRegister --> ProxyDCRClient\n    ProxyDCRClient --> RedirectValidation\n    RedirectValidation --> StorageData\n    StorageData --> ClientStorage\n    ClientStorage --> FileSystem\n```\nSources:\n[src/fastmcp/server/auth/oauth_proxy.py:60-115](.)\n,\n[src/fastmcp/server/auth/oauth_proxy.py:396-459](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 17,
+      "total_chunks": 30,
+      "char_count": 1107,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291830"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:18",
+    "content": "The proxy implements a dual-layer authorization flow that maintains security while bridging DCR requirements with traditional OAuth constraints.\n```\nsequenceDiagram\n    participant Client as \"MCP Client\"\n    participant Proxy as \"OAuthProxy\"\n    participant Provider as \"OAuth Provider\"\n    \n    Note over Client, Proxy: Phase 1: Authorization Request\n    Client->>Proxy: authorize(client, params)<br/>code_challenge=CLIENT_CHALLENGE\n    Proxy->>Proxy: _generate_pkce_pair()<br/>proxy_code_verifier, proxy_code_challenge\n    Proxy->>Proxy: _oauth_transactions[txn_id] = transaction_data\n    Proxy->>Provider: redirect to upstream<br/>code_challenge=PROXY_CHALLENGE\n    \n    Note over Proxy, Provider: Phase 2: Provider Callback  \n    Provider->>Proxy: _handle_idp_callback(request)<br/>authorization_code\n    Proxy->>Provider: exchange_code_for_tokens<br/>code_verifier=PROXY_VERIFIER  \n    Provider->>Proxy: access_token, refresh_token\n    Proxy->>Proxy: _client_codes[client_code] = tokens + PKCE\n    Proxy->>Client: redirect to client callback<br/>code=CLIENT_CODE\n    \n    Note over Client, Proxy: Phase 3: Token Exchange\n    Client->>Proxy: exchange_authorization_code<br/>code_verifier=CLIENT_VERIFIER\n    Proxy->>Proxy: validate PKCE + load stored tokens\n    Proxy->>Client: OAuthToken (from provider)\n```\nSources:\n[src/fastmcp/server/auth/oauth_proxy.py:464-669](.)\n,\n[src/fastmcp/server/auth/oauth_proxy.py:876-1061](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 18,
+      "total_chunks": 30,
+      "char_count": 1428,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291836"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:19",
+    "content": "FastMCP supports multiple token verification strategies through the\n```\nTokenVerifier\n```\nbase class and provider-specific implementations that handle different token formats and validation mechanisms.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 19,
+      "total_chunks": 30,
+      "char_count": 201,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291842"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:20",
+    "content": "```\ngraph TB\n    subgraph \"Token Verifier Hierarchy\"\n        TokenVerifier[\"`TokenVerifier`<br/>required_scopes: list[str]<br/>verify_token(token) -> AccessToken\"]\n        \n        JWTVerifier[\"`JWTVerifier`<br/>jwks_uri: str<br/>issuer: str<br/>algorithm: str\"]\n        \n        GitHubTokenVerifier[\"`GitHubTokenVerifier`<br/>api.github.com/user<br/>X-OAuth-Scopes header\"]\n        \n        GoogleTokenVerifier[\"`GoogleTokenVerifier`<br/>googleapis.com/oauth2/v1/tokeninfo<br/>userinfo endpoint\"]\n        \n        AzureTokenVerifier[\"`AzureTokenVerifier`<br/>graph.microsoft.com/v1.0/me<br/>Graph API validation\"]\n        \n        WorkOSTokenVerifier[\"`WorkOSTokenVerifier`<br/>authkit.app/oauth2/userinfo<br/>AuthKit validation\"]\n    end\n    \n    subgraph \"Verification Methods\"\n        JWKSValidation[\"`JWKS Signature Validation`<br/>RS256, HS256<br/>Cryptographic verification\"]\n        \n        APIValidation[\"`API Endpoint Validation`<br/>HTTP calls to provider<br/>Opaque token validation\"]\n        \n        UserInfoExtraction[\"`User Info Extraction`<br/>Claims mapping<br/>Scope validation\"]\n    end\n    \n    TokenVerifier --> JWTVerifier\n    TokenVerifier --> GitHubTokenVerifier  \n    TokenVerifier --> GoogleTokenVerifier\n    TokenVerifier --> AzureTokenVerifier\n    TokenVerifier --> WorkOSTokenVerifier\n    \n    JWTVerifier --> JWKSValidation\n    GitHubTokenVerifier --> APIValidation\n    GoogleTokenVerifier --> APIValidation\n    AzureTokenVerifier --> APIValidation\n    WorkOSTokenVerifier --> APIValidation\n    \n    JWKSValidation --> UserInfoExtraction\n    APIValidation --> UserInfoExtraction\n```\nSources:\n[src/fastmcp/server/auth/providers/jwt.py:1-200](.)\n,\n[src/fastmcp/server/auth/providers/github.py:62-165](.)\n,\n[src/fastmcp/server/auth/providers/google.py:64-181](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 20,
+      "total_chunks": 30,
+      "char_count": 1791,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291848"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:21",
+    "content": "The\n```\nAccessToken\n```\nclass provides a unified representation of validated tokens across all providers:\n```\ngraph LR\n    subgraph \"AccessToken Components\"\n        AccessToken[\"`AccessToken`<br/>token: str<br/>client_id: str<br/>scopes: list[str]<br/>expires_at: int | None<br/>claims: dict[str, Any]\"]\n        \n        Claims[\"`claims`<br/>sub: user_id<br/>email: str<br/>name: str<br/>provider_specific_data\"]\n        \n        Scopes[\"`scopes`<br/>Validated against<br/>required_scopes\"]\n    end\n    \n    subgraph \"Provider Mapping\"\n        GitHubClaims[\"`GitHub Claims`<br/>github_user_data<br/>login, avatar_url\"]\n        \n        GoogleClaims[\"`Google Claims`<br/>google_user_data<br/>picture, locale\"]\n        \n        AzureClaims[\"`Azure Claims`<br/>job_title<br/>office_location\"]\n    end\n    \n    AccessToken --> Claims\n    AccessToken --> Scopes\n    Claims --> GitHubClaims\n    Claims --> GoogleClaims  \n    Claims --> AzureClaims\n```\nSources:\n[src/fastmcp/server/auth/auth.py:50-85](.)\n,\n[src/fastmcp/server/auth/providers/github.py:144-157](.)\n,\n[src/fastmcp/server/auth/providers/google.py:152-173](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 21,
+      "total_chunks": 30,
+      "char_count": 1115,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291854"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:22",
+    "content": "FastMCP includes ready-to-use provider implementations for major OAuth services, each handling provider-specific requirements and token formats.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 22,
+      "total_chunks": 30,
+      "char_count": 144,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291860"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:23",
+    "content": "```\ngraph TB\n    subgraph \"Provider Base Classes\"\n        OAuthProxy[\"`OAuthProxy`<br/>DCR-compliant proxy<br/>PKCE forwarding<br/>Callback handling\"]\n        \n        RemoteAuthProvider[\"`RemoteAuthProvider`<br/>Metadata forwarding<br/>Authorization server delegation\"]\n    end\n    \n    subgraph \"OAuth Proxy Providers\"\n        GitHubProvider[\"`GitHubProvider`<br/>github.com/login/oauth/*<br/>GitHubTokenVerifier\"]\n        \n        GoogleProvider[\"`GoogleProvider`<br/>accounts.google.com/o/oauth2/*<br/>GoogleTokenVerifier\"]\n        \n        AzureProvider[\"`AzureProvider`<br/>login.microsoftonline.com/{tenant}/*<br/>AzureTokenVerifier\"]\n        \n        WorkOSProvider[\"`WorkOSProvider`<br/>{domain}.authkit.app/oauth2/*<br/>WorkOSTokenVerifier\"]\n    end\n    \n    subgraph \"DCR Providers\"\n        AuthKitProvider[\"`AuthKitProvider`<br/>WorkOS DCR support<br/>Metadata forwarding\"]\n    end\n    \n    subgraph \"Configuration\"\n        ProviderSettings[\"`*ProviderSettings`<br/>Environment variables<br/>FASTMCP_SERVER_AUTH_*\"]\n        \n        NotSetPattern[\"`NotSet / NotSetT`<br/>Parameter/environment fallback<br/>Validation pattern\"]\n    end\n    \n    OAuthProxy --> GitHubProvider\n    OAuthProxy --> GoogleProvider\n    OAuthProxy --> AzureProvider\n    OAuthProxy --> WorkOSProvider\n    \n    RemoteAuthProvider --> AuthKitProvider\n    \n    GitHubProvider --> ProviderSettings\n    GoogleProvider --> ProviderSettings\n    AzureProvider --> ProviderSettings\n    WorkOSProvider --> ProviderSettings\n    \n    ProviderSettings --> NotSetPattern\n```\nSources:\n[src/fastmcp/server/auth/providers/github.py:167-284](.)\n,\n[src/fastmcp/server/auth/providers/google.py:183-303](.)\n,\n[src/fastmcp/server/auth/providers/azure.py:118-266](.)\n,\n[src/fastmcp/server/auth/providers/workos.py:128-262](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 23,
+      "total_chunks": 30,
+      "char_count": 1788,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291865"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:24",
+    "content": "FastMCP implements multiple layers of security to protect OAuth flows and ensure secure token handling.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 24,
+      "total_chunks": 30,
+      "char_count": 103,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291870"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:25",
+    "content": "The proxy implements dual-layer PKCE protection, maintaining security between client-to-proxy and proxy-to-provider connections:\n```\ngraph LR\n    subgraph \"Client PKCE Layer\"\n        ClientVerifier[\"`client_code_verifier`<br/>Generated by MCP client\"]\n        ClientChallenge[\"`client_code_challenge`<br/>SHA256(verifier) + base64url\"]\n        ClientValidation[\"`PKCE Validation`<br/>MCP framework validates<br/>client's PKCE\"]\n    end\n    \n    subgraph \"Proxy PKCE Layer\"  \n        ProxyVerifier[\"`proxy_code_verifier`<br/>_generate_pkce_pair()\"]\n        ProxyChallenge[\"`proxy_code_challenge`<br/>S256 method<br/>Sent to upstream\"]\n        ProxyValidation[\"`Upstream Validation`<br/>Provider validates<br/>proxy's PKCE\"]\n    end\n    \n    subgraph \"Transaction Storage\"\n        TransactionData[\"`_oauth_transactions[txn_id]`<br/>code_challenge: client<br/>proxy_code_verifier: proxy\"]\n    end\n    \n    ClientVerifier --> ClientChallenge\n    ClientChallenge --> ClientValidation\n    \n    ProxyVerifier --> ProxyChallenge  \n    ProxyChallenge --> ProxyValidation\n    \n    ClientChallenge --> TransactionData\n    ProxyVerifier --> TransactionData\n```\nSources:\n[src/fastmcp/server/auth/oauth_proxy.py:377-391](.)\n,\n[src/fastmcp/server/auth/oauth_proxy.py:481-530](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 25,
+      "total_chunks": 30,
+      "char_count": 1263,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291876"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:26",
+    "content": "The\n```\nProxyDCRClient\n```\nclass implements configurable redirect URI validation to prevent authorization code interception while maintaining DCR compatibility:\n```\ngraph TB\n    subgraph \"Redirect URI Patterns\"\n        AllowedPatterns[\"`allowed_client_redirect_uris`<br/>['http://localhost:*']<br/>['https://*.example.com/*']\"]\n        \n        DefaultPatterns[\"`Default: None`<br/>All URIs allowed<br/>(DCR compatibility)\"]\n        \n        RestrictivePatterns[\"`Empty list: []`<br/>No URIs allowed<br/>(Maximum security)\"]\n    end\n    \n    subgraph \"Validation Logic\"\n        ValidateRedirectURI[\"`validate_redirect_uri()`<br/>Pattern matching<br/>Wildcard support\"]\n        \n        PatternMatch[\"`validate_redirect_uri()`<br/>from redirect_validation<br/>Glob-style patterns\"]\n        \n        FallbackValidation[\"`super().validate_redirect_uri()`<br/>Standard OAuth validation\"]\n    end\n    \n    AllowedPatterns --> ValidateRedirectURI\n    DefaultPatterns --> ValidateRedirectURI\n    RestrictivePatterns --> ValidateRedirectURI\n    \n    ValidateRedirectURI --> PatternMatch\n    PatternMatch --> FallbackValidation\n```\nSources:\n[src/fastmcp/server/auth/oauth_proxy.py:60-115](.)\n,\n[src/fastmcp/server/auth/redirect_validation.py:1-50](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 26,
+      "total_chunks": 30,
+      "char_count": 1241,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291881"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:27",
+    "content": "The proxy maintains comprehensive token lifecycle management with cleanup and revocation capabilities:\n```\ngraph LR\n    subgraph \"Token Storage\"\n        AccessTokenStorage[\"`_access_tokens`<br/>dict[str, AccessToken]<br/>Token tracking\"]\n        \n        RefreshTokenStorage[\"`_refresh_tokens`<br/>dict[str, RefreshToken]<br/>Refresh tracking\"]\n        \n        TokenRelations[\"`_access_to_refresh`<br/>`_refresh_to_access`<br/>Bidirectional mapping\"]\n    end\n    \n    subgraph \"Token Operations\"\n        TokenRevocation[\"`revoke_token()`<br/>Local cleanup<br/>Upstream revocation\"]\n        \n        TokenRefresh[\"`exchange_refresh_token()`<br/>AsyncOAuth2Client<br/>authlib integration\"]\n        \n        TokenValidation[\"`load_access_token()`<br/>Delegate to TokenVerifier<br/>JWKS or API validation\"]\n    end\n    \n    subgraph \"Cleanup Mechanisms\"\n        LocalCleanup[\"`Local Storage Cleanup`<br/>Remove paired tokens<br/>Maintain consistency\"]\n        \n        UpstreamRevocation[\"`Upstream Revocation`<br/>HTTP POST to<br/>revocation_endpoint\"]\n        \n        ExpirationHandling[\"`Expiration Handling`<br/>expires_at checking<br/>Automatic cleanup\"]\n    end\n    \n    AccessTokenStorage --> TokenRevocation\n    RefreshTokenStorage --> TokenRevocation\n    TokenRelations --> TokenRevocation\n    \n    TokenRevocation --> LocalCleanup\n    TokenRevocation --> UpstreamRevocation\n    TokenValidation --> ExpirationHandling\n```\nSources:\n[src/fastmcp/server/auth/oauth_proxy.py:775-818](.)\n,\n[src/fastmcp/server/auth/oauth_proxy.py:674-753](.)",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 27,
+      "total_chunks": 30,
+      "char_count": 1543,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291886"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:28",
+    "content": "FastMCP provides pluggable storage backends for persisting OAuth client registrations and maintaining session state across server restarts.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 28,
+      "total_chunks": 30,
+      "char_count": 139,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291892"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:HTTP_Server_and_Deployment:chunk:29",
+    "content": "```\ngraph TB\n    subgraph \"Storage Interface\"\n        KVStorage[\"`KVStorage Protocol`<br/>get(key) -> dict | None<br/>set(key, value)<br/>delete(key)\"]\n    end\n    \n    subgraph \"File-Based Storage\"\n        JSONFileStorage[\"`JSONFileStorage`<br/>~/.fastmcp/oauth-proxy-clients/<br/>Automatic metadata<br/>timestamp tracking\"]\n        \n        FileStructure[\"`File Structure`<br/>{client_id}.json<br/>data: client_info<br/>timestamp: float\"]\n        \n        SafeKeys[\"`_get_safe_key()`<br/>Filesystem-safe naming<br/>Character sanitization\"]\n    end\n    \n    subgraph \"In-Memory Storage\"\n        InMemoryStorage[\"`InMemoryStorage`<br/>_data: dict[str, dict]<br/>Testing/temporary use\"]\n    end\n    \n    subgraph \"Storage Operations\"\n        MetadataWrapping[\"`Metadata Wrapping`<br/>timestamp: creation_time<br/>data: actual_payload\"]\n        \n        CleanupOperations[\"`cleanup_old_entries()`<br/>Age-based removal<br/>30-day default TTL\"]\n    end\n    \n    KVStorage --> JSONFileStorage\n    KVStorage --> InMemoryStorage\n    \n    JSONFileStorage --> FileStructure\n    JSONFileStorage --> SafeKeys\n    JSONFileStorage --> MetadataWrapping\n    JSONFileStorage --> CleanupOperations\n    \n    InMemoryStorage --> MetadataWrapping\n```\nSources:\n[src/fastmcp/utilities/storage.py:16-205](.)\n,\n[src/fastmcp/server/auth/oauth_proxy.py:345-349](.)\nThe authentication system provides a robust, secure foundation for FastMCP servers while maintaining compatibility with both traditional OAuth providers and MCP's Dynamic Client Registration requirements. The modular design allows for easy extension with new providers and verification methods as needed.",
+    "metadata": {
+      "source": "fastmcp\\HTTP_Server_and_Deployment.md",
+      "file_name": "HTTP_Server_and_Deployment.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 29,
+      "total_chunks": 30,
+      "char_count": 1644,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.291897"
+    }
+  }
+]

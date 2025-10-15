@@ -1,0 +1,92 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Installation__Dependencies:chunk:0",
+    "content": "This document covers the installation process for the MCP Python SDK and explains its dependency management system. It provides guidance on system requirements, installation methods, and the role of each dependency category in the SDK's functionality.\nFor information about core MCP concepts after installation, see\n[Key Concepts](#1.2)\n. For development environment setup including CLI tools, see\n[Development Environment](#8.2)\n.",
+    "metadata": {
+      "source": "python-sdk\\Installation__Dependencies.md",
+      "file_name": "Installation__Dependencies.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 6,
+      "char_count": 431,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.442883"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Installation__Dependencies:chunk:1",
+    "content": "The MCP Python SDK has specific system requirements that must be met before installation.",
+    "metadata": {
+      "source": "python-sdk\\Installation__Dependencies.md",
+      "file_name": "Installation__Dependencies.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 6,
+      "char_count": 89,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.442897"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Installation__Dependencies:chunk:2",
+    "content": "```\ngraph LR\n    subgraph \"Python Version Support\"\n        Python310[\"Python 3.10\"]\n        Python311[\"Python 3.11\"] \n        Python312[\"Python 3.12\"]\n        Python313[\"Python 3.13\"]\n    end\n    \n    subgraph \"MCP SDK Compatibility\"\n        MCPCore[\"mcp package\"]\n    end\n    \n    Python310 --> MCPCore\n    Python311 --> MCPCore\n    Python312 --> MCPCore\n    Python313 --> MCPCore\n```\nThe SDK requires Python 3.10 or higher, with official support through Python 3.13. Platform-specific dependencies include\n```\npywin32>=310\n```\nfor Windows systems to support process management and inter-process communication.\n**Sources:**\n[pyproject.toml:6](.)\n,\n[pyproject.toml:19-22](.)\n,\n[pyproject.toml:35](.)",
+    "metadata": {
+      "source": "python-sdk\\Installation__Dependencies.md",
+      "file_name": "Installation__Dependencies.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 6,
+      "char_count": 699,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.442903"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Installation__Dependencies:chunk:3",
+    "content": "The project uses\n```\nuv\n```\nas its primary dependency manager with a minimum required version of 0.7.2. This is enforced through the build configuration to ensure consistent dependency resolution and workspace management.\n**Sources:**\n[pyproject.toml:46-48](.)",
+    "metadata": {
+      "source": "python-sdk\\Installation__Dependencies.md",
+      "file_name": "Installation__Dependencies.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 6,
+      "char_count": 260,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.442907"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Installation__Dependencies:chunk:4",
+    "content": "The MCP SDK can be installed from PyPI using standard Python package managers:\n```\npip install mcp\n```",
+    "metadata": {
+      "source": "python-sdk\\Installation__Dependencies.md",
+      "file_name": "Installation__Dependencies.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 6,
+      "char_count": 102,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.442912"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Installation__Dependencies:chunk:5",
+    "content": "The SDK provides optional feature sets that can be installed as needed:",
+    "metadata": {
+      "source": "python-sdk\\Installation__Dependencies.md",
+      "file_name": "Installation__Dependencies.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 6,
+      "char_count": 71,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.442918"
+    }
+  }
+]

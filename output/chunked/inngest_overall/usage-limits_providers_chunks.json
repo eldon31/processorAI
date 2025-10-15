@@ -1,0 +1,64 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\usage-limits_providers.md",
+  "title": "Providers' Usage Limits",
+  "num_chunks": 2,
+  "total_chars": 1365,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Providers' Usage Limits](\\docs\\usage-limits\\providers#providers-usage-limits)\nPlatform\n[Deployment](\\docs\\platform\\deployment)\n[Cloud Providers](\\docs\\deploy\\vercel)",
+      "char_count": 181,
+      "token_count": 50,
+      "metadata": {
+        "title": "Providers' Usage Limits",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\usage-limits_providers.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\usage-limits_providers.md",
+        "file_name": "usage-limits_providers.md",
+        "file_size": 1453,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "b5e70a5036aa4944ef746e04d1f5bdd431e07ab606b9c6d2722ce41d4d9824d9",
+        "author": null,
+        "created_at": "2025-10-13T00:01:48.252923",
+        "modified_at": "2025-10-13T00:01:48.253456",
+        "page_count": null,
+        "word_count": 173,
+        "extracted_at": "2025-10-13T20:05:14.527229",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 50,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Providers' Usage Limits\nAs your functions' code runs on the hosting provider of your choice, you will be subject to provider or billing plan\nlimits separate from\n[Inngest's own limits](\\docs\\usage-limits\\inngest)\n.\nHere are the known usage limits for each provider we support based on their documentation.\nAWS Lambda, Payload size = 6MB - 20MB. AWS Lambda, Concurrency = 1000. AWS Lambda, Timeout = 15m. Google Cloud Functions, Payload size = 512KB - 32MB. Google Cloud Functions, Concurrency = 3000 (1st gen only). Google Cloud Functions, Timeout = 10m - 60m. Cloudflare Workers, Payload size = 100MB - 500MB. Cloudflare Workers, Concurrency = 100 - 500. Cloudflare Workers, Timeout = N/A. Vercel, Payload size = 4MB - 4.5MB. Vercel, Concurrency = 1000. Vercel, Timeout = 10s - 900s, N/A (Edge Fn). Netlify, Payload size = 256KB - 6MB. Netlify, Concurrency = Undocumented. Netlify, Timeout = 10s - 15m. DigitalOcean, Payload size = 1MB. DigitalOcean, Concurrency = 120. DigitalOcean, Timeout = 15m. Fly.io, Payload size = Undocumented. Fly.io, Concurrency = User configured. Fly.io, Timeout = Undocumented\nFor more details tailored to your plan, please check each provider's website.",
+      "char_count": 1184,
+      "token_count": 368,
+      "metadata": {
+        "title": "Providers' Usage Limits",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\usage-limits_providers.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\usage-limits_providers.md",
+        "file_name": "usage-limits_providers.md",
+        "file_size": 1453,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "b5e70a5036aa4944ef746e04d1f5bdd431e07ab606b9c6d2722ce41d4d9824d9",
+        "author": null,
+        "created_at": "2025-10-13T00:01:48.252923",
+        "modified_at": "2025-10-13T00:01:48.253456",
+        "page_count": null,
+        "word_count": 173,
+        "extracted_at": "2025-10-13T20:05:14.527229",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 368,
+        "has_context": true
+      }
+    }
+  ]
+}

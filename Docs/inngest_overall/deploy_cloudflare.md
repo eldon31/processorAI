@@ -1,0 +1,25 @@
+#### On this page
+
+- [Cloudflare Pages](\docs\deploy\cloudflare#cloudflare-pages)
+- [Deploying to Cloudflare Pages](\docs\deploy\cloudflare#deploying-to-cloudflare-pages)
+- [Syncing your app](\docs\deploy\cloudflare#syncing-your-app)
+
+Platform [Deployment](\docs\platform\deployment) [Cloud Providers](\docs\deploy\vercel)
+
+# Cloudflare Pages
+
+Inngest allows you to deploy your event-driven functions to [Cloudflare Pages](https://pages.cloudflare.com/) .
+
+## [Deploying to Cloudflare Pages](\docs\deploy\cloudflare#deploying-to-cloudflare-pages)
+
+1. [Write your functions](\docs\functions)
+2. [Serve your functions](\docs\learn\serving-inngest-functions#framework-cloudflare)
+3. [Set environment variables](https://developers.cloudflare.com/pages/get-started/#environment-variables) for your deployment
+
+- NODE\_VERSION: 16
+- `INNGEST_SIGNING_KEY: ***` - from [the Inngest dashboard](https://app.inngest.com/env/production/manage/signing-key)
+- `INNGEST_EVENT_KEY: ***` - from [the Inngest dashboard](https://app.inngest.com/env/production/manage/keys)
+
+## [Syncing your app](\docs\deploy\cloudflare#syncing-your-app)
+
+After your code is deployed to Cloudflare Pages, you'll need to sync your app with Inngest. Learn how to [sync your app with Inngest here](\docs\apps\cloud#sync-a-new-app-in-inngest-cloud) .

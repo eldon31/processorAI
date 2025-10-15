@@ -1,0 +1,64 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_debounce.md",
+  "title": "Debounce functions v3.1.0+",
+  "num_chunks": 2,
+  "total_chars": 1296,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Debounce functions](\\docs\\reference\\functions\\debounce#debounce-functions)\nReferences\n[TypeScript SDK](\\docs\\reference\\typescript)",
+      "char_count": 146,
+      "token_count": 39,
+      "metadata": {
+        "title": "Debounce functions v3.1.0+",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_debounce.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_debounce.md",
+        "file_name": "reference_functions_debounce.md",
+        "file_size": 1333,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "889e588980ef1080b950c36a5ec25be51aa93ca6125290ffd8dcfd5408719348",
+        "author": null,
+        "created_at": "2025-10-13T00:00:32.782349",
+        "modified_at": "2025-10-13T00:00:32.782349",
+        "page_count": null,
+        "word_count": 192,
+        "extracted_at": "2025-10-13T20:04:30.526453",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 39,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Debounce functions v3.1.0+\nDebounce delays a function run for the given\n```\nperiod\n```\n, and reschedules functions for the given\n```\nperiod\n```\nany time new events are received while the debounce is active.  The function run starts after the specified\n```\nperiod\n```\npasses and no new events have been received.  Functions use the last event as their input data.\nSee the\n[Debounce guide](\\docs\\guides\\debounce)\nfor more information about how this feature works.\nCopy Copied\n```\nexport default inngest .createFunction (\n{\nid : \"handle-webhook\" ,\ndebounce : {\nkey : \"event.data.account_id\" ,\nperiod : \"5m\" ,\n} ,\n} ,\n{ event : \"intercom/company.updated\" } ,\nasync ({ event , step }) => {\n// This function will only be scheduled 5m after events have stopped being received with the same\n// `event.data.account_id` field.\n//\n// `event` will be the last event in the series received.\n}\n);\n```\n- Name `debounce` Type object Required optional Description Options to configure how to debounce function execution Properties\nFunctions will run using the last event received as the input data.\nDebounce cannot be combined with\n[batching](\\docs\\guides\\batching)\n.",
+      "char_count": 1150,
+      "token_count": 284,
+      "metadata": {
+        "title": "Debounce functions v3.1.0+",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_debounce.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_functions_debounce.md",
+        "file_name": "reference_functions_debounce.md",
+        "file_size": 1333,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "889e588980ef1080b950c36a5ec25be51aa93ca6125290ffd8dcfd5408719348",
+        "author": null,
+        "created_at": "2025-10-13T00:00:32.782349",
+        "modified_at": "2025-10-13T00:00:32.782349",
+        "page_count": null,
+        "word_count": 192,
+        "extracted_at": "2025-10-13T20:04:30.526453",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 284,
+        "has_context": true
+      }
+    }
+  ]
+}

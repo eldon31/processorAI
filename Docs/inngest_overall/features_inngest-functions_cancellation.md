@@ -1,0 +1,88 @@
+#### On this page
+
+- [Cancellation](\docs\features\inngest-functions\cancellation#cancellation)
+- [Anatomy of a cancellation](\docs\features\inngest-functions\cancellation#anatomy-of-a-cancellation)
+- [Handling cancelled functions](\docs\features\inngest-functions\cancellation#handling-cancelled-functions)
+
+Features [Inngest Functions](\docs\features\inngest-functions)
+
+# Cancellation
+
+Cancellation is a useful mechanism for preventing unnecessary actions based on previous actions (ex, skipping a report generation upon an account deletion) or stopping an unwanted function run composed of multiple steps (ex, deployment mistake, duplicates).
+
+Inngest enables you to cancel running Functions via the API, Dashboard, or based on events:
+
+## [Cancel on events](\docs\features\inngest-functions\cancellation\cancel-on-events)
+
+[Cancel scheduled or sleeping Functions based on incoming events.](\docs\features\inngest-functions\cancellation\cancel-on-events)
+
+## [Bulk cancel via the Platform Dashboard](\docs\platform\manage\bulk-cancellation)
+
+[The quickest way to cancel the Function runs within a given time range.](\docs\platform\manage\bulk-cancellation)
+
+## [Cancel or bulk cancel via the REST API](\docs\guides\cancel-running-functions#bulk-cancel-via-the-rest-api)
+
+[Useful to cancel a large number of Function runs within a specific range.](\docs\guides\cancel-running-functions#bulk-cancel-via-the-rest-api)
+
+## [Replay canceled Function runs](\docs\platform\replay)
+
+[Canceled Functions runs can be replayed from the Platform Dashboard](\docs\platform\replay)
+
+## [Anatomy of a cancellation](\docs\features\inngest-functions\cancellation#anatomy-of-a-cancellation)
+
+Inngest cancellation mechanisms prevent a scheduled Function run from running or stop an ongoing Function run between some following steps (sleep or action steps).
+
+Please note that:
+
+- Cancelling a function that has a currently executing step will not stop the step's execution. Any actively executing steps will run to completion.
+- Canceling a set of Function runs does not prevent new Function runs from being enqueued (ex, in case of loop issues). Consider using [Functions Pausing](\docs\guides\pause-functions) instead.
+
+Consider the below Inngest Function:
+
+inngest/scheduleReminder.ts inngest/schedule\_reminder.py main.go
+
+Copy Copied
+
+```
+const scheduleReminder = inngest .createFunction (
+{
+id : "schedule-reminder" ,
+cancelOn : [{ event : "tasks/deleted" , if : "event.data.id == async.data.id" }] ,
+}
+{ event : "tasks/reminder.created" } ,
+async ({ event , step }) => {
+// Step 1
+await step .sleepUntil ( 'sleep-until-remind-at-time' , event . data .remindAt);
+// Step 2
+await step .run ( 'send-reminder-push' , async ({}) => {
+await pushNotificationService .push ( event . data .userId , event . data .reminderBody)
+})
+}
+// ...
+);
+```
+
+Let's now look at two different cancellations triggered from the Dashboard Bulk Cancellation UI:
+
+**We cancel the Function run before or after Step 1**
+
+1. The Function Run gets picked up by Inngest
+2. The Step 1 is processed, triggering a sleep until the following week
+3. Three days after, a cancellation is received
+4. The Function run is canceled (Step 2 is skipped)
+
+**We cancel the Function run when Step 2 is running**
+
+1. The Function Run gets picked up by Inngest
+2. The Step 1 is processed, triggering a sleep until a next week
+3. A week after, a cancellation is received but the Step 2 is already started
+4. The Step 2 runs until completion
+5. The Function run is marked as "canceled"
+
+All canceled Function runs can be replay by using the Platform's [Functions Replay UI](\docs\platform\replay) .
+
+## [Handling cancelled functions](\docs\features\inngest-functions\cancellation#handling-cancelled-functions)
+
+Function runs that are cancelled may require additional work like database cleanup or purging of deletion of temporary resources. This can be done leveraging the [`inngest/function.cancelled`](\docs\reference\system-events\inngest-function-cancelled) system event.
+
+See [this complete example](\docs\examples\cleanup-after-function-cancellation) for how to use this event within your system to cleanup after a function run is cancelled.

@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_replay.md",
+  "title": "Function Replay",
+  "num_chunks": 3,
+  "total_chars": 2357,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Function Replay](\\docs\\platform\\replay#function-replay)\n- [How to create a new Replay](\\docs\\platform\\replay#how-to-create-a-new-replay)\nPlatform\n[Manage](\\docs\\platform\\environments)",
+      "char_count": 199,
+      "token_count": 58,
+      "metadata": {
+        "title": "Function Replay",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_replay.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_replay.md",
+        "file_name": "platform_replay.md",
+        "file_size": 2585,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "70c276eeaf698eafbb93208c0b6e3b61b6ed9d1febdba66a8858e7856192f124",
+        "author": null,
+        "created_at": "2025-10-13T00:00:22.797824",
+        "modified_at": "2025-10-13T00:00:22.797899",
+        "page_count": null,
+        "word_count": 408,
+        "extracted_at": "2025-10-13T20:04:22.972203",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 58,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Function Replay\nFunctions will fail. It's unavoidable. When they do, you need to recover from the failure quickly.\nWhen a large number of functions fail, you can easily\n*replay*\nthem in bulk from the Inngest dashboard.\nRelay graphic\nThe recovery flow in other systems may require dead-letter queues or some other form of manual intervention.\nWith Replay, you can replay functions in bulk from the Inngest dashboard:\n1. You detect an issue with your functions (e.g. a failure due to a bug or external system)\n2. You fix the issue and push to production\n3. You use Replay to replay the functions from the time range when the issues occurred\nLet's learn how you can use Replay to recover from function failures:",
+      "char_count": 708,
+      "token_count": 155,
+      "metadata": {
+        "title": "Function Replay",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_replay.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_replay.md",
+        "file_name": "platform_replay.md",
+        "file_size": 2585,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "70c276eeaf698eafbb93208c0b6e3b61b6ed9d1febdba66a8858e7856192f124",
+        "author": null,
+        "created_at": "2025-10-13T00:00:22.797824",
+        "modified_at": "2025-10-13T00:00:22.797899",
+        "page_count": null,
+        "word_count": 408,
+        "extracted_at": "2025-10-13T20:04:22.972203",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 155,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Function Replay\nHow to create a new Replay\nTo replay a function, select the \"Replay\" option in the \"All actions\" menu from a function's dashboard. This will open a modal where you can select the runs you want to replay.\nReplay button in function runs page\nEach replay requires a name, a time range and status(es) to filter the runs to be replayed.\nWe recommend using a name that describes the incident that you're resolving so your team can\nunderstand this later, or maybe just mention the bug tracker issue:  e.g. \"Bug fix from PR #958\",\n\"API-395: Networking blip.\"\nReplay modal form\nHere's an example of a Replay that fixed a bug triggered by daylight savings time between the given timestamp.\nFor this issue, we only want to target the \"Failed\" function runs statuses. You can select multiple run\nstatuses in case your function might have had a bug that failed silently, so you want to replay anything\npreviously marked as \"Succeeded\" as well.\nReplay modal form filled\nOnce you have selected the runs you want to replay, click the replay button to start the replay. You\nwill be redirected to the replay page where you can see the progress of the replay.\nList of all Replays\nThe replay will spread out the runs over time as to not overwhelm your application with requests.\nDepending on the number of runs to be replayed, this could take seconds or minutes to complete.\nWhen all the runs have been replayed, the replay will be marked as \"Completed.\"",
+      "char_count": 1450,
+      "token_count": 326,
+      "metadata": {
+        "title": "Function Replay",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_replay.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_replay.md",
+        "file_name": "platform_replay.md",
+        "file_size": 2585,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "70c276eeaf698eafbb93208c0b6e3b61b6ed9d1febdba66a8858e7856192f124",
+        "author": null,
+        "created_at": "2025-10-13T00:00:22.797824",
+        "modified_at": "2025-10-13T00:00:22.797899",
+        "page_count": null,
+        "word_count": 408,
+        "extracted_at": "2025-10-13T20:04:22.972203",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 326,
+        "has_context": true
+      }
+    }
+  ]
+}

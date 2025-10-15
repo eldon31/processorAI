@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_prod-mode.md",
+  "title": "Production mode",
+  "num_chunks": 3,
+  "total_chars": 1247,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Production mode](\\docs\\reference\\python\\overview\\prod-mode#production-mode)\n- [How to opt-out](\\docs\\reference\\python\\overview\\prod-mode#how-to-opt-out)\nReferences\n[Python SDK](\\docs\\reference\\python)",
+      "char_count": 216,
+      "token_count": 61,
+      "metadata": {
+        "title": "Production mode",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_prod-mode.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_prod-mode.md",
+        "file_name": "reference_python_overview_prod-mode.md",
+        "file_size": 1321,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "4e86639bf47c0fcaa687a899ed26ca2dfac5cdbd3f14f1494a4427f277ec2cfa",
+        "author": null,
+        "created_at": "2025-10-13T00:01:09.034247",
+        "modified_at": "2025-10-13T00:01:09.034750",
+        "page_count": null,
+        "word_count": 173,
+        "extracted_at": "2025-10-13T20:04:47.060171",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 61,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Production mode\nWhen the SDK is in production mode it will try to connect to Inngest Cloud instead of the Inngest Dev Server. Production mode is opt-out for security reasons.",
+      "char_count": 174,
+      "token_count": 38,
+      "metadata": {
+        "title": "Production mode",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_prod-mode.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_prod-mode.md",
+        "file_name": "reference_python_overview_prod-mode.md",
+        "file_size": 1321,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "4e86639bf47c0fcaa687a899ed26ca2dfac5cdbd3f14f1494a4427f277ec2cfa",
+        "author": null,
+        "created_at": "2025-10-13T00:01:09.034247",
+        "modified_at": "2025-10-13T00:01:09.034750",
+        "page_count": null,
+        "word_count": 173,
+        "extracted_at": "2025-10-13T20:04:47.060171",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 38,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Production mode\nHow to opt-out\nYou'll want to disable production mode whenever you're using the Inngest Dev Server. This is typically during local development and CI. Production mode can be disabled in 2 ways:\n1. Set the `INNGEST_DEV` environment variable to `1` .\n2. Set the `Inngest` 's `is_production` constructor argument to `false` .\nUsing the\n```\nINNGEST_DEV\n```\nenvironment variable is the recommended way to disable production mode. But make sure that it isn't set in production!\n```\nInngest\n```\n's\n```\nis_production\n```\nconstructor argument is useful for disabling production mode based on whatever logic you want. For example, you could control it using the\n```\nFLASK_ENV\n```\nenvironment variable:\nCopy Copied\n```\nimport inngest\n\ninngest . Inngest (\napp_id = \"my_flask_app\" ,\nis_production = os.environ. get ( \"FLASK_ENV\" ) == \"production\" ,\n)\n```",
+      "char_count": 857,
+      "token_count": 221,
+      "metadata": {
+        "title": "Production mode",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_prod-mode.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_prod-mode.md",
+        "file_name": "reference_python_overview_prod-mode.md",
+        "file_size": 1321,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "4e86639bf47c0fcaa687a899ed26ca2dfac5cdbd3f14f1494a4427f277ec2cfa",
+        "author": null,
+        "created_at": "2025-10-13T00:01:09.034247",
+        "modified_at": "2025-10-13T00:01:09.034750",
+        "page_count": null,
+        "word_count": 173,
+        "extracted_at": "2025-10-13T20:04:47.060171",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 221,
+        "has_context": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:0",
+    "content": "This page covers the FastMCP documentation system, release management, and how documentation is structured and maintained within the project. It explains the technical infrastructure behind documentation generation, changelog management, and the various output formats designed for both human and LLM consumption.\nFor information about the CLI system and commands, see\n[Command Line Interface](#5)\n. For details about project infrastructure and automation, see\n[Project Infrastructure](#9)\n.",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 13,
+      "char_count": 491,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727402"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:1",
+    "content": "The FastMCP documentation system consists of several interconnected components that generate and maintain documentation across multiple formats and platforms.",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 13,
+      "char_count": 158,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727417"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:2",
+    "content": "```\ngraph TB\n    subgraph \"Source Documentation\"\n        ChangelogMDX[\"docs/changelog.mdx<br/>Detailed Release Notes\"]\n        UpdatesMDX[\"docs/updates.mdx<br/>Summary Cards\"]\n        DocsSource[\"Documentation Source Files<br/>.mdx format\"]\n    end\n    \n    subgraph \"Navigation and Schema\"\n        DocsJSON[\"docs.json<br/>Navigation Structure\"]\n        SchemaFiles[\"Schema Files<br/>fastmcp.json definitions\"]\n    end\n    \n    subgraph \"Generated Documentation\"\n        WebDocs[\"gofastmcp.com<br/>Documentation Website\"]\n        LLMFormats[\"LLM-Friendly Formats<br/>llms.txt output\"]\n        SDKDocs[\"SDK Documentation<br/>Auto-generated API docs\"]\n    end\n    \n    subgraph \"Automation Infrastructure\"\n        StaticWorkflow[\"run-static.yml<br/>CI/CD Automation\"]\n        PreCommitHooks[\".pre-commit-config.yaml<br/>Quality Gates\"]\n        SchemaWorkflow[\"Schema Update Automation<br/>PR-based updates\"]\n    end\n    \n    %% Core connections\n    ChangelogMDX --> WebDocs\n    UpdatesMDX --> WebDocs\n    DocsSource --> WebDocs\n    DocsJSON --> WebDocs\n    \n    %% Generation connections\n    SchemaFiles --> SDKDocs\n    WebDocs --> LLMFormats\n    \n    %% Automation connections\n    StaticWorkflow --> SchemaFiles\n    PreCommitHooks --> DocsSource\n    SchemaWorkflow --> SchemaFiles\n    \n    %% Update flow\n    ChangelogMDX -.->|\"Version updates\"| UpdatesMDX\n    SchemaFiles -.->|\"Auto-generated\"| DocsJSON\n```\n**Sources:**\n[docs/changelog.mdx:1-10](.)\n,\n[docs/updates.mdx:1-10](.)\n,\n[.github/workflows/run-static.yml:1-20](.)\n,\n[.pre-commit-config.yaml:1-15](.)",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 13,
+      "char_count": 1559,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727423"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:3",
+    "content": "The documentation follows a structured hierarchy with specific file types and naming conventions:\n```\ndocs/changelog.mdx\n```\n```\ndocs/updates.mdx\n```\n```\ndocs.json\n```\n```\n*/README.md\n```\nRelease Notes, Location = . Release Notes, Purpose = . Release Notes, Example = \n**Sources:**\n[docs/changelog.mdx:1-5](.)\n,\n[docs/updates.mdx:1-6](.)\n,\n[src/fastmcp/contrib/mcp_mixin/README.md:1-10](.)",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 13,
+      "char_count": 389,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727429"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:4",
+    "content": "FastMCP uses a structured approach to managing releases and communicating updates to users and developers.",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 13,
+      "char_count": 106,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727435"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:5",
+    "content": "The changelog follows a consistent format with version-specific entries:\n```\ngraph TD\n    subgraph \"Changelog Entry Structure\"\n        VersionHeader[\"Version Header<br/>v2.12.4: OIDC What You Did There\"]\n        ReleaseDate[\"Release Date<br/>2025-09-26\"]\n        Description[\"Release Description<br/>High-level summary\"]\n        \n        subgraph \"Change Categories\"\n            NewFeatures[\"New Features 🎉<br/>feat: prefixed items\"]\n            Enhancements[\"Enhancements 🔧<br/>Minor improvements\"]\n            Fixes[\"Fixes 🐞<br/>Bug fixes and patches\"]\n            Docs[\"Docs 📚<br/>Documentation updates\"]\n            Dependencies[\"Dependencies 📦<br/>Dependency updates\"]\n        end\n        \n        subgraph \"Metadata\"\n            Contributors[\"New Contributors<br/>First-time contributors\"]\n            FullChangelog[\"Full Changelog<br/>GitHub comparison links\"]\n        end\n    end\n    \n    VersionHeader --> ReleaseDate\n    ReleaseDate --> Description\n    Description --> NewFeatures\n    NewFeatures --> Enhancements\n    Enhancements --> Fixes\n    Fixes --> Docs\n    Docs --> Dependencies\n    Dependencies --> Contributors\n    Contributors --> FullChangelog\n```\n**Sources:**\n[docs/changelog.mdx:7-79](.)\n,\n[docs/changelog.mdx:81-123](.)",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 13,
+      "char_count": 1243,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727441"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:6",
+    "content": "The updates system provides visual summaries of releases through structured cards:\n```\ngraph LR\n    subgraph \"Update Card Components\"\n        UpdateWrapper[\"Update Component<br/>label, description, tags\"]\n        CardContent[\"Card Component<br/>title, href, cta\"]\n        \n        subgraph \"Card Properties\"\n            Title[\"title: Release Name\"]\n            Href[\"href: GitHub release URL\"]\n            CTA[\"cta: Call-to-action text\"]\n            Image[\"img: Optional hero image\"]\n        end\n        \n        subgraph \"Categorization\"\n            Tags[\"tags: ['Releases', 'Blog Posts']\"]\n            Labels[\"label: Version identifier\"]\n            Description[\"description: Release date\"]\n        end\n    end\n    \n    UpdateWrapper --> CardContent\n    CardContent --> Title\n    CardContent --> Href\n    CardContent --> CTA\n    CardContent --> Image\n    UpdateWrapper --> Tags\n    UpdateWrapper --> Labels\n    UpdateWrapper --> Description\n```\n**Sources:**\n[docs/updates.mdx:8-22](.)\n,\n[docs/updates.mdx:54-68](.)",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 13,
+      "char_count": 1016,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727446"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:7",
+    "content": "FastMCP employs automated systems for maintaining documentation quality and consistency.",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 13,
+      "char_count": 88,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727452"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:8",
+    "content": "The documentation maintenance relies on automated quality checks:\n```\ngraph TB\n    subgraph \"Pre-commit Pipeline\"\n        ValidatePyproject[\"validate-pyproject<br/>Project file validation\"]\n        Prettier[\"prettier<br/>YAML/JSON formatting\"]\n        RuffCheck[\"ruff-check<br/>Code linting\"]\n        RuffFormat[\"ruff-format<br/>Code formatting\"]\n        TyCheck[\"ty check<br/>Type checking\"]\n        CodeSpell[\"codespell<br/>Spell checking\"]\n        NoCommitMain[\"no-commit-to-branch<br/>Branch protection\"]\n    end\n    \n    subgraph \"CI/CD Workflow\"\n        StaticAnalysis[\"run-static.yml<br/>GitHub Actions\"]\n        UVSync[\"uv sync<br/>Dependency management\"]\n        LockfileCheck[\"Lockfile validation<br/>uv lock --check\"]\n        PreCommitRun[\"Pre-commit execution<br/>All files check\"]\n    end\n    \n    %% Pre-commit flow\n    ValidatePyproject --> Prettier\n    Prettier --> RuffCheck\n    RuffCheck --> RuffFormat\n    RuffFormat --> TyCheck\n    TyCheck --> CodeSpell\n    CodeSpell --> NoCommitMain\n    \n    %% CI/CD flow\n    StaticAnalysis --> UVSync\n    UVSync --> LockfileCheck\n    LockfileCheck --> PreCommitRun\n    \n    %% Integration\n    PreCommitRun -.->|\"Runs\"| ValidatePyproject\n```\n**Sources:**\n[.pre-commit-config.yaml:3-48](.)\n,\n[.github/workflows/run-static.yml:26-54](.)",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 13,
+      "char_count": 1290,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727460"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:9",
+    "content": "The project uses automated workflows to maintain documentation currency:\nSchema Updates, Trigger = Code changes. Schema Updates, Purpose = Keep schemas current. Schema Updates, Implementation = PR-based automation. SDK Documentation, Trigger = Post-merge. SDK Documentation, Purpose = Generate API docs. SDK Documentation, Implementation = GitHub Actions. Static Analysis, Trigger = PR/Push. Static Analysis, Purpose = Quality validation. Static Analysis, Implementation = .github/workflows/run-static.yml:18-20. Spell Checking, Trigger = Pre-commit. Spell Checking, Purpose = Content quality. Spell Checking, Implementation = .pre-commit-config.yaml:43-48\n**Sources:**\n[.github/workflows/run-static.yml:8-22](.)\n,\n[.pre-commit-config.yaml:25-42](.)",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 13,
+      "char_count": 749,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727467"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:10",
+    "content": "FastMCP generates documentation in formats optimized for consumption by Large Language Models and AI assistants.",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 13,
+      "char_count": 112,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727473"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:11",
+    "content": "```\ngraph LR\n    subgraph \"Human-Readable Formats\"\n        WebsiteDocs[\"gofastmcp.com<br/>HTML Documentation\"]\n        MarkdownDocs[\"Markdown Files<br/>.mdx source\"]\n        GitHubDocs[\"GitHub README<br/>Repository docs\"]\n    end\n    \n    subgraph \"LLM-Optimized Formats\"\n        LLMsTxt[\"llms.txt<br/>Structured text format\"]\n        MCPServer[\"MCP Server<br/>Interactive documentation\"]\n        StructuredJSON[\"JSON Schemas<br/>Machine-readable specs\"]\n    end\n    \n    subgraph \"Code Documentation\"\n        InlineComments[\"Inline Comments<br/>Source code docs\"]\n        DocStrings[\"Python Docstrings<br/>Function documentation\"]\n        TypeHints[\"Type Annotations<br/>Interface specifications\"]\n    end\n    \n    %% Transformation flows\n    MarkdownDocs --> WebsiteDocs\n    WebsiteDocs --> LLMsTxt\n    MarkdownDocs --> LLMsTxt\n    \n    %% Code documentation\n    InlineComments --> StructuredJSON\n    DocStrings --> MCPServer\n    TypeHints --> StructuredJSON\n    \n    %% Integration\n    StructuredJSON --> MCPServer\n    MCPServer -.->|\"Serves\"| LLMsTxt\n```\n**Sources:**\n[src/fastmcp/contrib/mcp_mixin/README.md:1-25](.)\n,\n[docs/updates.mdx:1-6](.)",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 13,
+      "char_count": 1149,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727481"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Documentation_and_Updates:chunk:12",
+    "content": "FastMCP components follow a standardized documentation pattern, as exemplified by the MCP Mixin:\n```\ngraph TD\n    subgraph \"Component Documentation Structure\"\n        ModuleHeader[\"Module Header<br/>Purpose and scope\"]\n        FeatureList[\"Feature List<br/>Bulleted capabilities\"]\n        \n        subgraph \"Usage Examples\"\n            BasicUsage[\"Basic Usage<br/>Simple examples\"]\n            AdvancedUsage[\"Advanced Usage<br/>Complex scenarios\"]\n            ConfigOptions[\"Configuration Options<br/>Parameter details\"]\n        end\n        \n        subgraph \"Code Examples\"\n            ImportStatements[\"Import Statements<br/>Required dependencies\"]\n            ClassDefinition[\"Class Definition<br/>Inheritance pattern\"]\n            MethodExamples[\"Method Examples<br/>Decorator usage\"]\n            RegistrationCode[\"Registration Code<br/>Server integration\"]\n        end\n    end\n    \n    ModuleHeader --> FeatureList\n    FeatureList --> BasicUsage\n    BasicUsage --> AdvancedUsage\n    AdvancedUsage --> ConfigOptions\n    \n    BasicUsage --> ImportStatements\n    ImportStatements --> ClassDefinition\n    ClassDefinition --> MethodExamples\n    MethodExamples --> RegistrationCode\n```\n**Sources:**\n[src/fastmcp/contrib/mcp_mixin/README.md:3-25](.)\n,\n[src/fastmcp/contrib/mcp_mixin/README.md:26-117](.)\nThe documentation system ensures that FastMCP maintains comprehensive, up-to-date, and accessible documentation across multiple formats and audiences, supporting both human developers and AI systems that need to understand and work with the codebase.",
+    "metadata": {
+      "source": "fastmcp\\Documentation_and_Updates.md",
+      "file_name": "Documentation_and_Updates.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 13,
+      "char_count": 1552,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:57.727486"
+    }
+  }
+]

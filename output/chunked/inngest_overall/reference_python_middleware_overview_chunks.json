@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_middleware_overview.md",
+  "title": "Middleware v0.3.0+",
+  "num_chunks": 3,
+  "total_chars": 1051,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Middleware](\\docs\\reference\\python\\middleware\\overview#middleware)\n- [Examples](\\docs\\reference\\python\\middleware\\overview#examples)\nReferences\n[Python SDK](\\docs\\reference\\python)",
+      "char_count": 196,
+      "token_count": 51,
+      "metadata": {
+        "title": "Middleware v0.3.0+",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_middleware_overview.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_middleware_overview.md",
+        "file_name": "reference_python_middleware_overview.md",
+        "file_size": 1137,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "497e238c2b07169aad0a07500a37057d6c5f769623a859c1bbeef4f534713a38",
+        "author": null,
+        "created_at": "2025-10-13T00:01:01.599620",
+        "modified_at": "2025-10-13T00:01:01.599620",
+        "page_count": null,
+        "word_count": 124,
+        "extracted_at": "2025-10-13T20:04:43.286823",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 51,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Middleware v0.3.0+\nMiddleware allows you to run code at various points in an Inngest function's lifecycle. This is useful for adding custom behavior to your functions, like error reporting and end-to-end encryption.\nCopy Copied\n```\nclass MyMiddleware ( inngest . Middleware ):\nasync def before_send_events ( self , events : list [ inngest . Event ] ) -> None :\nprint ( f \"Sending { len (events) } events\" )\n\nasync def after_send_events ( self , result : inngest . SendEventsResult) -> None :\nprint ( \"Done sending events\" )\n\ninngest_client = inngest . Inngest (\napp_id = \"my_app\" ,\nmiddleware = [MyMiddleware],\n)\n```",
+      "char_count": 616,
+      "token_count": 156,
+      "metadata": {
+        "title": "Middleware v0.3.0+",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_middleware_overview.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_middleware_overview.md",
+        "file_name": "reference_python_middleware_overview.md",
+        "file_size": 1137,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "497e238c2b07169aad0a07500a37057d6c5f769623a859c1bbeef4f534713a38",
+        "author": null,
+        "created_at": "2025-10-13T00:01:01.599620",
+        "modified_at": "2025-10-13T00:01:01.599620",
+        "page_count": null,
+        "word_count": 124,
+        "extracted_at": "2025-10-13T20:04:43.286823",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 156,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Middleware v0.3.0+\nExamples\n- [End-to-end encryption](https://github.com/inngest/inngest-py/tree/main/pkg/inngest_encryption)\n- [Sentry](https://github.com/inngest/inngest-py/blob/main/pkg/inngest/inngest/experimental/sentry_middleware.py)",
+      "char_count": 239,
+      "token_count": 72,
+      "metadata": {
+        "title": "Middleware v0.3.0+",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_middleware_overview.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_middleware_overview.md",
+        "file_name": "reference_python_middleware_overview.md",
+        "file_size": 1137,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "497e238c2b07169aad0a07500a37057d6c5f769623a859c1bbeef4f534713a38",
+        "author": null,
+        "created_at": "2025-10-13T00:01:01.599620",
+        "modified_at": "2025-10-13T00:01:01.599620",
+        "page_count": null,
+        "word_count": 124,
+        "extracted_at": "2025-10-13T20:04:43.286823",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 72,
+        "has_context": true
+      }
+    }
+  ]
+}

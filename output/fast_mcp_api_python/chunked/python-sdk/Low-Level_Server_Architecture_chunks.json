@@ -1,0 +1,107 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Low-Level_Server_Architecture:chunk:0",
+    "content": "This document covers the low-level\n```\nServer\n```\nclass implementation in the MCP Python SDK, which provides the foundational layer for building MCP servers. This class handles protocol message dispatching, request validation, and the core server lifecycle without the convenience abstractions provided by FastMCP.\nFor high-level server development using decorators and automatic schema generation, see\n[FastMCP Server Framework](#2)\n. For details about session management and client communication, see\n[ServerSession Implementation](#6.2)\n.",
+    "metadata": {
+      "source": "python-sdk\\Low-Level_Server_Architecture.md",
+      "file_name": "Low-Level_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 7,
+      "char_count": 541,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:20.855513"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Low-Level_Server_Architecture:chunk:1",
+    "content": "The\n```\nServer\n```\nclass in\n[src/mcp/server/lowlevel/server.py:133-158](.)\nserves as the foundation for all MCP server implementations. It manages handler registration, request dispatching, and protocol compliance.\n```\ngraph TB\n    subgraph \"Server Core Components\"\n        Server[\"Server<br/>(lowlevel/server.py)\"]\n        RequestHandlers[\"request_handlers<br/>dict[type, Callable]\"]\n        NotificationHandlers[\"notification_handlers<br/>dict[type, Callable]\"]\n        ToolCache[\"_tool_cache<br/>dict[str, Tool]\"]\n    end\n    \n    subgraph \"Server Configuration\"\n        ServerConfig[\"Server Constructor<br/>name, version, instructions\"]\n        Capabilities[\"ServerCapabilities<br/>get_capabilities()\"]\n        InitOptions[\"InitializationOptions<br/>create_initialization_options()\"]\n    end\n    \n    subgraph \"Handler Decorators\"\n        ListTools[\"@server.list_tools()\"]\n        CallTool[\"@server.call_tool()\"]\n        ListResources[\"@server.list_resources()\"]\n        ReadResource[\"@server.read_resource()\"]\n        ListPrompts[\"@server.list_prompts()\"]\n        GetPrompt[\"@server.get_prompt()\"]\n    end\n    \n    Server --> RequestHandlers\n    Server --> NotificationHandlers\n    Server --> ToolCache\n    Server --> ServerConfig\n    \n    ServerConfig --> Capabilities\n    Capabilities --> InitOptions\n    \n    ListTools --> RequestHandlers\n    CallTool --> RequestHandlers\n    ListResources --> RequestHandlers\n    ReadResource --> RequestHandlers\n    ListPrompts --> RequestHandlers\n    GetPrompt --> RequestHandlers\n```\n**Server Initialization and Configuration**\nThe\n```\nServer\n```\nconstructor takes essential metadata and an optional lifespan context manager:\n```\nname\n```\n```\nstr\n```\n```\nversion\n```\n```\nstr \\| None\n```\n```\ninstructions\n```\n```\nstr \\| None\n```\n```\nwebsite_url\n```\n```\nstr \\| None\n```\n```\nicons\n```\n```\nlist[types.Icon] \\| None\n```\n```\nlifespan\n```\n```\nCallable\n```\n, Type = . , Purpose = \nSources:\n[src/mcp/server/lowlevel/server.py:134-157](.)",
+    "metadata": {
+      "source": "python-sdk\\Low-Level_Server_Architecture.md",
+      "file_name": "Low-Level_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 7,
+      "char_count": 1973,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:20.855528"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Low-Level_Server_Architecture:chunk:2",
+    "content": "The Server class uses a decorator-based system to register handlers for different MCP request types. Each decorator corresponds to a specific MCP protocol message type.\n```\ngraph LR\n    subgraph \"Request Types\"\n        ListToolsReq[\"types.ListToolsRequest\"]\n        CallToolReq[\"types.CallToolRequest\"]\n        ListResourcesReq[\"types.ListResourcesRequest\"]\n        ReadResourceReq[\"types.ReadResourceRequest\"]\n        ListPromptsReq[\"types.ListPromptsRequest\"]\n        GetPromptReq[\"types.GetPromptRequest\"]\n    end\n    \n    subgraph \"Handler Decorators\"\n        ListToolsDec[\"@server.list_tools()\"]\n        CallToolDec[\"@server.call_tool()\"]\n        ListResourcesDec[\"@server.list_resources()\"]\n        ReadResourceDec[\"@server.read_resource()\"]\n        ListPromptsDec[\"@server.list_prompts()\"]\n        GetPromptDec[\"@server.get_prompt()\"]\n    end\n    \n    subgraph \"Handler Storage\"\n        RequestHandlersDict[\"request_handlers<br/>dict[type, Callable]\"]\n    end\n    \n    ListToolsReq --> ListToolsDec\n    CallToolReq --> CallToolDec\n    ListResourcesReq --> ListResourcesDec\n    ReadResourceReq --> ReadResourceDec\n    ListPromptsReq --> ListPromptsDec\n    GetPromptReq --> GetPromptDec\n    \n    ListToolsDec --> RequestHandlersDict\n    CallToolDec --> RequestHandlersDict\n    ListResourcesDec --> RequestHandlersDict\n    ReadResourceDec --> RequestHandlersDict\n    ListPromptsDec --> RequestHandlersDict\n    GetPromptDec --> RequestHandlersDict\n```\n**Handler Registration Process**\nEach decorator method follows a consistent pattern:\n1. Creates a wrapper function that adapts the user function to the expected signature\n2. Stores the wrapper in `request_handlers` with the request type as key\n3. Returns the original function unchanged\nFor example, the\n```\nlist_tools\n```\ndecorator at\n[src/mcp/server/lowlevel/server.py:409-437](.)\nregisters handlers for\n```\ntypes.ListToolsRequest\n```\nand manages the tool cache.\nSources:\n[src/mcp/server/lowlevel/server.py:238-596](.)",
+    "metadata": {
+      "source": "python-sdk\\Low-Level_Server_Architecture.md",
+      "file_name": "Low-Level_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 7,
+      "char_count": 1975,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:20.855534"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Low-Level_Server_Architecture:chunk:3",
+    "content": "The Server processes incoming requests through a multi-stage pipeline that includes message handling, context setup, and response generation.\n```\nsequenceDiagram\n    participant Client as \"Client\"\n    participant Transport as \"Transport Layer\"\n    participant Session as \"ServerSession\"\n    participant Server as \"Server.run()\"\n    participant Handler as \"Request Handler\"\n    participant Context as \"RequestContext\"\n    \n    Client->>Transport: \"JSON-RPC Request\"\n    Transport->>Session: \"SessionMessage\"\n    Session->>Server: \"RequestResponder\"\n    \n    Server->>Server: \"_handle_message()\"\n    Server->>Context: \"request_ctx.set()\"\n    Server->>Handler: \"handler(request)\"\n    Handler->>Handler: \"Process Request\"\n    Handler->>Server: \"types.ServerResult\"\n    Server->>Context: \"request_ctx.reset()\"\n    Server->>Session: \"respond(result)\"\n    Session->>Transport: \"JSON-RPC Response\"\n    Transport->>Client: \"Response\"\n```\n**Message Handling Flow**\nThe main request processing occurs in\n```\n_handle_request\n```\nat\n[src/mcp/server/lowlevel/server.py:656-712](.)\n:\n1. **Handler Lookup** : Finds handler by request type in `request_handlers`\n2. **Context Setup** : Creates and sets `RequestContext` with session and lifespan data\n3. **Handler Execution** : Calls the registered handler function\n4. **Error Handling** : Catches exceptions and converts to appropriate error responses\n5. **Context Cleanup** : Resets the request context using `contextvars`\nSources:\n[src/mcp/server/lowlevel/server.py:598-723](.)",
+    "metadata": {
+      "source": "python-sdk\\Low-Level_Server_Architecture.md",
+      "file_name": "Low-Level_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 7,
+      "char_count": 1512,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:20.855540"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Low-Level_Server_Architecture:chunk:4",
+    "content": "The Server implements a sophisticated tool handling system with caching, validation, and structured output support.\n```\ngraph TB\n    subgraph \"Tool Registration\"\n        CallToolDec[\"@server.call_tool(validate_input=True)\"]\n        ToolFunction[\"Tool Handler Function\"]\n        ToolCache[\"_tool_cache<br/>dict[str, Tool]\"]\n    end\n    \n    subgraph \"Tool Execution Pipeline\"\n        CallToolReq[\"CallToolRequest\"]\n        InputValidation[\"Input Schema Validation<br/>jsonschema.validate()\"]\n        ToolCall[\"Tool Function Execution\"]\n        OutputNormalization[\"Output Type Handling\"]\n        OutputValidation[\"Output Schema Validation\"]\n        CallToolResult[\"CallToolResult\"]\n    end\n    \n    subgraph \"Output Types\"\n        UnstructuredOutput[\"UnstructuredContent<br/>Iterable[ContentBlock]\"]\n        StructuredOutput[\"StructuredContent<br/>dict[str, Any]\"]\n        CombinationOutput[\"CombinationContent<br/>tuple[Unstructured, Structured]\"]\n    end\n    \n    CallToolDec --> ToolFunction\n    ToolFunction --> ToolCache\n    \n    CallToolReq --> InputValidation\n    InputValidation --> ToolCall\n    ToolCall --> OutputNormalization\n    OutputNormalization --> OutputValidation\n    OutputValidation --> CallToolResult\n    \n    OutputNormalization --> UnstructuredOutput\n    OutputNormalization --> StructuredOutput\n    OutputNormalization --> CombinationOutput\n```\n**Tool Caching and Validation**\nThe Server maintains a tool cache (\n```\n_tool_cache\n```\n) that stores\n```\nTool\n```\ndefinitions for input/output validation. The cache is populated when\n```\nlist_tools\n```\nhandlers are called, as shown in\n[src/mcp/server/lowlevel/server.py:418-433](.)\n.\n**Tool Call Processing**\nThe\n```\ncall_tool\n```\ndecorator at\n[src/mcp/server/lowlevel/server.py:465-547](.)\nimplements comprehensive tool call handling:\n1. **Input Validation** : Uses `jsonschema` to validate arguments against `inputSchema`\n2. **Tool Execution** : Calls the registered tool function\n3. \n**Output Normalization**\n: Handles three output types:\n- `UnstructuredContent` : Raw content blocks\n- `StructuredContent` : JSON objects\n- `CombinationContent` : Both structured and unstructured\n4. **Output Validation** : Validates structured output against `outputSchema` if defined\nSources:\n[src/mcp/server/lowlevel/server.py:449-547](.)\n,\n[src/mcp/server/lowlevel/server.py:99-102](.)",
+    "metadata": {
+      "source": "python-sdk\\Low-Level_Server_Architecture.md",
+      "file_name": "Low-Level_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 7,
+      "char_count": 2343,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:20.855546"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Low-Level_Server_Architecture:chunk:5",
+    "content": "The Server uses Python's\n```\ncontextvars\n```\nmodule to provide request-scoped context accessible throughout the request processing pipeline.\n```\ngraph TB\n    subgraph \"Context Variables\"\n        RequestCtxVar[\"request_ctx<br/>ContextVar[RequestContext]\"]\n        RequestContext[\"RequestContext<br/>session, lifespan_context, request_data\"]\n    end\n    \n    subgraph \"Context Lifecycle\"\n        ContextSet[\"request_ctx.set()<br/>_handle_request:677\"]\n        ContextAccess[\"server.request_context<br/>property:232-236\"]\n        ContextReset[\"request_ctx.reset()<br/>_handle_request:702\"]\n    end\n    \n    subgraph \"Context Components\"\n        RequestId[\"request_id: str\"]\n        RequestMeta[\"request_meta: dict\"]\n        Session[\"session: ServerSession\"]\n        LifespanContext[\"lifespan_context: LifespanResultT\"]\n        RequestData[\"request: RequestT | None\"]\n    end\n    \n    RequestCtxVar --> RequestContext\n    \n    ContextSet --> ContextAccess\n    ContextAccess --> ContextReset\n    \n    RequestContext --> RequestId\n    RequestContext --> RequestMeta\n    RequestContext --> Session\n    RequestContext --> LifespanContext\n    RequestContext --> RequestData\n```\n**Request Context Structure**\nThe\n```\nRequestContext\n```\nis created in\n```\n_handle_request\n```\nat\n[src/mcp/server/lowlevel/server.py:677-684](.)\nwith:\n- Request ID and metadata from the message\n- `ServerSession` instance for client communication\n- Lifespan context from the server's lifespan manager\n- Optional request-specific data\n**Context Access**\nHandlers can access the current request context via the\n```\nrequest_context\n```\nproperty at\n[src/mcp/server/lowlevel/server.py:232-236](.)\n, which retrieves the context variable or raises\n```\nLookupError\n```\nif called outside a request.\nSources:\n[src/mcp/server/lowlevel/server.py:105](.)\n,\n[src/mcp/shared/context.py](.)\n,\n[src/mcp/server/lowlevel/server.py:677-702](.)",
+    "metadata": {
+      "source": "python-sdk\\Low-Level_Server_Architecture.md",
+      "file_name": "Low-Level_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 7,
+      "char_count": 1891,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:20.855551"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Low-Level_Server_Architecture:chunk:6",
+    "content": "The Server integrates with various transport mechanisms through the\n```\nServerSession\n```\nand stream-based communication.\n```\ngraph LR\n    subgraph \"Transport Implementations\"\n        StdioTransport[\"stdio_server<br/>(stdio.py)\"]\n        SSETransport[\"SseServerTransport<br/>(sse.py)\"]\n        StreamableTransport[\"StreamableHTTPServerTransport<br/>(streamablehttp.py)\"]\n    end\n    \n    subgraph \"Server Integration\"\n        Server[\"Server.run()\"]\n        ReadStream[\"MemoryObjectReceiveStream<br/>[SessionMessage | Exception]\"]\n        WriteStream[\"MemoryObjectSendStream<br/>[SessionMessage]\"]\n        ServerSession[\"ServerSession<br/>(session.py)\"]\n    end\n    \n    subgraph \"Example Usage\"\n        SimpleResource[\"simple-resource/server.py\"]\n        SimpleTool[\"simple-tool/server.py\"]\n        SimplePrompt[\"simple-prompt/server.py\"]\n    end\n    \n    StdioTransport --> ReadStream\n    SSETransport --> ReadStream\n    StreamableTransport --> ReadStream\n    \n    ReadStream --> Server\n    WriteStream --> Server\n    Server --> ServerSession\n    \n    SimpleResource --> Server\n    SimpleTool --> Server\n    SimplePrompt --> Server\n```\n**Server Run Method**\nThe\n```\nrun\n```\nmethod at\n[src/mcp/server/lowlevel/server.py:598-635](.)\norchestrates the server lifecycle:\n1. **Lifespan Management** : Enters the async context manager for startup/shutdown\n2. **Session Creation** : Creates `ServerSession` with provided streams and options\n3. **Message Processing** : Iterates over incoming messages and spawns handlers\n4. **Graceful Shutdown** : Ensures proper cleanup of resources\n**Transport Examples**\nThe example servers demonstrate different transport integrations:\n- **stdio** : Direct process communication via stdin/stdout\n- **SSE** : HTTP Server-Sent Events with Starlette ASGI integration\n- **HTTP** : Full bidirectional HTTP with session management\nSources:\n[src/mcp/server/lowlevel/server.py:598-635](.)\n,\n[examples/servers/simple-resource/mcp_simple_resource/server.py:60-91](.)\n,\n[examples/servers/simple-tool/mcp_simple_tool/server.py:60-91](.)\n,\n[examples/servers/simple-prompt/mcp_simple_prompt/server.py:79-110](.)",
+    "metadata": {
+      "source": "python-sdk\\Low-Level_Server_Architecture.md",
+      "file_name": "Low-Level_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 7,
+      "char_count": 2127,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:20.855557"
+    }
+  }
+]

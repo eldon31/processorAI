@@ -1,0 +1,137 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:0",
+    "content": "pip install mcp[rich,cli,ws]\n```\n### Development Installation\n\nFor development work, install from source with development dependencies:\n\n```bash\n# Clone and install with uv\ngit clone https://github.com/modelcontextprotocol/python-sdk\ncd python-sdk\nuv sync\n```\n**Sources:**\n[pyproject.toml:38-41](.)\n,\n[pyproject.toml:43-44](.)",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 9,
+      "char_count": 326,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308222"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:1",
+    "content": "The following diagram shows how core dependencies support different functional areas of the MCP SDK:\n```\ngraph TB\n    subgraph \"Transport Layer Dependencies\"\n        anyio[\"anyio>=4.5\"]\n        httpx[\"httpx>=0.27.1\"] \n        httpx_sse[\"httpx-sse>=0.4\"]\n        starlette[\"starlette>=0.27\"]\n        multipart[\"python-multipart>=0.0.9\"]\n        sse_starlette[\"sse-starlette>=1.6.1\"]\n        uvicorn[\"uvicorn>=0.31.1\"]\n    end\n    \n    subgraph \"Data & Validation Dependencies\"\n        pydantic[\"pydantic>=2.11.0\"]\n        pydantic_settings[\"pydantic-settings>=2.5.2\"]\n        jsonschema[\"jsonschema>=4.20.0\"]\n    end\n    \n    subgraph \"Platform Dependencies\"\n        pywin32[\"pywin32>=310\"]\n    end\n    \n    subgraph \"Core MCP Functions\"\n        AsyncIO[\"Async I/O Operations\"]\n        HTTPTransport[\"HTTP Transport\"]\n        SSETransport[\"SSE Transport\"] \n        WebFramework[\"Web Framework\"]\n        DataValidation[\"Data Validation\"]\n        SchemaGeneration[\"Schema Generation\"]\n        WindowsSupport[\"Windows Process Support\"]\n    end\n    \n    anyio --> AsyncIO\n    httpx --> HTTPTransport\n    httpx_sse --> SSETransport\n    starlette --> WebFramework\n    multipart --> WebFramework\n    sse_starlette --> SSETransport\n    uvicorn --> WebFramework\n    pydantic --> DataValidation\n    pydantic_settings --> DataValidation\n    jsonschema --> SchemaGeneration\n    pywin32 --> WindowsSupport\n```\n**Sources:**\n[pyproject.toml:24-36](.)",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 9,
+      "char_count": 1434,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308236"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:2",
+    "content": "```\nanyio\n```\n```\nhttpx\n```\n```\nhttpx-sse\n```\n```\npydantic\n```\n```\nstarlette\n```\n```\npython-multipart\n```\n```\nsse-starlette\n```\n```\npydantic-settings\n```\n```\nuvicorn\n```\n```\njsonschema\n```\n, Version = . , Purpose = ",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 9,
+      "char_count": 215,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308242"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:3",
+    "content": "```\ngraph TB\n    subgraph \"Optional Feature Groups\"\n        rich_group[\"rich\"]\n        cli_group[\"cli\"] \n        ws_group[\"ws\"]\n    end\n    \n    subgraph \"Dependencies\"\n        rich_lib[\"rich>=13.9.4\"]\n        typer[\"typer>=0.16.0\"]\n        python_dotenv[\"python-dotenv>=1.0.0\"]\n        websockets[\"websockets>=15.0.1\"]\n    end\n    \n    subgraph \"SDK Features\"\n        ConsoleOutput[\"Rich Console Output\"]\n        CLITools[\"CLI Application\"]\n        ConfigFiles[\"Environment Configuration\"]\n        WebSocketTransport[\"WebSocket Transport\"]\n    end\n    \n    rich_group --> rich_lib\n    cli_group --> typer\n    cli_group --> python_dotenv\n    ws_group --> websockets\n    \n    rich_lib --> ConsoleOutput\n    typer --> CLITools\n    python_dotenv --> ConfigFiles\n    websockets --> WebSocketTransport\n```\n**Sources:**\n[pyproject.toml:38-41](.)",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 9,
+      "char_count": 839,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308248"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:4",
+    "content": "The SDK provides a CLI entry point through the\n```\nmcp\n```\ncommand, which requires the\n```\ncli\n```\noptional dependency group to be installed. The CLI script configuration automatically includes the required dependencies when the CLI feature is requested.\n**Sources:**\n[pyproject.toml:43-44](.)",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 9,
+      "char_count": 293,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308253"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:5",
+    "content": "```\ngraph TB\n    subgraph \"Development Groups\"\n        dev_group[\"dev\"]\n        docs_group[\"docs\"]\n    end\n    \n    subgraph \"Code Quality Tools\"\n        pyright[\"pyright>=1.1.400\"]\n        ruff[\"ruff>=0.8.5\"] \n    end\n    \n    subgraph \"Testing Framework\"\n        pytest[\"pytest>=8.3.4\"]\n        trio[\"trio>=0.26.2\"]\n        pytest_flakefinder[\"pytest-flakefinder>=1.1.0\"]\n        pytest_xdist[\"pytest-xdist>=3.6.1\"]\n        pytest_examples[\"pytest-examples>=0.0.14\"]\n        pytest_pretty[\"pytest-pretty>=1.2.0\"]\n        inline_snapshot[\"inline-snapshot>=0.23.0\"]\n        dirty_equals[\"dirty-equals>=0.9.0\"]\n    end\n    \n    subgraph \"Documentation Tools\"\n        mkdocs[\"mkdocs>=1.6.1\"]\n        mkdocs_glightbox[\"mkdocs-glightbox>=0.4.0\"]\n        mkdocs_material[\"mkdocs-material[imaging]>=9.5.45\"]\n        mkdocstrings[\"mkdocstrings-python>=1.12.2\"]\n    end\n    \n    dev_group --> pyright\n    dev_group --> ruff\n    dev_group --> pytest\n    dev_group --> trio\n    dev_group --> pytest_flakefinder\n    dev_group --> pytest_xdist\n    dev_group --> pytest_examples\n    dev_group --> pytest_pretty\n    dev_group --> inline_snapshot\n    dev_group --> dirty_equals\n    \n    docs_group --> mkdocs\n    docs_group --> mkdocs_glightbox\n    docs_group --> mkdocs_material\n    docs_group --> mkdocstrings\n```\nThe development environment automatically includes both\n```\ndev\n```\nand\n```\ndocs\n```\ndependency groups through the default groups configuration.\n**Sources:**\n[pyproject.toml:46-47](.)\n,\n[pyproject.toml:50-68](.)",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 9,
+      "char_count": 1512,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308259"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:6",
+    "content": "The SDK uses a modern Python build system with dynamic versioning:\n```\nhatchling\n```\n```\nuv-dynamic-versioning\n```\n```\npep440\n```\n```\nsrc/mcp\n```\nBuild Backend, Tool = . Build Backend, Purpose = \nThe build system automatically generates versions from Git tags using PEP 440 formatting with bump support for development versions.\n**Sources:**\n[pyproject.toml:70-80](.)\n,\n[pyproject.toml:87-88](.)",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 9,
+      "char_count": 395,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308264"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:7",
+    "content": "```\ngraph TB\n    subgraph \"uv Workspace Structure\"\n        root[\"python-sdk (root)\"]\n        examples_servers[\"examples/servers/*\"]\n        examples_snippets[\"examples/snippets\"]\n    end\n    \n    subgraph \"Workspace Sources\"\n        mcp_source[\"mcp = { workspace = true }\"]\n    end\n    \n    subgraph \"Default Groups\"\n        dev_default[\"dev\"]\n        docs_default[\"docs\"]\n    end\n    \n    root --> examples_servers\n    root --> examples_snippets\n    root --> mcp_source\n    root --> dev_default\n    root --> docs_default\n```\nThe uv workspace configuration enables unified dependency management across the main SDK package and all example projects. This ensures consistent dependency versions and simplifies development workflows.\n**Sources:**\n[pyproject.toml:136-140](.)\n,\n[pyproject.toml:46-47](.)",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 9,
+      "char_count": 799,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308270"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Install_multiple_optional_features:chunk:8",
+    "content": "The uv configuration enforces minimum version requirements and provides automatic dependency resolution across the entire workspace. The required uv version (>=0.7.2) ensures access to modern workspace features and dependency group management.\n**Sources:**\n[pyproject.toml:46-48](.)",
+    "metadata": {
+      "source": "python-sdk\\Install_multiple_optional_features.md",
+      "file_name": "Install_multiple_optional_features.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 9,
+      "char_count": 282,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:18.308275"
+    }
+  }
+]

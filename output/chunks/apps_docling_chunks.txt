@@ -1,0 +1,126 @@
+Document: apps
+Source: Docs\inngest_overall\apps.md
+Chunker: Docling HybridChunker
+Total chunks: 7
+======================================================================
+
+CHUNK 0
+Characters: 382
+Tokens (approx): 29
+Headings: ['On this page']
+----------------------------------------------------------------------
+- [Inngest Apps](\docs\apps#inngest-apps)
+- [Apps in SDK](\docs\apps#apps-in-sdk)
+- [Apps in Inngest Cloud](\docs\apps#apps-in-inngest-cloud)
+- [Apps in Inngest Dev Server](\docs\apps#apps-in-inngest-dev-server)
+- [Informing Inngest about your apps](\docs\apps#informing-inngest-about-your-apps)
+- [Next Steps](\docs\apps#next-steps)
+Platform
+[Deployment](\docs\platform\deployment)
+======================================================================
+
+CHUNK 1
+Characters: 712
+Tokens (approx): 110
+Headings: ['Inngest Apps']
+----------------------------------------------------------------------
+In Inngest, apps map directly to your projects or services. When you serve your functions using our serve API handler, you are hosting a new Inngest app. With Inngest apps, your dashboard reflects your code organization better.
+It's important to note that apps are synced to one environment. You can sync any number of apps to one single environment using different Inngest Clients.
+The diagram below shows how each environment can have multiple apps which can have multiple functions each:
+Diagram showing multiple environments, each with various apps. Within these apps, there are numerous functions
+Diagram showing multiple environments, each with various apps. Within these apps, there are numerous functions
+======================================================================
+
+CHUNK 2
+Characters: 888
+Tokens (approx): 139
+Headings: ['Inngest Apps', 'Apps in SDK']
+----------------------------------------------------------------------
+Each
+[```
+serve()
+```](\docs\learn\serving-inngest-functions)
+[API handler](\docs\learn\serving-inngest-functions)
+will generate an app in Inngest upon syncing.
+The app ID is determined by the ID passed to the serve handler from the Inngest client.
+For example, the code below will create an Inngest app called "example-app" which contains one function:
+Node.js Python (Flask) Python (FastAPI) Go (HTTP)
+Copy Copied
+```
+import { Inngest } from "inngest" ;
+import { serve } from "inngest/next" ; // or your preferred framework
+import { sendSignupEmail } from "./functions" ;
+
+const inngest = new Inngest ({ id : "example-app" });
+
+serve ({
+client : inngest ,
+functions : [sendSignupEmail] ,
+});
+```
+Each app ID is considered a persistent identifier. Changing your client ID will result in Inngest not recognizing the app ID during the next sync. As a result, Inngest will create a new app.
+======================================================================
+
+CHUNK 3
+Characters: 210
+Tokens (approx): 35
+Headings: ['Inngest Apps', 'Apps in Inngest Cloud']
+----------------------------------------------------------------------
+In the image below, you can see the apps page in Inngest Cloud. Check the
+[Working with Apps Guide](\docs\apps\cloud)
+for more information about how to sync apps in Inngest Cloud.
+Inngest Cloud screen with apps
+======================================================================
+
+CHUNK 4
+Characters: 278
+Tokens (approx): 40
+Headings: ['Inngest Apps', 'Apps in Inngest Dev Server']
+----------------------------------------------------------------------
+In the image below, you can see the apps page in Inngest Dev Server. For more information on how to sync apps in Inngest Dev Server check the
+[Local Development Guide](\docs\local-development#connecting-apps-to-the-dev-server)
+.
+Inngest Dev Server screen with no events recorded
+======================================================================
+
+CHUNK 5
+Characters: 765
+Tokens (approx): 120
+Headings: ['Inngest Apps', 'Informing Inngest about your apps']
+----------------------------------------------------------------------
+To integrate your code hosted on another platform with Inngest, you need to inform Inngest about the location of your app and functions.
+For example, imagine that your
+```
+serve()
+```
+handler is located at
+```
+/api/inngest
+```
+, and your domain is
+```
+myapp.com
+```
+. In this scenario, you will need to sync your app to inform Inngest that your apps and functions are hosted at
+```
+https://myapp.com/api/inngest
+```
+.
+To ensure that your functions are up to date, you need to resync your app with Inngest whenever you deploy new function configurations to your hosted platform.
+Inngest uses the
+[```
+INNGEST_SIGNING_KEY
+```](\docs\platform\signing-keys?ref=deploy)
+to securely communicate with your application and identify the correct environment to sync your app.
+======================================================================
+
+CHUNK 6
+Characters: 217
+Tokens (approx): 28
+Headings: ['Inngest Apps', 'Next Steps']
+----------------------------------------------------------------------
+To continue your exploration, feel free to check out:
+- How to [work with Apps in the Dev Server](\docs\local-development#connecting-apps-to-the-dev-server)
+- How to [work with Apps in Inngest Cloud](\docs\apps\cloud)
+======================================================================
+

@@ -1,0 +1,272 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:0",
+    "content": "uv python install 3.10\nuv sync --python 3.10\n```\n**Sources:** [.github/workflows/run-static.yml:44-50](), [pyproject.toml:20]()\n\n# FastMCP Server Core\n\n\n\n\n## Purpose and Scope\n\nThe FastMCP Server Core is the central orchestrating component of the FastMCP framework, implemented primarily in the `FastMCP` class. This document covers the core server architecture, component management, MCP protocol integration, server composition patterns, and lifecycle management. \n\nFor information about individual component types (Tools, Resources, Prompts), see [Component System Architecture](#2.1). For client-side interaction with FastMCP servers, see [FastMCP Client System](#3). For HTTP deployment and authentication, see [HTTP Server and Deployment](#4).\n\n## Core Server Architecture\n\nThe `FastMCP` class serves as the primary interface for creating MCP servers, providing a high-level, Pythonic API that wraps the low-level MCP protocol implementation.\n\n### FastMCP Server Structure\n\n```mermaid\ngraph TB\n    FastMCP[\"FastMCP\"]\n    \n    subgraph \"Component Managers\"\n        ToolManager[\"ToolManager<br/>_tool_manager\"]\n        ResourceManager[\"ResourceManager<br/>_resource_manager\"] \n        PromptManager[\"PromptManager<br/>_prompt_manager\"]\n    end\n    \n    subgraph \"Core Infrastructure\"\n        LowLevelServer[\"LowLevelServer<br/>_mcp_server\"]\n        Middleware[\"middleware: list[Middleware]\"]\n        AuthProvider[\"auth: AuthProvider | None\"]\n    end\n    \n    subgraph \"Server Composition\"\n        MountedServers[\"_mounted_servers: list[MountedServer]\"]\n        HTTPRoutes[\"_additional_http_routes: list[BaseRoute]\"]\n    end\n    \n    FastMCP --> ToolManager\n    FastMCP --> ResourceManager\n    FastMCP --> PromptManager\n    FastMCP --> LowLevelServer\n    FastMCP --> Middleware\n    FastMCP --> AuthProvider\n    FastMCP --> MountedServers\n    FastMCP --> HTTPRoutes\n```\nThe\n```\nFastMCP\n```\nclass maintains three specialized managers for different component types, wraps a low-level MCP server for protocol handling, and supports server composition through mounting and importing.\n**Sources:**\n[src/fastmcp/server/server.py:125-202](.)\n,\n[src/fastmcp/server/server.py:176-188](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 18,
+      "char_count": 2180,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141460"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:1",
+    "content": "```\ngraph LR\n    subgraph \"Developer Interface\"\n        ToolDecorator[\"@server.tool\"]\n        ResourceDecorator[\"@server.resource\"] \n        PromptDecorator[\"@server.prompt\"]\n        DirectAdd[\"server.add_tool()\"]\n    end\n    \n    subgraph \"Component Creation\"\n        FunctionTool[\"FunctionTool.from_function()\"]\n        Resource[\"Resource.from_function()\"]\n        Prompt[\"Prompt.from_function()\"]\n    end\n    \n    subgraph \"Registration\"\n        ToolManagerAdd[\"ToolManager.add_tool()\"]\n        ResourceManagerAdd[\"ResourceManager.add_resource()\"]\n        PromptManagerAdd[\"PromptManager.add_prompt()\"]\n    end\n    \n    subgraph \"Storage\"\n        ToolsDict[\"_tools: dict[str, Tool]\"]\n        ResourcesDict[\"_resources: dict[str, Resource]\"] \n        PromptsDict[\"_prompts: dict[str, Prompt]\"]\n    end\n    \n    ToolDecorator --> FunctionTool\n    DirectAdd --> FunctionTool\n    FunctionTool --> ToolManagerAdd\n    ToolManagerAdd --> ToolsDict\n    \n    ResourceDecorator --> Resource\n    Resource --> ResourceManagerAdd\n    ResourceManagerAdd --> ResourcesDict\n    \n    PromptDecorator --> Prompt\n    Prompt --> PromptManagerAdd\n    PromptManagerAdd --> PromptsDict\n```\nComponent registration flows from high-level decorators through component creation to manager-specific storage dictionaries.\n**Sources:**\n[src/fastmcp/server/server.py:858-881](.)\n,\n[src/fastmcp/server/server.py:945-1058](.)\n,\n[tests/server/test_server.py:141-151](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 18,
+      "char_count": 1437,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141476"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:2",
+    "content": "FastMCP integrates with the Model Context Protocol by wrapping a\n```\nLowLevelServer\n```\nand implementing the required MCP handlers.",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 18,
+      "char_count": 131,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141483"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:3",
+    "content": "```\ngraph TB\n    subgraph \"MCP Client Requests\"\n        ListTools[\"list_tools\"]\n        CallTool[\"call_tool\"] \n        ListResources[\"list_resources\"]\n        ReadResource[\"read_resource\"]\n        ListPrompts[\"list_prompts\"]\n        GetPrompt[\"get_prompt\"]\n    end\n    \n    subgraph \"FastMCP Handlers\"\n        MCPListTools[\"_mcp_list_tools()\"]\n        MCPCallTool[\"_mcp_call_tool()\"]\n        MCPListResources[\"_mcp_list_resources()\"]\n        MCPReadResource[\"_mcp_read_resource()\"]\n        MCPListPrompts[\"_mcp_list_prompts()\"]\n        MCPGetPrompt[\"_mcp_get_prompt()\"]\n    end\n    \n    subgraph \"Internal Handlers\"\n        ListToolsInternal[\"_list_tools()\"]\n        CallToolInternal[\"_call_tool()\"]\n        ListResourcesInternal[\"_list_resources()\"]\n        ReadResourceInternal[\"_read_resource()\"]\n        ListPromptsInternal[\"_list_prompts()\"]\n        GetPromptInternal[\"_get_prompt()\"]\n    end\n    \n    subgraph \"Component Managers\"\n        ToolMgr[\"ToolManager\"]\n        ResourceMgr[\"ResourceManager\"]\n        PromptMgr[\"PromptManager\"]\n    end\n    \n    ListTools --> MCPListTools\n    CallTool --> MCPCallTool\n    ListResources --> MCPListResources\n    ReadResource --> MCPReadResource\n    ListPrompts --> MCPListPrompts\n    GetPrompt --> MCPGetPrompt\n    \n    MCPListTools --> ListToolsInternal\n    MCPCallTool --> CallToolInternal\n    MCPListResources --> ListResourcesInternal\n    MCPReadResource --> ReadResourceInternal\n    MCPListPrompts --> ListPromptsInternal\n    MCPGetPrompt --> GetPromptInternal\n    \n    ListToolsInternal --> ToolMgr\n    CallToolInternal --> ToolMgr\n    ListResourcesInternal --> ResourceMgr\n    ReadResourceInternal --> ResourceMgr\n    ListPromptsInternal --> PromptMgr\n    GetPromptInternal --> PromptMgr\n```\nThe protocol integration uses a two-layer approach: MCP handlers that manage protocol specifics and internal handlers that apply middleware and delegate to component managers.\n**Sources:**\n[src/fastmcp/server/server.py:387-396](.)\n,\n[src/fastmcp/server/server.py:522-533](.)\n,\n[src/fastmcp/server/server.py:701-727](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 18,
+      "char_count": 2063,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141488"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:4",
+    "content": "During server initialization, the\n```\n_setup_handlers()\n```\nmethod registers protocol handlers with the underlying\n```\nLowLevelServer\n```\n:\n```\n_mcp_list_tools\n```\n```\ntools/list\n```\n```\n_mcp_call_tool\n```\n```\ntools/call\n```\n```\n_mcp_list_resources\n```\n```\nresources/list\n```\n```\n_mcp_read_resource\n```\n```\nresources/read\n```\n```\n_mcp_list_prompts\n```\n```\nprompts/list\n```\n```\n_mcp_get_prompt\n```\n```\nprompts/get\n```\n, MCP Operation = . , Component Type = \n**Sources:**\n[src/fastmcp/server/server.py:387-396](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 18,
+      "char_count": 511,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141494"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:5",
+    "content": "FastMCP supports two patterns for combining multiple servers:\n**mounting**\n(live delegation) and\n**importing**\n(static copying).",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 18,
+      "char_count": 128,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141500"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:6",
+    "content": "```\ngraph TB\n    subgraph \"Main Server\"\n        MainFastMCP[\"FastMCP('MainApp')\"]\n        MainToolManager[\"ToolManager\"]\n        MainMountedServers[\"_mounted_servers[]\"]\n    end\n    \n    subgraph \"Mount Pattern (Live)\"\n        MountedServer1[\"MountedServer(server=sub1, prefix='api')\"]\n        SubServer1[\"FastMCP('SubApp1')\"]\n        ProxyServer[\"FastMCPProxy (if as_proxy=True)\"]\n    end\n    \n    subgraph \"Import Pattern (Static)\"\n        ImportedTools[\"Static copies in _tools{}\"]\n        SubServer2[\"FastMCP('SubApp2')\"]\n    end\n    \n    MainFastMCP --> MainToolManager\n    MainFastMCP --> MainMountedServers\n    MainMountedServers --> MountedServer1\n    MountedServer1 --> SubServer1\n    MountedServer1 --> ProxyServer\n    \n    MainToolManager --> ImportedTools\n    SubServer2 -.->|\"import_server()\"| ImportedTools\n    \n    SubServer1 -.->|\"mount()\"| MountedServer1\n```\nMounting creates live links to other servers, while importing creates static copies of components.\n**Sources:**\n[src/fastmcp/server/server.py:175](.)\n,\n[tests/server/test_mount.py:19-47](.)\n,\n[tests/server/test_import_server.py:10-34](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 18,
+      "char_count": 1113,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141506"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:7",
+    "content": "When servers are mounted or imported with prefixes, component names are prefixed according to these patterns:\n```\n{prefix}_{tool_name}\n```\n```\napi_get_data\n```\n```\n{protocol}://{prefix}/{path}\n```\n```\ndata://api/users\n```\n```\n{protocol}://{prefix}/{template}\n```\n```\nusers://api/{user_id}\n```\n```\n{prefix}_{prompt_name}\n```\n```\napi_greeting\n```\nTools, Prefix Format = . Tools, Example = \n**Sources:**\n[src/fastmcp/server/server.py:1395-1420](.)\n,\n[tests/server/test_mount.py:978-1024](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 18,
+      "char_count": 487,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141511"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:8",
+    "content": "FastMCP implements a middleware system that allows request processing to be modified through a chain of middleware functions.",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 18,
+      "char_count": 125,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141517"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:9",
+    "content": "```\ngraph LR\n    subgraph \"Request Flow\"\n        Request[\"MCP Request\"]\n        MW1[\"Middleware 1\"]\n        MW2[\"Middleware 2\"] \n        MW3[\"Middleware 3\"]\n        Handler[\"Component Handler\"]\n        Response[\"MCP Response\"]\n    end\n    \n    Request --> MW1\n    MW1 --> MW2\n    MW2 --> MW3\n    MW3 --> Handler\n    Handler --> MW3\n    MW3 --> MW2\n    MW2 --> MW1\n    MW1 --> Response\n```\nMiddleware functions receive a\n```\nMiddlewareContext\n```\nand a\n```\ncall_next\n```\nfunction, allowing them to process requests before and after the main handler.\n**Sources:**\n[src/fastmcp/server/server.py:397-406](.)\n,\n[src/fastmcp/server/server.py:553-564](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 18,
+      "char_count": 647,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141523"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:10",
+    "content": "The\n```\nMiddlewareContext\n```\nprovides access to:\n- `message` : The MCP request parameters\n- `source` : Request source (\"client\")\n- `type` : Request type (\"request\")\n- `method` : MCP method name (e.g., \"tools/call\")\n- `fastmcp_context` : Current FastMCP context object\n**Sources:**\n[src/fastmcp/server/server.py:555-561](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 18,
+      "char_count": 323,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141529"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:11",
+    "content": "FastMCP servers support lifecycle management through lifespan context managers, similar to FastAPI applications.",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 18,
+      "char_count": 112,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141534"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:12",
+    "content": "```\ngraph TB\n    subgraph \"Server Lifecycle\"\n        ServerInit[\"FastMCP.__init__()\"]\n        LifespanWrapper[\"_lifespan_wrapper()\"]\n        UserLifespan[\"User Lifespan Function\"]\n        DefaultLifespan[\"default_lifespan()\"]\n    end\n    \n    subgraph \"Runtime Execution\"\n        ServerStart[\"Server Start\"]\n        LifespanStart[\"Lifespan Enter\"]\n        RequestHandling[\"Request Handling\"]\n        LifespanEnd[\"Lifespan Exit\"]\n        ServerStop[\"Server Stop\"]\n    end\n    \n    ServerInit --> LifespanWrapper\n    LifespanWrapper --> UserLifespan\n    LifespanWrapper --> DefaultLifespan\n    \n    ServerStart --> LifespanStart\n    LifespanStart --> RequestHandling\n    RequestHandling --> LifespanEnd\n    LifespanEnd --> ServerStop\n```\nLifespan functions allow setup and cleanup operations to be performed when servers start and stop.\n**Sources:**\n[src/fastmcp/server/server.py:93-123](.)\n,\n[src/fastmcp/server/server.py:191-202](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 18,
+      "char_count": 932,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141539"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:13",
+    "content": "FastMCP server behavior is controlled through the global\n```\nSettings\n```\nobject and constructor parameters.",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 13,
+      "total_chunks": 18,
+      "char_count": 108,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141545"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:14",
+    "content": "```\ninclude_tags\n```\n,\n```\nexclude_tags\n```\n```\nmask_error_details\n```\n```\nresource_prefix_format\n```\n```\nserver_auth\n```\n```\ninclude_fastmcp_meta\n```\nComponent Filtering, Key Parameters = . Component Filtering, Purpose = \n**Sources:**\n[src/fastmcp/settings.py:293-333](.)\n,\n[src/fastmcp/server/server.py:126-169](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 14,
+      "total_chunks": 18,
+      "char_count": 316,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141551"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:15",
+    "content": "The\n```\n_should_enable_component()\n```\nmethod determines whether components are exposed based on:\n1. Component `enabled` status\n2. Global `include_tags` filtering (if any component tags match)\n3. Global `exclude_tags` filtering (if any component tags match)\nComponents are enabled if they pass all filtering criteria.\n**Sources:**\n[src/fastmcp/server/server.py:1507-1530](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 15,
+      "total_chunks": 18,
+      "char_count": 374,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141556"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:16",
+    "content": "FastMCP servers can run over multiple transport protocols through the\n```\nrun()\n```\nand\n```\nrun_async()\n```\nmethods.",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 16,
+      "total_chunks": 18,
+      "char_count": 116,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141562"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Ensure_UV_uses_correct_Python_version:chunk:17",
+    "content": "```\ngraph TB\n    FastMCPServer[\"FastMCP Server\"]\n    \n    subgraph \"Transport Options\"\n        STDIO[\"STDIO Transport<br/>run_stdio_async()\"]\n        HTTP[\"HTTP Transport<br/>run_http_async()\"]\n        SSE[\"Server-Sent Events<br/>create_sse_app()\"]\n        StreamableHTTP[\"Streamable HTTP<br/>create_streamable_http_app()\"]\n    end\n    \n    FastMCPServer --> STDIO\n    FastMCPServer --> HTTP\n    FastMCPServer --> SSE\n    FastMCPServer --> StreamableHTTP\n```\nThe transport is selected via the\n```\ntransport\n```\nparameter to\n```\nrun()\n```\nor\n```\nrun_async()\n```\n.\n**Sources:**\n[src/fastmcp/server/server.py:336-364](.)\n,\n[src/fastmcp/server/server.py:1567-1583](.)",
+    "metadata": {
+      "source": "fastmcp\\Ensure_UV_uses_correct_Python_version.md",
+      "file_name": "Ensure_UV_uses_correct_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 17,
+      "total_chunks": 18,
+      "char_count": 663,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.141567"
+    }
+  }
+]

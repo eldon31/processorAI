@@ -1,0 +1,93 @@
+#### On this page
+
+- [Cancel on timeouts](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#cancel-on-timeouts)
+- [timeouts.start - Adding timeouts to queued runs (before start)](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#timeouts-start-adding-timeouts-to-queued-runs-before-start)
+- [timeouts.finish - Adding timeouts to executing runs](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#timeouts-finish-adding-timeouts-to-executing-runs)
+- [Tips](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#tips)
+- [Limitations](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#limitations)
+
+Features [Inngest Functions](\docs\features\inngest-functions) [Cancellation](\docs\features\inngest-functions\cancellation)
+
+# Cancel on timeouts
+
+It's possible to force runs to cancel if they take too long to start, or if the runs execute for too long.  The `timeouts` configuration property allows you to automatically cancel functions based off of two timeout properties:
+
+- `timeouts.start` , which controls how long a function can stay "queued" before they start
+- `timeouts.finish` , which controls how long a function can execute once started
+
+In the following examples, we'll explore how to configure the timeout property and how this works.
+
+TypeScript Go
+
+## [timeouts.start - Adding timeouts to queued runs (before start)](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#timeouts-start-adding-timeouts-to-queued-runs-before-start)
+
+Runs may stay in the queue waiting to start due to concurrency backlogs, throttling configurations, or other delays. You can automatically cancel these runs if they are queued for too long prior to starting.
+
+The `timeouts.start` configuration property controls this timeout. This example forces runs to cancel if it takes over 10 seconds to successfully start the first step of a run:
+
+### inngest/function.ts
+
+Copy Copied
+
+```
+const scheduleReminder = inngest .createFunction (
+{
+id : "schedule-reminder" ,
+timeouts : {
+// If the run takes longer than 10s to start, cancel the run.
+start : "10s" ,
+} ,
+}
+{ event : "tasks/reminder.created" } ,
+async ({ event , step }) => {
+await step .run ( 'send-reminder-push' , async () => {
+await pushNotificationService .push ( event . data .reminder)
+})
+}
+// ...
+);
+```
+
+## [timeouts.finish - Adding timeouts to executing runs](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#timeouts-finish-adding-timeouts-to-executing-runs)
+
+You may want to limit the overall duration of a run after the run starts executing. You can cancel functions automatically if they're executing for too long.
+
+The `timeouts.finish` configuration property controls this timeout. This example forces runs to cancel if it takes over 30 seconds to finish, once started:
+
+### inngest/function.ts
+
+Copy Copied
+
+```
+const scheduleReminder = inngest .createFunction (
+{
+id : "schedule-reminder" ,
+timeouts : {
+// If the run takes longer than 10s to start, cancel the run.
+start : "10s" ,
+// And if the run takes longer than 30s to finish after starting, cancel the run.
+finish : "30s" ,
+} ,
+}
+{ event : "tasks/reminder.created" } ,
+async ({ event , step }) => {
+await step .run ( 'send-reminder-push' , async () => {
+await pushNotificationService .push ( event . data .reminder)
+})
+}
+// ...
+);
+```
+
+## [Tips](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#tips)
+
+- The `timeouts.start` duration limits how long a run waits in the queue for the first step to start
+- Once the first attempt of a step begins, the `timeouts.start` property no longer applies. Instead, the `timeouts.finish` duration begins.
+- Once started, the `timeouts.finish` duration limits how long a run can execute
+- Both properties can be stacked to control the overall length of a function run
+- Runs that are cancelled due to a timeout trigger an [`inngest/function.cancelled`](\docs\reference\system-events\inngest-function-cancelled) event
+
+## [Limitations](\docs\features\inngest-functions\cancellation\cancel-on-timeouts#limitations)
+
+- Step duration is unaffected by timeouts. For example, a 5 minute timeout will not prematurely cancel a step after 5 minutes.
+- Concurrency can delay timeouts. For example, if a function is configured with a 5 minute timeout but concurrency delays the function run for 10 minutes, then the run will take 10 minutes to cancel.

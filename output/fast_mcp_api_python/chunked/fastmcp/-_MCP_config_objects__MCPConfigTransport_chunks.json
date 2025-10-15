@@ -1,0 +1,122 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:-_MCP_config_objects__MCPConfigTransport:chunk:0",
+    "content": "```\nSources: [src/fastmcp/client/transports.py](), [src/fastmcp/server/http.py](), [src/fastmcp/client/client.py]()\n\n## Advanced Server Patterns\n\nFastMCP provides sophisticated patterns for building complex applications:\n\n### Server Composition\n\nFastMCP supports two composition patterns:\n\n1. **Mounting (`mount`)**: Live delegation to child servers\n2. **Importing (`import_server`)**: Static copying of components\n\n```python\n# Live mounting - changes in child_server are reflected immediately\nmain_server.mount(child_server, prefix=\"api\")\n\n# Static importing - components are copied at import time  \nawait main_server.import_server(child_server, prefix=\"api\")\n```",
+    "metadata": {
+      "source": "fastmcp\\-_MCP_config_objects__MCPConfigTransport.md",
+      "file_name": "-_MCP_config_objects__MCPConfigTransport.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 8,
+      "char_count": 664,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.881515"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:-_MCP_config_objects__MCPConfigTransport:chunk:1",
+    "content": "The\n```\nFastMCP.as_proxy()\n```\nmethod creates servers that act as intermediaries:\n```\nproxy_server = FastMCP.as_proxy(\n    Client(\"remote_server.py\"),\n    name=\"proxy\"\n)\n```\nSources:\n[tests/server/test_mount.py:19-67](.)\n,\n[tests/server/test_import_server.py:10-34](.)\n,\n[src/fastmcp/server/proxy.py](.)",
+    "metadata": {
+      "source": "fastmcp\\-_MCP_config_objects__MCPConfigTransport.md",
+      "file_name": "-_MCP_config_objects__MCPConfigTransport.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 8,
+      "char_count": 303,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.881531"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:-_MCP_config_objects__MCPConfigTransport:chunk:2",
+    "content": "FastMCP uses a hierarchical settings system with environment variable support:",
+    "metadata": {
+      "source": "fastmcp\\-_MCP_config_objects__MCPConfigTransport.md",
+      "file_name": "-_MCP_config_objects__MCPConfigTransport.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 8,
+      "char_count": 78,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.881538"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:-_MCP_config_objects__MCPConfigTransport:chunk:3",
+    "content": "The\n```\nSettings\n```\nclass provides configuration via environment variables prefixed with\n```\nFASTMCP_\n```\n:\n- `FASTMCP_LOG_LEVEL` : Logging configuration\n- `FASTMCP_SERVER_AUTH` : Authentication provider class path\n- `FASTMCP_INCLUDE_TAGS` / `FASTMCP_EXCLUDE_TAGS` : Component filtering\n- `FASTMCP_HOST` / `FASTMCP_PORT` : HTTP server configuration",
+    "metadata": {
+      "source": "fastmcp\\-_MCP_config_objects__MCPConfigTransport.md",
+      "file_name": "-_MCP_config_objects__MCPConfigTransport.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 8,
+      "char_count": 349,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.881544"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:-_MCP_config_objects__MCPConfigTransport:chunk:4",
+    "content": "FastMCP maintains a global settings instance accessible via\n```\nfastmcp.settings\n```\n:\n```\n# From __init__.py:8\nsettings = Settings()\n```\nSources:\n[src/fastmcp/settings.py:80-381](.)\n,\n[src/fastmcp/](.)\n[**init**](.)\n[.py:8](.)",
+    "metadata": {
+      "source": "fastmcp\\-_MCP_config_objects__MCPConfigTransport.md",
+      "file_name": "-_MCP_config_objects__MCPConfigTransport.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 8,
+      "char_count": 227,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.881549"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:-_MCP_config_objects__MCPConfigTransport:chunk:5",
+    "content": "FastMCP provides enterprise-grade authentication through the\n```\nAuthProvider\n```\nsystem:",
+    "metadata": {
+      "source": "fastmcp\\-_MCP_config_objects__MCPConfigTransport.md",
+      "file_name": "-_MCP_config_objects__MCPConfigTransport.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 8,
+      "char_count": 89,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.881555"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:-_MCP_config_objects__MCPConfigTransport:chunk:6",
+    "content": "The framework includes built-in providers for major identity systems:\n```\nGoogleProvider\n```\n- `GitHubProvider`\n```\nAzureProvider\n```\n```\nAuth0Provider\n```\n```\nWorkOSProvider\n```\n```\nJWTVerifier\n```",
+    "metadata": {
+      "source": "fastmcp\\-_MCP_config_objects__MCPConfigTransport.md",
+      "file_name": "-_MCP_config_objects__MCPConfigTransport.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 8,
+      "char_count": 198,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.881561"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:-_MCP_config_objects__MCPConfigTransport:chunk:7",
+    "content": "- Auth Integration\n- Auth Integration\n- Auth Integration\n- Auth Integration\n- Auth Integration\nAuthentication providers integrate with the server at initialization:",
+    "metadata": {
+      "source": "fastmcp\\-_MCP_config_objects__MCPConfigTransport.md",
+      "file_name": "-_MCP_config_objects__MCPConfigTransport.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 8,
+      "char_count": 164,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.881566"
+    }
+  }
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Installation_and_Setup:chunk:0",
+    "content": "This document covers the installation procedures, dependency management, and initial configuration for the FastMCP framework. It provides step-by-step instructions for setting up a development or production environment.\nFor information about running FastMCP servers and CLI commands, see\n[Command Line Interface](#5)\n. For details about server configuration and settings, see\n[Configuration Management](#8)\n.",
+    "metadata": {
+      "source": "fastmcp\\Installation_and_Setup.md",
+      "file_name": "Installation_and_Setup.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 4,
+      "char_count": 408,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.766867"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Installation_and_Setup:chunk:1",
+    "content": "FastMCP requires Python 3.10 or higher and uses UV as the primary package manager for dependency resolution and virtual environment management.",
+    "metadata": {
+      "source": "fastmcp\\Installation_and_Setup.md",
+      "file_name": "Installation_and_Setup.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 4,
+      "char_count": 143,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.766880"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Installation_and_Setup:chunk:2",
+    "content": "3.10, Support Status = ✅ Supported. 3.11, Support Status = ✅ Supported. 3.12, Support Status = ✅ Supported. < 3.10, Support Status = ❌ Not supported\n**Sources:**\n[pyproject.toml:20](.)\n,\n[pyproject.toml:37-39](.)",
+    "metadata": {
+      "source": "fastmcp\\Installation_and_Setup.md",
+      "file_name": "Installation_and_Setup.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 4,
+      "char_count": 212,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.766886"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Installation_and_Setup:chunk:3",
+    "content": "The recommended installation method uses UV for optimal dependency resolution and environment isolation:",
+    "metadata": {
+      "source": "fastmcp\\Installation_and_Setup.md",
+      "file_name": "Installation_and_Setup.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 4,
+      "char_count": 104,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.766891"
+    }
+  }
+]

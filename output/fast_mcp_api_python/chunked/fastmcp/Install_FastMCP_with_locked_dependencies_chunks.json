@@ -1,0 +1,167 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:0",
+    "content": "uv sync --frozen\n```\n### Development Installation\n\nFor development work, install with development dependencies:\n\n```bash\n# Install with development dependencies\nuv sync\n\n# Install pre-commit hooks\nuv run pre-commit install\n```\n**Sources:**\n[.github/workflows/run-tests.yml:46-48](.)\n,\n[pyproject.toml:47-71](.)",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 11,
+      "char_count": 310,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663685"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:1",
+    "content": "The following diagram shows the core dependency structure and how packages map to FastMCP functionality:\n```\ngraph TB\n    subgraph \"Core Dependencies\"\n        mcp[\"mcp>=1.12.4,<2.0.0\"]\n        httpx[\"httpx>=0.28.1\"]\n        pydantic[\"pydantic[email]>=2.11.7\"]\n        authlib[\"authlib>=1.5.2\"]\n    end\n    \n    subgraph \"Optional Dependencies\"\n        websockets[\"websockets>=15.0.1\"]\n        openai[\"openai>=1.102.0\"]\n    end\n    \n    subgraph \"Development Dependencies\"\n        pytest[\"pytest>=8.3.3\"]\n        ruff[\"ruff\"]\n        precommit[\"pre-commit\"]\n        tycheck[\"ty>=0.0.1a19\"]\n    end\n    \n    subgraph \"Utility Dependencies\"\n        rich[\"rich>=13.9.4\"]\n        cyclopts[\"cyclopts>=3.0.0\"]\n        dotenv[\"python-dotenv>=1.1.0\"]\n        pyperclip[\"pyperclip>=1.9.0\"]\n    end\n    \n    subgraph \"FastMCP Components\"\n        server[\"FastMCP Server\"]\n        client[\"FastMCP Client\"]\n        cli[\"fastmcp CLI\"]\n        auth[\"Authentication System\"]\n    end\n    \n    mcp --> server\n    mcp --> client\n    httpx --> client\n    httpx --> server\n    pydantic --> server\n    authlib --> auth\n    websockets --> server\n    openai --> client\n    rich --> cli\n    cyclopts --> cli\n    dotenv --> server\n    pyperclip --> cli\n    \n    pytest --> server\n    pytest --> client\n    ruff --> server\n    ruff --> client\n    precommit --> server\n    precommit --> client\n    tycheck --> server\n    tycheck --> client\n```\n**Sources:**\n[pyproject.toml:6-18](.)\n,\n[pyproject.toml:43-46](.)\n,\n[pyproject.toml:47-71](.)",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 11,
+      "char_count": 1508,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663699"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:2",
+    "content": "FastMCP uses several configuration files for different aspects of the development and runtime environment:",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 11,
+      "char_count": 106,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663705"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:3",
+    "content": "```\ngraph LR\n    subgraph \"Configuration Files\"\n        pyproject[\"pyproject.toml\"]\n        uvlock[\"uv.lock\"]\n        precommit[\".pre-commit-config.yaml\"]\n    end\n    \n    subgraph \"Configuration Sections\"\n        project[\"[project]\"]\n        build[\"[build-system]\"]\n        tools[\"[tool.*]\"]\n        deps[\"[dependency-groups]\"]\n    end\n    \n    subgraph \"Tools Configuration\"\n        pytest_config[\"[tool.pytest.ini_options]\"]\n        ruff_config[\"[tool.ruff.lint]\"]\n        ty_config[\"[tool.ty.*]\"]\n        hatch_config[\"[tool.hatch.*]\"]\n    end\n    \n    pyproject --> project\n    pyproject --> build\n    pyproject --> tools\n    pyproject --> deps\n    \n    tools --> pytest_config\n    tools --> ruff_config\n    tools --> ty_config\n    tools --> hatch_config\n    \n    uvlock --> pyproject\n    precommit --> ruff_config\n```\n**Sources:**\n[pyproject.toml:1-143](.)\n,\n[uv.lock:1-8](.)\n,\n[.pre-commit-config.yaml:1-42](.)",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 11,
+      "char_count": 917,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663711"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:4",
+    "content": "The\n```\nfastmcp\n```\ncommand-line interface is configured as an entry point script:\n```\nfastmcp\n```\n```\nfastmcp.cli:app\n```\n```\ncyclopts>=3.0.0\n```\n,\n```\nrich>=13.9.4\n```\nScript name, Value = . Script name, Purpose = \n**Sources:**\n[pyproject.toml:73-74](.)\n,\n[pyproject.toml:12-13](.)",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 11,
+      "char_count": 283,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663716"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:5",
+    "content": "FastMCP supports several environment variables for configuration:\n```\nFASTMCP_TEST_MODE\n```\n```\n0\n```\n```\nFASTMCP_LOG_LEVEL\n```\n```\nINFO\n```\n```\nFASTMCP_ENABLE_RICH_TRACEBACKS\n```\n```\n1\n```\n, Purpose = . , Default = ",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 11,
+      "char_count": 216,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663721"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:6",
+    "content": "The testing environment is configured with specific settings:\n```\ngraph TB\n    subgraph \"Test Configuration\"\n        asyncio[\"asyncio_mode = auto\"]\n        timeout[\"timeout = 3\"]\n        markers[\"Test Markers\"]\n        env_vars[\"Environment Variables\"]\n    end\n    \n    subgraph \"Test Categories\"\n        unit[\"Unit Tests\"]\n        integration[\"Integration Tests\"] \n        client_process[\"Client Process Tests\"]\n    end\n    \n    subgraph \"CI/CD Pipeline\"\n        static[\".github/workflows/run-static.yml\"]\n        tests[\".github/workflows/run-tests.yml\"]\n    end\n    \n    asyncio --> unit\n    asyncio --> integration\n    timeout --> unit\n    timeout --> client_process\n    \n    markers --> integration\n    markers --> client_process\n    \n    env_vars --> unit\n    env_vars --> integration\n    \n    static --> tests\n    tests --> unit\n    tests --> integration\n    tests --> client_process\n```\n**Sources:**\n[pyproject.toml:98-119](.)\n,\n[.github/workflows/run-tests.yml:25-82](.)\n,\n[.github/workflows/run-static.yml:26-55](.)",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 11,
+      "char_count": 1024,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663726"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:7",
+    "content": "For development and testing with authentication providers, additional environment variables are required:",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 11,
+      "char_count": 105,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663731"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:8",
+    "content": "```\nFASTMCP_GITHUB_TOKEN\n```\n```\nFASTMCP_TEST_AUTH_GITHUB_CLIENT_ID\n```\n```\nFASTMCP_TEST_AUTH_GITHUB_CLIENT_SECRET\n```\n, Purpose = . , Required For = \n**Sources:**\n[tests/integration_tests/auth/test_github_provider_integration.py:25-28](.)\n,\n[.github/workflows/run-tests.yml:79-81](.)",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 11,
+      "char_count": 284,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663735"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:9",
+    "content": "After installation, verify the setup using these commands:",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 11,
+      "char_count": 58,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663741"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Install_FastMCP_with_locked_dependencies:chunk:10",
+    "content": "```\n# Check FastMCP CLI is available\nuv run fastmcp --help\n\n# Run unit tests\nuv run pytest -v tests -m \"not integration and not client_process\"\n\n# Run static analysis\nuv run pre-commit run --all-files\n```",
+    "metadata": {
+      "source": "fastmcp\\Install_FastMCP_with_locked_dependencies.md",
+      "file_name": "Install_FastMCP_with_locked_dependencies.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 11,
+      "char_count": 204,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:01.663745"
+    }
+  }
+]

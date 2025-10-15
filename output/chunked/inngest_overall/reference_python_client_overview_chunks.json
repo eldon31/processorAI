@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_overview.md",
+  "title": "Inngest client",
+  "num_chunks": 3,
+  "total_chars": 2299,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Inngest client](\\docs\\reference\\python\\client\\overview#inngest-client)\n- [Configuration](\\docs\\reference\\python\\client\\overview#configuration)\nReferences\n[Python SDK](\\docs\\reference\\python)",
+      "char_count": 206,
+      "token_count": 57,
+      "metadata": {
+        "title": "Inngest client",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_overview.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_overview.md",
+        "file_name": "reference_python_client_overview.md",
+        "file_size": 2494,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "4086b0a6f160ddb848f72c0ef9853d8c5ab6ac663f1ef76c189d178803865b79",
+        "author": null,
+        "created_at": "2025-10-13T00:00:52.636630",
+        "modified_at": "2025-10-13T00:00:52.636630",
+        "page_count": null,
+        "word_count": 249,
+        "extracted_at": "2025-10-13T20:04:37.444473",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 57,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Inngest client\nThe Inngest client is used to configure your application and send events outside of Inngest functions.\nCopy Copied\n```\nimport inngest\n\ninngest_client = inngest . Inngest (\napp_id = \"flask_example\" ,\n)\n```",
+      "char_count": 219,
+      "token_count": 61,
+      "metadata": {
+        "title": "Inngest client",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_overview.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_overview.md",
+        "file_name": "reference_python_client_overview.md",
+        "file_size": 2494,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "4086b0a6f160ddb848f72c0ef9853d8c5ab6ac663f1ef76c189d178803865b79",
+        "author": null,
+        "created_at": "2025-10-13T00:00:52.636630",
+        "modified_at": "2025-10-13T00:00:52.636630",
+        "page_count": null,
+        "word_count": 249,
+        "extracted_at": "2025-10-13T20:04:37.444473",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 61,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Inngest client\nConfiguration\n- Name `api_base_url` Type str Required optional Description Override the default base URL for our REST API ( `https://api.inngest.com/` ). See also the [`INNGEST_EVENT_API_BASE_URL`](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url) environment variable.\n- Name `app_id` Type str Required required Description A unique identifier for your application. We recommend a hyphenated slug.\n- Name `env` Type str Required optional Description The environment name. Required only when using [Branch Environments](\\docs\\platform\\environments) .\n- Name `event_api_base_url` Type str Required optional Description Override the default base URL for sending events ( `https://inn.gs/` ). See also the [`INNGEST_EVENT_API_BASE_URL`](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url) environment variable.\n- Name `event_key` Type str Required optional Description An Inngest event key. Alternatively, set the [`INNGEST_EVENT_KEY`](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key) environment variable.\n- Name `is_production` Type bool Required optional Description Whether the SDK should run in [production mode](\\docs\\reference\\python\\overview\\prod-mode) . See also the [`INNGEST_DEV`](\\docs\\reference\\python\\overview\\env-vars#inngest-dev) environment variable.\n- Name `logger` `logging.Logger` or `logging.LoggerAdapter` . Defaults to using `logging.getLogger(__name__)` if not provided.\n- Name `middleware` Type list Required optional Version experimental Description A list of middleware to add to the client. Read more in our [middleware docs](\\docs\\reference\\python\\middleware\\overview) .\n- Name `signing_key` Type str Required optional Description The Inngest signing key. Alternatively, set the [`INNGEST_SIGNING_KEY`](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key) environment variable.",
+      "char_count": 1874,
+      "token_count": 435,
+      "metadata": {
+        "title": "Inngest client",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_overview.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_client_overview.md",
+        "file_name": "reference_python_client_overview.md",
+        "file_size": 2494,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "4086b0a6f160ddb848f72c0ef9853d8c5ab6ac663f1ef76c189d178803865b79",
+        "author": null,
+        "created_at": "2025-10-13T00:00:52.636630",
+        "modified_at": "2025-10-13T00:00:52.636630",
+        "page_count": null,
+        "word_count": 249,
+        "extracted_at": "2025-10-13T20:04:37.444473",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 435,
+        "has_context": true
+      }
+    }
+  ]
+}

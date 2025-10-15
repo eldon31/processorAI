@@ -1,0 +1,197 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:0",
+    "content": "ServerSession(read_stream, write_stream, init_options, stateless=True)\n```\nIn stateless mode, the session immediately transitions to `Initialized` state, bypassing the normal MCP initialization handshake.\n\nSources: [src/mcp/server/session.py:88-93]()\n\n# Authentication & Security\n\n\n\n\nThis document covers the OAuth 2.0 authentication system implemented in the MCP Python SDK for securing communication between MCP clients and servers. The authentication system provides both client-side authentication (for MCP clients connecting to protected servers) and server-side authentication (for MCP servers that need to authenticate clients).\n\nThe OAuth system integrates seamlessly with MCP's core components:\n- **ClientSession**: Automatically handles OAuth authentication when connecting to protected MCP servers\n- **FastMCP servers**: Can optionally expose OAuth authorization server endpoints\n- **Transport layer**: OAuth authentication works across all transport mechanisms (stdio, SSE, StreamableHTTP)\n\nFor detailed OAuth implementation specifics, see [OAuth 2.0 System](#7.1). For transport-level security features like DNS rebinding protection, see [Transport Security](#5.4). For the overall client framework, see [Client Framework](#3).\n\n## MCP Authentication Integration\n\n```mermaid\ngraph TB\n    subgraph \"MCP Client Side\"\n        ClientSession[\"ClientSession\"]\n        OAuthClientProvider[\"OAuthClientProvider\"]\n        TokenStorage[\"TokenStorage\"]\n        HTTPXAuth[\"httpx.Auth Integration\"]\n    end\n    \n    subgraph \"MCP Server Side\" \n        FastMCPServer[\"FastMCP Server\"]\n        AuthRoutes[\"create_auth_routes()\"]\n        OAuthProvider[\"OAuthAuthorizationServerProvider\"]\n        AuthMiddleware[\"Authentication Middleware\"]\n    end\n    \n    subgraph \"Transport Layer\"\n        StdioTransport[\"stdio Transport\"]\n        SSETransport[\"SSE Transport\"] \n        StreamableHTTP[\"StreamableHTTP Transport\"]\n    end\n    \n    subgraph \"OAuth Endpoints\"\n        AuthorizeEndpoint[\"/authorize\"]\n        TokenEndpoint[\"/token\"]\n        RegisterEndpoint[\"/register\"]\n        MetadataEndpoint[\"/.well-known/oauth-authorization-server\"]\n    end\n    \n    ClientSession --> OAuthClientProvider\n    OAuthClientProvider --> TokenStorage\n    OAuthClientProvider --> HTTPXAuth\n    \n    FastMCPServer --> AuthRoutes\n    AuthRoutes --> AuthorizeEndpoint\n    AuthRoutes --> TokenEndpoint\n    AuthRoutes --> RegisterEndpoint\n    AuthRoutes --> MetadataEndpoint\n    AuthRoutes --> OAuthProvider\n    FastMCPServer --> AuthMiddleware\n    \n    HTTPXAuth -.-> StdioTransport\n    HTTPXAuth -.-> SSETransport  \n    HTTPXAuth -.-> StreamableHTTP\n    \n    OAuthClientProvider -.-> AuthorizeEndpoint\n    OAuthClientProvider -.-> TokenEndpoint\n    OAuthClientProvider -.-> RegisterEndpoint\n    OAuthClientProvider -.-> MetadataEndpoint\n```\n**Sources:**\n[src/mcp/client/auth.py:179-206](.)\n,\n[src/mcp/server/auth/routes.py:68-146](.)\n,\n[src/mcp/client/session.py](.)\n,\n[src/mcp/server/fastmcp/](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 13,
+      "char_count": 2973,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603757"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:1",
+    "content": "The MCP SDK provides a complete OAuth 2.0 client implementation centered around the\n```\nOAuthClientProvider\n```\nclass, which integrates with httpx to provide transparent authentication for HTTP requests.",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 13,
+      "char_count": 203,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603773"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:2",
+    "content": "```\ngraph TB\n    subgraph \"OAuthClientProvider Class\"\n        OAuthClientProvider[\"OAuthClientProvider\"]\n        OAuthContext[\"OAuthContext\"]\n        TokenStorage[\"TokenStorage\"]\n        PKCEParameters[\"PKCEParameters\"]\n    end\n    \n    subgraph \"OAuth Models (mcp.shared.auth)\"\n        ProtectedResourceMetadata[\"ProtectedResourceMetadata\"]\n        OAuthMetadata[\"OAuthMetadata\"] \n        OAuthClientInformationFull[\"OAuthClientInformationFull\"]\n        OAuthToken[\"OAuthToken\"]\n        OAuthClientMetadata[\"OAuthClientMetadata\"]\n    end\n    \n    subgraph \"Client Integration Methods\"\n        async_auth_flow[\"async_auth_flow()\"]\n        _initialize[\"_initialize()\"]\n        _refresh_token[\"_refresh_token()\"]\n        _add_auth_header[\"_add_auth_header()\"]\n    end\n    \n    subgraph \"Discovery Methods\"\n        _discover_protected_resource[\"_discover_protected_resource()\"]\n        _get_discovery_urls[\"_get_discovery_urls()\"]\n        _extract_resource_metadata_from_www_auth[\"_extract_resource_metadata_from_www_auth()\"]\n    end\n    \n    OAuthClientProvider --> OAuthContext\n    OAuthClientProvider --> TokenStorage\n    OAuthClientProvider --> PKCEParameters\n    OAuthContext --> ProtectedResourceMetadata\n    OAuthContext --> OAuthMetadata\n    OAuthContext --> OAuthClientInformationFull\n    OAuthContext --> OAuthToken\n    OAuthContext --> OAuthClientMetadata\n    \n    OAuthClientProvider --> async_auth_flow\n    OAuthClientProvider --> _initialize\n    OAuthClientProvider --> _refresh_token\n    OAuthClientProvider --> _add_auth_header\n    OAuthClientProvider --> _discover_protected_resource\n    OAuthClientProvider --> _get_discovery_urls\n    OAuthClientProvider --> _extract_resource_metadata_from_www_auth\n```\nThe\n```\nOAuthClientProvider\n```\nimplements the\n```\nhttpx.Auth\n```\ninterface, allowing it to be used as an authentication handler for any HTTP client that supports httpx auth providers. The class is instantiated with server URL, client metadata, token storage, and callback handlers for user interaction.\n**Sources:**\n[src/mcp/client/auth.py:179-206](.)\n,\n[src/mcp/shared/auth.py:6-25](.)\n,\n[src/mcp/shared/auth.py:37-91](.)\n,\n[src/mcp/shared/auth.py:93-103](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 13,
+      "char_count": 2179,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603780"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:3",
+    "content": "The client authentication follows the OAuth 2.0 authorization code flow with PKCE (Proof Key for Code Exchange) for enhanced security. The entire flow is implemented in the\n```\nasync_auth_flow()\n```\nmethod:\n```\nsequenceDiagram\n    participant OAuthClientProvider as \"OAuthClientProvider\"\n    participant MCPServer as \"MCP Server\"  \n    participant AuthServer as \"Authorization Server\"\n    participant UserBrowser as \"User Browser\"\n    \n    OAuthClientProvider->>MCPServer: \"Initial request (no auth)\"\n    MCPServer-->>OAuthClientProvider: \"401 + WWW-Authenticate header\"\n    \n    OAuthClientProvider->>MCPServer: \"_discover_protected_resource()\"\n    MCPServer-->>OAuthClientProvider: \"ProtectedResourceMetadata\"\n    \n    OAuthClientProvider->>AuthServer: \"_create_oauth_metadata_request()\"\n    AuthServer-->>OAuthClientProvider: \"OAuthMetadata\"\n    \n    OAuthClientProvider->>AuthServer: \"_register_client()\"\n    AuthServer-->>OAuthClientProvider: \"OAuthClientInformationFull\"\n    \n    OAuthClientProvider->>UserBrowser: \"_perform_authorization() + PKCEParameters.generate()\"\n    UserBrowser->>AuthServer: \"Authorization request + code_challenge\"\n    AuthServer-->>UserBrowser: \"Authorization code\"\n    UserBrowser-->>OAuthClientProvider: \"Authorization code + state\"\n    \n    OAuthClientProvider->>AuthServer: \"_exchange_token() + code_verifier\"\n    AuthServer-->>OAuthClientProvider: \"OAuthToken\"\n    \n    OAuthClientProvider->>MCPServer: \"_add_auth_header() + retry original request\"\n    MCPServer-->>OAuthClientProvider: \"200 Success\"\n```\nThe flow includes several key security features implemented in specific methods:\n- **PKCE (RFC 7636)** : `PKCEParameters.generate()` prevents authorization code interception attacks\n- **State parameter** : `_perform_authorization()` prevents CSRF attacks during authorization\n- **Dynamic Client Registration (RFC 7591)** : `_register_client()` enables automatic client registration\n- **Protected Resource Discovery (RFC 9728)** : `_discover_protected_resource()` enables automatic authorization server discovery\n**Sources:**\n[src/mcp/client/auth.py:485-551](.)\n,\n[src/mcp/client/auth.py:312-356](.)\n,\n[src/mcp/client/auth.py:49-61](.)\n,\n[src/mcp/client/auth.py:231-252](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 13,
+      "char_count": 2215,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603785"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:4",
+    "content": "The SDK provides a flexible token storage system through the\n```\nTokenStorage\n```\nprotocol interface:\n```\nget_tokens()\n```\n```\nOAuthToken \\| None\n```\n```\nset_tokens()\n```\n```\nOAuthToken\n```\n```\nNone\n```\n```\nget_client_info()\n```\n```\nOAuthClientInformationFull \\| None\n```\n```\nset_client_info()\n```\n```\nOAuthClientInformationFull\n```\n```\nNone\n```\n, Purpose = . , Parameters = . , Return Type = \nToken validation and refresh logic is handled automatically in\n```\nasync_auth_flow()\n```\n:\n```\ngraph LR\n    async_auth_flow[\"async_auth_flow()\"] --> is_token_valid[\"is_token_valid()\"]\n    is_token_valid --> TokenValid{\"Token Valid?\"}\n    TokenValid -->|\"Yes\"| _add_auth_header[\"_add_auth_header()\"]\n    TokenValid -->|\"No\"| can_refresh_token[\"can_refresh_token()\"]\n    can_refresh_token -->|\"Yes\"| _refresh_token[\"_refresh_token()\"]\n    can_refresh_token -->|\"No\"| FullOAuthFlow[\"Full OAuth Flow\"]\n    _refresh_token --> _handle_refresh_response[\"_handle_refresh_response()\"]\n    _handle_refresh_response --> RefreshSuccess{\"Refresh Success?\"}\n    RefreshSuccess -->|\"Yes\"| _add_auth_header\n    RefreshSuccess -->|\"No\"| FullOAuthFlow\n    FullOAuthFlow --> _add_auth_header\n```\nThe\n```\nOAuthContext\n```\nclass manages token expiry using the\n```\nupdate_token_expiry()\n```\nmethod, which calculates wall-clock time based on the\n```\nexpires_in\n```\nfield from token responses. Token validation is performed by\n```\nis_token_valid()\n```\nwhich checks both token presence and expiry time.\n**Sources:**\n[src/mcp/client/auth.py:64-82](.)\n,\n[src/mcp/client/auth.py:120-142](.)\n,\n[src/mcp/client/auth.py:411-461](.)\n,\n[src/mcp/client/auth.py:494-501](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 13,
+      "char_count": 1632,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603791"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:5",
+    "content": "The client implements RFC 9728 for automatic discovery of authorization servers through several methods in\n```\nOAuthClientProvider\n```\n. The discovery process supports multiple fallback mechanisms:\n1. **WWW-Authenticate Header** : `_extract_resource_metadata_from_www_auth()` extracts `resource_metadata` URL from 401 responses\n2. **Well-known Resource Discovery** : `_discover_protected_resource()` falls back to `/.well-known/oauth-protected-resource`\n3. **Authorization Server Discovery** : `_get_discovery_urls()` tries multiple OAuth metadata endpoints\n```\ngraph TB\n    Response401[\"401 Response\"] --> _extract_resource_metadata_from_www_auth[\"_extract_resource_metadata_from_www_auth()\"]\n    _extract_resource_metadata_from_www_auth --> HasResourceMeta{\"Has resource_metadata?\"}\n    HasResourceMeta -->|\"Yes\"| UseResourceMeta[\"Use extracted URL\"]\n    HasResourceMeta -->|\"No\"| WellKnownFallback[\"/.well-known/oauth-protected-resource\"]\n    \n    UseResourceMeta --> _discover_protected_resource[\"_discover_protected_resource()\"]\n    WellKnownFallback --> _discover_protected_resource\n    \n    _discover_protected_resource --> _handle_protected_resource_response[\"_handle_protected_resource_response()\"]\n    _handle_protected_resource_response --> ExtractAS[\"Extract authorization_servers\"]\n    ExtractAS --> _get_discovery_urls[\"_get_discovery_urls()\"]\n    \n    _get_discovery_urls --> Endpoint1[\"/.well-known/oauth-authorization-server/{path}\"]\n    _get_discovery_urls --> Endpoint2[\"/.well-known/oauth-authorization-server\"]\n    _get_discovery_urls --> Endpoint3[\"/.well-known/openid-configuration/{path}\"]\n    _get_discovery_urls --> Endpoint4[\"{server}/.well-known/openid-configuration\"]\n```\nThe discovery flow uses regex pattern matching in\n```\n_extract_resource_metadata_from_www_auth()\n```\nto parse the WWW-Authenticate header:\n```\nresource_metadata=(?:\"([^\"]+)\"|([^\\s,]+))\n```\n. If no resource_metadata is found, it constructs the well-known URL using\n```\nget_authorization_base_url()\n```\nand\n```\nurljoin()\n```\n.\n**Sources:**\n[src/mcp/client/auth.py:207-240](.)\n,\n[src/mcp/client/auth.py:254-279](.)\n,\n[src/mcp/client/auth.py:517-530](.)\n,\n[src/mcp/client/auth.py:242-252](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 13,
+      "char_count": 2188,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603798"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:6",
+    "content": "The server-side authentication system provides a complete OAuth 2.0 authorization server implementation that MCP servers can use to authenticate clients. The system is built around the\n```\ncreate_auth_routes()\n```\nfunction and handler classes.",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 13,
+      "char_count": 243,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603804"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:7",
+    "content": "```\ngraph TB\n    subgraph \"Route Creation (mcp.server.auth.routes)\"\n        create_auth_routes[\"create_auth_routes()\"]\n        build_metadata[\"build_metadata()\"]\n        validate_issuer_url[\"validate_issuer_url()\"]\n        cors_middleware[\"cors_middleware()\"]\n    end\n    \n    subgraph \"OAuth Endpoints\"\n        WellKnownEndpoint[\"/.well-known/oauth-authorization-server\"]\n        AuthorizeEndpoint[\"/authorize\"]\n        TokenEndpoint[\"/token\"] \n        RegisterEndpoint[\"/register\"]\n        RevokeEndpoint[\"/revoke\"]\n    end\n    \n    subgraph \"Handler Classes (mcp.server.auth.handlers)\"\n        MetadataHandler[\"MetadataHandler\"]\n        AuthorizationHandler[\"AuthorizationHandler\"] \n        TokenHandler[\"TokenHandler\"]\n        RegistrationHandler[\"RegistrationHandler\"]\n        RevocationHandler[\"RevocationHandler\"]\n    end\n    \n    subgraph \"Middleware & Authentication\"\n        ClientAuthenticator[\"ClientAuthenticator\"]\n        OAuthAuthorizationServerProvider[\"OAuthAuthorizationServerProvider\"]\n    end\n    \n    subgraph \"Configuration Models\"\n        ClientRegistrationOptions[\"ClientRegistrationOptions\"]\n        RevocationOptions[\"RevocationOptions\"]\n    end\n    \n    create_auth_routes --> build_metadata\n    create_auth_routes --> validate_issuer_url\n    create_auth_routes --> cors_middleware\n    create_auth_routes --> ClientRegistrationOptions\n    create_auth_routes --> RevocationOptions\n    \n    create_auth_routes --> WellKnownEndpoint\n    create_auth_routes --> AuthorizeEndpoint\n    create_auth_routes --> TokenEndpoint\n    create_auth_routes --> RegisterEndpoint\n    create_auth_routes --> RevokeEndpoint\n    \n    WellKnownEndpoint --> MetadataHandler\n    AuthorizeEndpoint --> AuthorizationHandler\n    TokenEndpoint --> TokenHandler\n    RegisterEndpoint --> RegistrationHandler\n    RevokeEndpoint --> RevocationHandler\n    \n    TokenHandler --> ClientAuthenticator\n    RevocationHandler --> ClientAuthenticator\n    \n    AuthorizationHandler --> OAuthAuthorizationServerProvider\n    TokenHandler --> OAuthAuthorizationServerProvider\n    RegistrationHandler --> OAuthAuthorizationServerProvider\n    RevocationHandler --> OAuthAuthorizationServerProvider\n```\n**Sources:**\n[src/mcp/server/auth/routes.py:68-146](.)\n,\n[src/mcp/server/auth/handlers/](.)\n,\n[src/mcp/server/auth/middleware/client_auth.py](.)\n,\n[src/mcp/server/auth/settings.py](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 13,
+      "char_count": 2364,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603809"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:8",
+    "content": "The server automatically generates RFC 8414 compliant OAuth metadata using the\n```\nbuild_metadata()\n```\nfunction based on configuration:\n```\nissuer\n```\n```\nissuer_url\n```\n```\nauthorization_endpoint\n```\n```\n{issuer}/authorize\n```\n```\nAUTHORIZATION_PATH\n```\n```\ntoken_endpoint\n```\n```\n{issuer}/token\n```\n```\nTOKEN_PATH\n```\n```\nregistration_endpoint\n```\n```\n{issuer}/register\n```\n```\nREGISTRATION_PATH\n```\n```\nrevocation_endpoint\n```\n```\n{issuer}/revoke\n```\n```\nREVOCATION_PATH\n```\n```\nscopes_supported\n```\n```\nClientRegistrationOptions.valid_scopes\n```\n```\ngrant_types_supported\n```\n```\n[\"authorization_code\", \"refresh_token\"]\n```\n```\nbuild_metadata()\n```\n```\ntoken_endpoint_auth_methods_supported\n```\n```\n[\"client_secret_post\"]\n```\n```\nbuild_metadata()\n```\n```\ncode_challenge_methods_supported\n```\n```\n[\"S256\"]\n```\n```\nbuild_metadata()\n```\n, Value = . , Source = \nThe\n```\nbuild_metadata()\n```\nfunction constructs the complete\n```\nOAuthMetadata\n```\nobject with proper URL validation through\n```\nvalidate_issuer_url()\n```\nand CORS support via\n```\ncors_middleware()\n```\n. The metadata is served by\n```\nMetadataHandler.handle()\n```\nat the well-known endpoint.\n**Sources:**\n[src/mcp/server/auth/routes.py:149-186](.)\n,\n[src/mcp/server/auth/routes.py:23-47](.)\n,\n[src/mcp/server/auth/routes.py:49-52](.)\n,\n[src/mcp/server/auth/handlers/metadata.py](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 13,
+      "char_count": 1344,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603815"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:9",
+    "content": "The server supports RFC 7591 dynamic client registration through the\n```\nRegistrationHandler.handle()\n```\nmethod:\n```\ngraph LR\n    POSTRegister[\"POST /register\"] --> ParseJSON[\"Parse request.json()\"]\n    ParseJSON --> ValidateMetadata[\"OAuthClientMetadata.model_validate()\"]\n    ValidateMetadata --> ValidateScopes[\"Validate against ClientRegistrationOptions.valid_scopes\"]\n    ValidateScopes --> GenerateCredentials[\"uuid4() + secrets.token_hex(32)\"]\n    GenerateCredentials --> CreateClientInfo[\"OAuthClientInformationFull()\"]\n    CreateClientInfo --> StoreClient[\"provider.register_client()\"]\n    StoreClient --> ReturnSuccess[\"PydanticJSONResponse(201)\"]\n    \n    ParseJSON -->|\"ValidationError\"| ReturnError[\"RegistrationErrorResponse(400)\"]\n    ValidateScopes -->|\"Invalid scopes\"| ReturnError\n    StoreClient -->|\"RegistrationError\"| ReturnError\n```\nKey registration features implemented in\n```\nRegistrationHandler.handle()\n```\n:\n- **Automatic client ID generation** : Uses `uuid4()` for unique client identifiers\n- **Client secret generation** : Uses `secrets.token_hex(32)` for 32-byte cryptographically secure random hex string\n- **Scope validation** : Ensures requested scopes are within `ClientRegistrationOptions.valid_scopes`\n- **Grant type validation** : Only supports `authorization_code` and `refresh_token` grant types\n- **Client secret expiry** : Configurable via `ClientRegistrationOptions.client_secret_expiry_seconds`\n**Sources:**\n[src/mcp/server/auth/handlers/register.py:34-121](.)\n,\n[src/mcp/server/auth/settings.py](.)\n,\n[src/mcp/server/auth/handlers/register.py:51-85](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 13,
+      "char_count": 1598,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603821"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:10",
+    "content": "The server can also act as a protected resource by exposing RFC 9728 metadata through\n```\ncreate_protected_resource_routes()\n```\n:\n```\ngraph TB\n    subgraph \"Protected Resource System\"\n        create_protected_resource_routes[\"create_protected_resource_routes()\"]\n        PRMRoute[\"/.well-known/oauth-protected-resource\"]\n        ProtectedResourceMetadataHandler[\"ProtectedResourceMetadataHandler\"]\n    end\n    \n    subgraph \"ProtectedResourceMetadata Model\"\n        resource[\"resource: AnyHttpUrl\"]\n        authorization_servers[\"authorization_servers: list[AnyHttpUrl]\"]\n        scopes_supported[\"scopes_supported: list[str] | None\"]\n        bearer_methods_supported[\"bearer_methods_supported: ['header']\"]\n        resource_name[\"resource_name: str | None\"]\n        resource_documentation[\"resource_documentation: AnyHttpUrl | None\"]\n    end\n    \n    create_protected_resource_routes --> PRMRoute\n    PRMRoute --> ProtectedResourceMetadataHandler\n    ProtectedResourceMetadataHandler --> resource\n    ProtectedResourceMetadataHandler --> authorization_servers\n    ProtectedResourceMetadataHandler --> scopes_supported\n    ProtectedResourceMetadataHandler --> bearer_methods_supported\n    ProtectedResourceMetadataHandler --> resource_name\n    ProtectedResourceMetadataHandler --> resource_documentation\n```\nThis enables automatic discovery by OAuth clients using\n```\n_discover_protected_resource()\n```\nand supports the separation of authorization servers from protected resources as defined in RFC 9728.\n**Sources:**\n[src/mcp/server/auth/routes.py:189-227](.)\n,\n[src/mcp/shared/auth.py:134-156](.)\n,\n[src/mcp/server/auth/handlers/metadata.py](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 13,
+      "char_count": 1647,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603827"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:11",
+    "content": "The SDK implements PKCE (Proof Key for Code Exchange) as defined in RFC 7636 through the\n```\nPKCEParameters\n```\nclass to prevent authorization code interception attacks:\n```\ngraph LR\n    PKCEParameters_generate[\"PKCEParameters.generate()\"] --> code_verifier[\"128-char code_verifier\"]\n    code_verifier --> hashlib_sha256[\"hashlib.sha256()\"]\n    hashlib_sha256 --> base64_urlsafe_b64encode[\"base64.urlsafe_b64encode()\"]\n    base64_urlsafe_b64encode --> code_challenge[\"code_challenge\"]\n    \n    code_challenge --> _perform_authorization[\"_perform_authorization()\"]\n    code_verifier --> _exchange_token[\"_exchange_token()\"]\n```\nPKCE parameters use cryptographically secure random generation in\n```\nPKCEParameters.generate()\n```\n:\n- **Code verifier** : 128 characters from `secrets.choice(string.ascii_letters + string.digits + \"-._~\")`\n- **Code challenge** : SHA256 hash of verifier, Base64URL encoded with `rstrip(\"=\")` to remove padding\n- **Challenge method** : Always `S256` (SHA256) as specified in OAuth server metadata\n**Sources:**\n[src/mcp/client/auth.py:49-61](.)\n,\n[src/mcp/client/auth.py:324-325](.)\n,\n[src/mcp/client/auth.py:374](.)\n,\n[src/mcp/client/auth.py:56-61](.)",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 13,
+      "char_count": 1178,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603833"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Stateless_initialization_bypasses_normal_initialization_protocol:chunk:12",
+    "content": "The OAuth flow includes state parameter validation in\n```\n_perform_authorization()\n```\nto prevent CSRF attacks:",
+    "metadata": {
+      "source": "python-sdk\\Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "file_name": "Stateless_initialization_bypasses_normal_initialization_protocol.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 13,
+      "char_count": 111,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:31.603839"
+    }
+  }
+]

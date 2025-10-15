@@ -1,0 +1,22 @@
+{
+  "source": "Docs\\inngest_overall\\apps.md",
+  "title": "apps",
+  "total_chars": 3846,
+  "num_chunks": 2,
+  "chunks": [
+    {
+      "index": 0,
+      "start_char": 0,
+      "end_char": 2048,
+      "content": "#### On this page\n\n- [Inngest Apps](\\docs\\apps#inngest-apps)\n- [Apps in SDK](\\docs\\apps#apps-in-sdk)\n- [Apps in Inngest Cloud](\\docs\\apps#apps-in-inngest-cloud)\n- [Apps in Inngest Dev Server](\\docs\\apps#apps-in-inngest-dev-server)\n- [Informing Inngest about your apps](\\docs\\apps#informing-inngest-about-your-apps)\n- [Next Steps](\\docs\\apps#next-steps)\n\nPlatform [Deployment](\\docs\\platform\\deployment)\n\n# Inngest Apps\n\nIn Inngest, apps map directly to your projects or services. When you serve your functions using our serve API handler, you are hosting a new Inngest app. With Inngest apps, your dashboard reflects your code organization better.\n\nIt's important to note that apps are synced to one environment. You can sync any number of apps to one single environment using different Inngest Clients.\n\nThe diagram below shows how each environment can have multiple apps which can have multiple functions each:\n\nDiagram showing multiple environments, each with various apps. Within these apps, there are numerous functions\n\n<!-- image -->\n\nDiagram showing multiple environments, each with various apps. Within these apps, there are numerous functions\n\n<!-- image -->\n\n## [Apps in SDK](\\docs\\apps#apps-in-sdk)\n\nEach [`serve()`](\\docs\\learn\\serving-inngest-functions) [API handler](\\docs\\learn\\serving-inngest-functions) will generate an app in Inngest upon syncing.\n\nThe app ID is determined by the ID passed to the serve handler from the Inngest client.\n\nFor example, the code below will create an Inngest app called \"example-app\" which contains one function:\n\nNode.js Python (Flask) Python (FastAPI) Go (HTTP)\n\nCopy Copied\n\n```\nimport { Inngest } from \"inngest\" ;\nimport { serve } from \"inngest/next\" ; // or your preferred framework\nimport { sendSignupEmail } from \"./functions\" ;\n\nconst inngest = new Inngest ({ id : \"example-app\" });\n\nserve ({\nclient : inngest ,\nfunctions : [sendSignupEmail] ,\n});\n```\n\nEach app ID is considered a persistent identifier. Changing your client ID will result in Inngest not recognizing the app ID during the ne",
+      "char_count": 2048
+    },
+    {
+      "index": 1,
+      "start_char": 1948,
+      "end_char": 3846,
+      "content": " identifier. Changing your client ID will result in Inngest not recognizing the app ID during the next sync. As a result, Inngest will create a new app.\n\n## [Apps in Inngest Cloud](\\docs\\apps#apps-in-inngest-cloud)\n\nIn the image below, you can see the apps page in Inngest Cloud. Check the [Working with Apps Guide](\\docs\\apps\\cloud) for more information about how to sync apps in Inngest Cloud.\n\nInngest Cloud screen with apps\n\n<!-- image -->\n\n## [Apps in Inngest Dev Server](\\docs\\apps#apps-in-inngest-dev-server)\n\nIn the image below, you can see the apps page in Inngest Dev Server. For more information on how to sync apps in Inngest Dev Server check the [Local Development Guide](\\docs\\local-development#connecting-apps-to-the-dev-server) .\n\nInngest Dev Server screen with no events recorded\n\n<!-- image -->\n\n## [Informing Inngest about your apps](\\docs\\apps#informing-inngest-about-your-apps)\n\nTo integrate your code hosted on another platform with Inngest, you need to inform Inngest about the location of your app and functions.\n\nFor example, imagine that your `serve()` handler is located at `/api/inngest` , and your domain is `myapp.com` . In this scenario, you will need to sync your app to inform Inngest that your apps and functions are hosted at `https://myapp.com/api/inngest` .\n\nTo ensure that your functions are up to date, you need to resync your app with Inngest whenever you deploy new function configurations to your hosted platform.\n\nInngest uses the [`INNGEST_SIGNING_KEY`](\\docs\\platform\\signing-keys?ref=deploy) to securely communicate with your application and identify the correct environment to sync your app.\n\n## [Next Steps](\\docs\\apps#next-steps)\n\nTo continue your exploration, feel free to check out:\n\n- How to [work with Apps in the Dev Server](\\docs\\local-development#connecting-apps-to-the-dev-server)\n- How to [work with Apps in Inngest Cloud](\\docs\\apps\\cloud)",
+      "char_count": 1898
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_env-vars.md",
+  "title": "#### On this page",
+  "num_chunks": 3,
+  "total_chars": 7722,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Environment variables](\\docs\\reference\\python\\overview\\env-vars#environment-variables)\n- [INNGEST](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[API](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[BASE](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[URL](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n- [INNGEST](\\docs\\reference\\python\\overview\\env-vars#inngest-dev)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-dev)\n[DEV](\\docs\\reference\\python\\overview\\env-vars#inngest-dev)\n- [INNGEST](\\docs\\reference\\python\\overview\\env-vars#inngest-env)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-env)\n[ENV](\\docs\\reference\\python\\overview\\env-vars#inngest-env)\n- [INNGEST](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[EVENT](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[API](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[BASE](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[URL](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n- [INNGEST](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\n[EVENT](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\n[KEY](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\n- [INNGEST](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\n[SIGNING](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\n[KEY](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\n- [INNGEST](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[SIGNING](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[KEY](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[FALLBACK](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\nReferences\n[Python SDK](\\docs\\reference\\python)",
+      "char_count": 2906,
+      "token_count": 910,
+      "metadata": {
+        "title": "#### On this page",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_env-vars.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_env-vars.md",
+        "file_name": "reference_python_overview_env-vars.md",
+        "file_size": 4031,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "97c1c7012aa18a4d9b9c1a7d25944a34af78d8c3b653c1b4de16ad6adf43a38d",
+        "author": null,
+        "created_at": "2025-10-13T00:01:07.506512",
+        "modified_at": "2025-10-13T00:01:07.507161",
+        "page_count": null,
+        "word_count": 409,
+        "extracted_at": "2025-10-13T20:04:46.569519",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 910,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Environment variables\nYou can use environment variables to control some configuration.",
+      "char_count": 86,
+      "token_count": 13,
+      "metadata": {
+        "title": "#### On this page",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_env-vars.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_env-vars.md",
+        "file_name": "reference_python_overview_env-vars.md",
+        "file_size": 4031,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "97c1c7012aa18a4d9b9c1a7d25944a34af78d8c3b653c1b4de16ad6adf43a38d",
+        "author": null,
+        "created_at": "2025-10-13T00:01:07.506512",
+        "modified_at": "2025-10-13T00:01:07.507161",
+        "page_count": null,
+        "word_count": 409,
+        "extracted_at": "2025-10-13T20:04:46.569519",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 13,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Environment variables\nINNGEST\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[API](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[BASE](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\n[URL](\\docs\\reference\\python\\overview\\env-vars#inngest-api-base-url)\nOrigin for the Inngest API. Your app registers itself with this API.\n- Defaults to `https://api.inngest.com/` .\n- Can be overwritten by specifying `api_base_url` when calling a `serve` function.\nYou likely won't need to set this.\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-dev)\n[DEV](\\docs\\reference\\python\\overview\\env-vars#inngest-dev)\n- Set to `1` to disable [production mode](\\docs\\reference\\python\\overview\\prod-mode) .\n- Set to a URL if the Dev Server is not hosted at `http://localhost:8288` . For example, you may need to set it to `http://host.docker.internal:8288` when running the Dev Server within a Docker container (learn more in our [Docker guide](\\docs\\guides\\development-with-docker) ). Please note that URLs are not supported below version `0.4.6` .\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-env)\n[ENV](\\docs\\reference\\python\\overview\\env-vars#inngest-env)\nUse this to tell Inngest which\n[branch environment](\\docs\\platform\\environments#branch-environments)\nyou want to send and receive events from.\nCan be overwritten by manually specifying\n```\nenv\n```\non the Inngest client.\nThis is detected and set automatically for some platforms, but others will need manual action. See our\n[configuring branch environments](\\docs\\platform\\environments#configuring-branch-environments)\nguide to check if you need this.\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[EVENT](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[API](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[BASE](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\n[URL](\\docs\\reference\\python\\overview\\env-vars#inngest-event-api-base-url)\nOrigin for the Inngest Event API. The Inngest client sends events to this API.\n- Defaults to `https://inn.gs/` .\n- If set, it should be an origin (protocol, host, and optional port). For example, `http://localhost:8288` or `https://my.tunnel.com` are both valid.\n- Can be overwritten by specifying `base_url` when creating the Inngest client.\nYou likely won't need to set this. But some use cases include:\n- Forcing a production build of your app to use the Inngest Dev Server instead of Inngest Cloud for local integration testing. You might want `http://localhost:8288` for that.\n- Using the Dev Server within a Docker container. You might want `http://host.docker.internal:8288` for that. Learn more in our [Docker guide](\\docs\\guides\\development-with-docker) .\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\n[EVENT](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\n[KEY](\\docs\\reference\\python\\overview\\env-vars#inngest-event-key)\nThe secret key used to send events to Inngest.\n- Can be overwritten by specifying `event_key` when creating the Inngest client.\n- Not needed when using the Dev Server.\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\n[SIGNING](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\n[KEY](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key)\nThe secret key used to sign requests to and from Inngest, mitigating the risk of man-in-the-middle attacks.\n- Can be overwritten by specifying `signing_key` when calling a `serve` function.\n- Not needed when using the Dev Server.\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[SIGNING](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[KEY](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[_](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\n[FALLBACK](\\docs\\reference\\python\\overview\\env-vars#inngest-signing-key-fallback)\nOnly used during signing key rotation. When it's specified, the SDK will automatically retry signing key auth failures with the fallback key.\nAvailable in version\n```\n0.3.9\n```\nand above.",
+      "char_count": 4730,
+      "token_count": 1320,
+      "metadata": {
+        "title": "#### On this page",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_env-vars.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_python_overview_env-vars.md",
+        "file_name": "reference_python_overview_env-vars.md",
+        "file_size": 4031,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "97c1c7012aa18a4d9b9c1a7d25944a34af78d8c3b653c1b4de16ad6adf43a38d",
+        "author": null,
+        "created_at": "2025-10-13T00:01:07.506512",
+        "modified_at": "2025-10-13T00:01:07.507161",
+        "page_count": null,
+        "word_count": 409,
+        "extracted_at": "2025-10-13T20:04:46.569519",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 1320,
+        "has_context": true
+      }
+    }
+  ]
+}

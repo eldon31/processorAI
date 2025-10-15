@@ -1,0 +1,32 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Run_formatting:chunk:0",
+    "content": "uv run ruff format src tests\n```\n**Sources:** [.github/workflows/run-tests.yml:50-54](), [.github/workflows/run-static.yml:44-54](), [.pre-commit-config.yaml:27-34]()\n\n## Troubleshooting Common Issues\n\n### Dependency Resolution Issues\n\nIf UV fails to resolve dependencies, ensure the lockfile is up to date:\n\n```bash\n# Update lockfile\nuv lock\n\n# Force reinstall with updated lockfile\nuv sync --frozen\n```",
+    "metadata": {
+      "source": "fastmcp\\Run_formatting.md",
+      "file_name": "Run_formatting.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 2,
+      "char_count": 404,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.711971"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Run_formatting:chunk:1",
+    "content": "Verify Python version compatibility if installation fails:",
+    "metadata": {
+      "source": "fastmcp\\Run_formatting.md",
+      "file_name": "Run_formatting.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 2,
+      "char_count": 58,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.711984"
+    }
+  }
+]

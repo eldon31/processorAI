@@ -1,0 +1,32 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_customization:chunk:0",
+    "content": "```\n**Sources:** [src/fastmcp/server/openapi.py:798-812](), [src/fastmcp/server/openapi.py:930-939]()\n\n### Output Schema Generation\n\nThe system extracts output schemas from OpenAPI response definitions for structured tool results:\n\n```python\ndef extract_output_schema_from_responses(\n    responses: dict[str, ResponseInfo],\n    schema_definitions: dict[str, JsonSchema],\n    openapi_version: str | None\n) -> dict[str, Any] | None:\n    # Prioritizes 2xx responses\n    # Merges multiple response schemas\n    # Adds x-fastmcp-wrap-result for structured output control\n```\n**Sources:**\n[src/fastmcp/utilities/openapi.py:1098-1200](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_customization.md",
+      "file_name": "Component_customization.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 2,
+      "char_count": 629,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.154021"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_customization:chunk:1",
+    "content": "Comprehensive error handling for HTTP requests, parameter validation, and schema resolution:\n- **Parameter Validation** : Missing required path parameters raise `ToolError`\n- **HTTP Errors** : 4xx/5xx responses converted to `ValueError` with detailed messages\n- **Schema Resolution** : External references raise clear error messages\n- **Connection Errors** : Network issues converted to `ValueError`\n**Sources:**\n[src/fastmcp/server/openapi.py:504-520](.)\n,\n[src/fastmcp/server/openapi.py:623-639](.)\n,\n[tests/utilities/openapi/test_openapi_advanced.py:655-665](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_customization.md",
+      "file_name": "Component_customization.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 2,
+      "char_count": 564,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.154037"
+    }
+  }
+]

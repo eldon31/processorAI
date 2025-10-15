@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_steps-workflows_wait-for-event.md",
+  "title": "Wait for an Event",
+  "num_chunks": 3,
+  "total_chars": 5658,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "Wait for an Event\nOne step method is available to pause a Function's run until a given event is sent.\nThis is a useful pattern to react to specific user actions (for example, implement \"Human in the loop\" in AI Agent workflows).\nTypeScript Go Python\nUse\n```\nstep.waitForEvent()\n```\nto wait for a particular event to be received before continuing. It returns a\n```\nPromise\n```\nthat is resolved with the received event or\n```\nnull\n```\nif the event is not received within the timeout.\nCopy Copied\n```\nexport default inngest .createFunction (\n{ id : \"send-onboarding-nudge-email\" } ,\n{ event : \"app/account.created\" } ,\nasync ({ event , step }) => {\nconst onboardingCompleted = await step .waitForEvent (\n\"wait-for-onboarding-completion\" ,\n{ event : \"app/onboarding.completed\" , timeout : \"3d\" , match : \"data.userId\" }\n);\nif ( ! onboardingCompleted) {\n// if no event is received within 3 days, onboardingCompleted will be null\n} else {\n// if the event is received, onboardingCompleted will be the event payload object\n}\n}\n);\n```\nCheck out the\n[```\nstep.waitForEvent()\n```](\\docs\\reference\\functions\\step-wait-for-event)\n[TypeScript reference.](\\docs\\reference\\functions\\step-wait-for-event)\nTo add a simple time based delay to your code, use\n[```\nstep.sleep()\n```](\\docs\\reference\\functions\\step-sleep)\ninstead.",
+      "char_count": 1308,
+      "token_count": 333,
+      "metadata": {
+        "title": "Wait for an Event",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_steps-workflows_wait-for-event.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_steps-workflows_wait-for-event.md",
+        "file_name": "features_inngest-functions_steps-workflows_wait-for-event.md",
+        "file_size": 6065,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "845f21fd574cf1ddbcf5e4c1d79357b090412c5a756b04da7686528de401bd4f",
+        "author": null,
+        "created_at": "2025-10-12T23:58:57.087156",
+        "modified_at": "2025-10-12T23:58:57.087697",
+        "page_count": null,
+        "word_count": 922,
+        "extracted_at": "2025-10-13T20:03:25.451983",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 333,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Wait for an Event\nExamples\nDynamic functions that wait for additional user actions\nBelow is an example of an Inngest function that creates an Intercom or Customer.io-like drip email campaign, customized based on\nCopy Copied\n```\nexport default inngest .createFunction (\n{ id : \"onboarding-email-drip-campaign\" } ,\n{ event : \"app/account.created\" } ,\nasync ({ event , step }) => {\n// Send the user the welcome email immediately\nawait step .run ( \"send-welcome-email\" , async () => {\nawait sendEmail ( event . user .email , \"welcome\" );\n});\n\n// Wait up to 3 days for the user to complete the final onboarding step\n// If the event is received within these 3 days, onboardingCompleted will be the\n// event payload itself, if not it will be null\nconst onboardingCompleted = await step .waitForEvent ( \"wait-for-onboarding\" , {\nevent : \"app/onboarding.completed\" ,\ntimeout : \"3d\" ,\n// The \"data.userId\" must match in both the \"app/account.created\" and\n// the \"app/onboarding.completed\" events\nmatch : \"data.userId\" ,\n});\n\n// If the user has not completed onboarding within 3 days, send them a nudge email\nif ( ! onboardingCompleted) {\nawait step .run ( \"send-onboarding-nudge-email\" , async () => {\nawait sendEmail ( event . user .email , \"onboarding_nudge\" );\n});\n} else {\n// If they have completed onboarding, send them a tips email\nawait step .run ( \"send-tips-email\" , async () => {\nawait sendEmail ( event . user .email , \"new_user_tips\" );\n});\n}\n}\n);\n```",
+      "char_count": 1453,
+      "token_count": 370,
+      "metadata": {
+        "title": "Wait for an Event",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_steps-workflows_wait-for-event.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_steps-workflows_wait-for-event.md",
+        "file_name": "features_inngest-functions_steps-workflows_wait-for-event.md",
+        "file_size": 6065,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "845f21fd574cf1ddbcf5e4c1d79357b090412c5a756b04da7686528de401bd4f",
+        "author": null,
+        "created_at": "2025-10-12T23:58:57.087156",
+        "modified_at": "2025-10-12T23:58:57.087697",
+        "page_count": null,
+        "word_count": 922,
+        "extracted_at": "2025-10-13T20:03:25.451983",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 370,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Wait for an Event\nExamples\nAdvanced event matching with if\nFor more complex functions, you may want to match the event payload against some other value. This could be a hard coded value like a billing plan name, a greater than filter for a number value or a value returned from a previous step.\nIn this example, we have built an AI blog post generator which returns three ideas to the user to select. Then when the user selects an idea from that batch of ideas, we generate an entire blog post and save it.\nCopy Copied\n```\nexport default inngest .createFunction (\n{ id : \"generate-blog-post-with-ai\" } ,\n{ event : \"ai/post.generator.requested\" } ,\nasync ({ event , step }) => {\n// Generate a number of suggestions for topics with OpenAI\nconst generatedTopics = await step .run ( \"generate-topic-ideas\" , async () => {\nconst completion = await openai .createCompletion ({\nmodel : \"text-davinci-003\" ,\nprompt : helpers .topicIdeaPromptWrapper ( event . data .prompt) ,\nn : 3 ,\n});\nreturn {\ncompletionId : completion . data .id ,\ntopics : completion . data .choices ,\n};\n});\n\n// Send the topics to the user via Websockets so they can select one\n// Also send the completion id so we can match that later\nawait step .run ( \"send-user-topics\" , () => {\npusher .sendToUser ( event . data .userId , \"topics_generated\" , {\nsessionId : event . data .sessionId ,\ncompletionId : generatedTopics .completionId ,\ntopics : generatedTopics .topics ,\n});\n});\n\n// Wait up to 5 minutes for the user to select a topic\n// Ensuring the topic is from this batch of suggestions generated\nconst topicSelected = await step .waitForEvent ( \"wait-for-topic-selection\" , {\nevent : \"ai/post.topic.selected\" ,\ntimeout : \"5m\" ,\n// \"async\" is the \"ai/post.topic.selected\" event here:\nif : `async.data.completionId == \" ${ generatedTopics .completionId } \"` ,\n});\n\n// If the user selected a topic within 5 minutes, \"topicSelected\" will\n// be the event payload, otherwise it is null\nif (topicSelected) {\n// Now that we've confirmed the user selected their topic idea from\n// this batch of suggestions, let's generate a blog post\nawait step .run ( \"generate-blog-post-draft\" , async () => {\nconst completion = await openai .createCompletion ({\nmodel : \"text-davinci-003\" ,\nprompt : helpers .blogPostPromptWrapper ( topicSelected . data .prompt) ,\n});\n// Do something with the blog post draft like save it or something else...\nawait blog .saveDraft ( completion . data .choices[ 0 ]);\n});\n}\n}\n);\n```\n**Preventing race conditions**\nThe \"wait for event\" method begins listening for new events from when the code is executed. This means that events sent before the function is executed will not be handled by the wait.\nTo avoid race condition, always double-check the flow of events going through your functions.\n*Note: The \"wait for event\" mechanism will soon provide a \"lookback\" feature, including events from a given past timeframe.*",
+      "char_count": 2897,
+      "token_count": 683,
+      "metadata": {
+        "title": "Wait for an Event",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_steps-workflows_wait-for-event.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_steps-workflows_wait-for-event.md",
+        "file_name": "features_inngest-functions_steps-workflows_wait-for-event.md",
+        "file_size": 6065,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "845f21fd574cf1ddbcf5e4c1d79357b090412c5a756b04da7686528de401bd4f",
+        "author": null,
+        "created_at": "2025-10-12T23:58:57.087156",
+        "modified_at": "2025-10-12T23:58:57.087697",
+        "page_count": null,
+        "word_count": 922,
+        "extracted_at": "2025-10-13T20:03:25.451983",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 683,
+        "has_context": true
+      }
+    }
+  ]
+}

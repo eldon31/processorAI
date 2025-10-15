@@ -1,0 +1,287 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:0",
+    "content": "The FastMCP Client System provides a programmatic interface for interacting with Model Context Protocol (MCP) servers through a well-typed, Pythonic API. This system handles protocol operations, connection management, and session lifecycle while abstracting away transport-specific implementation details.\nFor information about creating and configuring MCP servers, see\n[FastMCP Server Core](#2)\n. For details about HTTP server deployment and authentication, see\n[HTTP Server and Deployment](#6)\n.",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 19,
+      "char_count": 497,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838836"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:1",
+    "content": "The FastMCP Client System implements a separation of concerns between protocol handling and connection management through two primary components:\n```\nClient\n```\n```\nClientTransport\n```\n,\n```\nSSETransport\n```\n,\n```\nStreamableHttpTransport\n```\n,\n```\nStdioTransport\n```\n,\n```\nFastMCPTransport\n```\nClient, Responsibility = MCP protocol operations, session management, callback handling. Client, Key Classes = ",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 19,
+      "char_count": 405,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838850"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:2",
+    "content": "```\ngraph TB\n    subgraph \"Client Layer\"\n        Client[\"Client<br/>• Protocol operations<br/>• Session lifecycle<br/>• Callback handling<br/>• Type conversion\"]\n    end\n    \n    subgraph \"Transport Layer\"\n        Transport[\"ClientTransport (Abstract)\"]\n        \n        StdioTransport[\"StdioTransport<br/>• Subprocess management<br/>• Environment isolation\"]\n        HttpTransports[\"HTTP Transports<br/>• StreamableHttpTransport<br/>• SSETransport\"]\n        FastMCPTransport[\"FastMCPTransport<br/>• In-memory communication\"]\n        MCPConfigTransport[\"MCPConfigTransport<br/>• Multi-server composition\"]\n        \n        Transport --> StdioTransport\n        Transport --> HttpTransports\n        Transport --> FastMCPTransport\n        Transport --> MCPConfigTransport\n    end\n    \n    Client --> Transport\n```\n**Sources**\n:\n[src/fastmcp/client/client.py:90-149](.)\n,\n[src/fastmcp/client/transports.py:71-115](.)\nThe\n```\nClient\n```\nclass uses generic typing to preserve specific transport types, enabling transport-specific configuration while maintaining a consistent protocol interface.",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 19,
+      "char_count": 1088,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838856"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:3",
+    "content": "The client automatically selects appropriate transports based on input type:\n```\nflowchart TD\n    Input[\"Client Input\"] --> FastMCPCheck{\"FastMCP instance?\"}\n    FastMCPCheck -->|Yes| FastMCPTransport[\"FastMCPTransport<br/>In-memory communication\"]\n    \n    FastMCPCheck -->|No| PathCheck{\"File path?\"}\n    PathCheck -->|.py extension| PythonStdio[\"PythonStdioTransport<br/>Python subprocess\"]\n    PathCheck -->|.js extension| NodeStdio[\"NodeStdioTransport<br/>Node.js subprocess\"]\n    \n    PathCheck -->|No| URLCheck{\"HTTP URL?\"}\n    URLCheck -->|Yes| HTTPTransport[\"StreamableHttpTransport<br/>or SSETransport\"]\n    \n    URLCheck -->|No| ConfigCheck{\"MCPConfig dict?\"}\n    ConfigCheck -->|Yes| ConfigTransport[\"MCPConfigTransport<br/>Multi-server client\"]\n```\n**Sources**\n:\n[src/fastmcp/client/transports.py:888-924](.)\n,\n[src/fastmcp/client/client.py:150-221](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 19,
+      "char_count": 865,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838862"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:4",
+    "content": "The\n```\nClient\n```\nimplements a sophisticated session management system supporting reentrant context managers and concurrent usage patterns.",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 19,
+      "char_count": 140,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838868"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:5",
+    "content": "```\ngraph LR\n    subgraph \"ClientSessionState\"\n        Session[\"session: ClientSession | None\"]\n        Counter[\"nesting_counter: int\"]\n        Lock[\"lock: anyio.Lock\"]\n        Task[\"session_task: asyncio.Task | None\"]\n        ReadyEvent[\"ready_event: anyio.Event\"]\n        StopEvent[\"stop_event: anyio.Event\"]\n        InitResult[\"initialize_result: InitializeResult | None\"]\n    end\n    \n    subgraph \"Session Runner Task\"\n        Runner[\"_session_runner()<br/>• Background session management<br/>• Connection lifecycle<br/>• Event coordination\"]\n    end\n    \n    Task --> Runner\n    ReadyEvent --> Runner\n    StopEvent --> Runner\n```\n**Sources**\n:\n[src/fastmcp/client/client.py:73-88](.)\n,\n[src/fastmcp/client/client.py:451-474](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 19,
+      "char_count": 733,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838874"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:6",
+    "content": "The client manages connection lifecycle through reference counting and background session management:\n```\nsequenceDiagram\n    participant App as \"Application Code\"\n    participant Client as \"Client.__aenter__\"\n    participant State as \"ClientSessionState\"\n    participant Runner as \"Session Runner Task\"\n    participant Transport as \"Transport\"\n\n    App->>Client: \"async with client\"\n    Client->>State: \"Acquire lock\"\n    \n    alt \"First connection\"\n        Client->>State: \"Create events, start task\"\n        Client->>Runner: \"Start _session_runner()\"\n        Runner->>Transport: \"connect_session()\"\n        Runner->>State: \"Set ready_event\"\n    else \"Nested connection\"\n        Client->>State: \"Wait for ready_event\"\n    end\n    \n    Client->>State: \"Increment nesting_counter\"\n    Client-->>App: \"Return self\"\n    \n    Note over App: \"Use client methods\"\n    \n    App->>Client: \"Exit context\"\n    Client->>State: \"Acquire lock, decrement counter\"\n    \n    alt \"Last connection\"\n        Client->>State: \"Set stop_event\"\n        Runner->>State: \"Clean up session\"\n    end\n```\n**Sources**\n:\n[src/fastmcp/client/client.py:367-411](.)\n,\n[src/fastmcp/client/client.py:413-449](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 19,
+      "char_count": 1177,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838879"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:7",
+    "content": "All transports implement the\n```\nClientTransport\n```\nabstract base class:\n```\nclassDiagram\n    class ClientTransport {\n        <<abstract>>\n        +connect_session(**kwargs) AsyncIterator[ClientSession]\n        +close() None\n        +_set_auth(auth) None\n    }\n    \n    class StdioTransport {\n        +command: str\n        +args: list[str]\n        +env: dict | None\n        +keep_alive: bool\n        +connect() ClientSession\n        +disconnect() None\n    }\n    \n    class StreamableHttpTransport {\n        +url: str\n        +headers: dict\n        +auth: httpx.Auth\n        +sse_read_timeout: timedelta\n    }\n    \n    class FastMCPTransport {\n        +server: FastMCP\n        +raise_exceptions: bool\n    }\n    \n    class MCPConfigTransport {\n        +config: MCPConfig\n        +transport: ClientTransport\n        +_composite_server: FastMCP\n    }\n    \n    ClientTransport <|-- StdioTransport\n    ClientTransport <|-- StreamableHttpTransport\n    ClientTransport <|-- FastMCPTransport\n    ClientTransport <|-- MCPConfigTransport\n```\n**Sources**\n:\n[src/fastmcp/client/transports.py:71-115](.)\n,\n[src/fastmcp/client/transports.py:301-417](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 19,
+      "char_count": 1138,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838885"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:8",
+    "content": "STDIO transports implement environment isolation for security:\n```\ngraph LR\n    subgraph \"Client Process\"\n        ClientEnv[\"Client Environment<br/>API_KEY=secret<br/>PATH=/usr/bin\"]\n    end\n    \n    subgraph \"Server Subprocess\"\n        ServerEnv[\"Isolated Environment<br/>Only explicitly passed vars\"]\n        StdioServer[\"MCP Server Process\"]\n        ServerEnv --> StdioServer\n    end\n    \n    ClientEnv -.->|\"Explicit env parameter\"| ServerEnv\n    ClientEnv -->|\"stdin/stdout pipes\"| StdioServer\n```\n**Sources**\n:\n[src/fastmcp/client/transports.py:301-417](.)\n,\n[src/fastmcp/client/transports.py:465-508](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 19,
+      "char_count": 610,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838890"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:9",
+    "content": "The\n```\nClient\n```\nclass provides methods for all MCP protocol operations, with both raw protocol and convenience variants:",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 19,
+      "char_count": 123,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838896"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:10",
+    "content": "```\nlist_tools()\n```\n```\nlist[mcp.types.Tool]\n```\n```\nlist_tools_mcp()\n```\n```\nmcp.types.ListToolsResult\n```\n```\ncall_tool()\n```\n```\nCallToolResult\n```\n```\ncall_tool_mcp()\n```\n```\nmcp.types.CallToolResult\n```\n, Return Type = . , Description = \n**Sources**\n:\n[src/fastmcp/client/client.py:763-895](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 19,
+      "char_count": 299,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838901"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:11",
+    "content": "```\nlist_resources()\n```\n```\nlist[mcp.types.Resource]\n```\n```\nlist_resource_templates()\n```\n```\nlist[mcp.types.ResourceTemplate]\n```\n```\nread_resource()\n```\n```\nlist[mcp.types.TextResourceContents \\| BlobResourceContents]\n```\n, Return Type = . , Description = \n**Sources**\n:\n[src/fastmcp/client/client.py:525-636](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 19,
+      "char_count": 316,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838907"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:12",
+    "content": "```\nlist_prompts()\n```\n```\nlist[mcp.types.Prompt]\n```\n```\nget_prompt()\n```\n```\nmcp.types.GetPromptResult\n```\n, Return Type = . , Description = \n**Sources**\n:\n[src/fastmcp/client/client.py:639-716](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 19,
+      "char_count": 199,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838912"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:13",
+    "content": "The client provides structured result handling through the\n```\nCallToolResult\n```\ndataclass:\n```\ngraph TB\n    subgraph \"Tool Call Processing\"\n        CallTool[\"call_tool()\"] --> ParseResult[\"Parse MCP Result\"]\n        ParseResult --> CheckError{\"isError?\"}\n        \n        CheckError -->|Yes| RaiseError[\"Raise ToolError\"]\n        CheckError -->|No| CheckStructured{\"Has structured content?\"}\n        \n        CheckStructured -->|Yes| ParseSchema[\"Parse with JSON schema\"]\n        CheckStructured -->|No| ReturnContent[\"Return text content\"]\n        \n        ParseSchema --> TypeConvert[\"Convert to Python types\"]\n        \n        ReturnContent --> Result[\"CallToolResult\"]\n        TypeConvert --> Result\n    end\n```\n**Sources**\n:\n[src/fastmcp/client/client.py:826-894](.)\n,\n[src/fastmcp/client/client.py:897-903](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 13,
+      "total_chunks": 19,
+      "char_count": 817,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838918"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:14",
+    "content": "The client supports multiple callback handlers for server interactions:\n```\nLogHandler\n```\n```\n(LogMessage) -> Awaitable[None]\n```\n```\nProgressHandler\n```\n```\n(float, float?, str?) -> Awaitable[None]\n```\n```\nSamplingHandler\n```\n```\nRootsHandler\n```\n```\n() -> RootsList\n```\n, Purpose = . , Interface = \n**Sources**\n:\n[src/fastmcp/client/client.py:210-267](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 14,
+      "total_chunks": 19,
+      "char_count": 357,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838923"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:15",
+    "content": "The client constructor uses overloaded signatures to support transport inference while maintaining type safety:\n```\ngraph LR\n    subgraph \"Constructor Overloads\"\n        TransportT[\"Client[T](transport: T)\"]\n        URLOverload[\"Client[HttpTransport](url: AnyUrl)\"]\n        FastMCPOverload[\"Client[FastMCPTransport](server: FastMCP)\"]\n        PathOverload[\"Client[StdioTransport](path: Path)\"]\n        ConfigOverload[\"Client[MCPConfigTransport](config: MCPConfig)\"]\n    end\n    \n    subgraph \"Transport Creation\"\n        InferTransport[\"infer_transport()\"]\n    end\n    \n    URLOverload --> InferTransport\n    FastMCPOverload --> InferTransport\n    PathOverload --> InferTransport\n    ConfigOverload --> InferTransport\n```\n**Sources**\n:\n[src/fastmcp/client/client.py:150-221](.)\n,\n[src/fastmcp/client/transports.py:888-924](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 15,
+      "total_chunks": 19,
+      "char_count": 825,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838928"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:16",
+    "content": "The client system integrates with FastMCP's server composition patterns through several mechanisms:",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 16,
+      "total_chunks": 19,
+      "char_count": 99,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838934"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:17",
+    "content": "```\ngraph TB\n    subgraph \"Proxy Server Pattern\"\n        ProxyServer[\"FastMCPProxy\"] --> ProxyClient[\"Client instance\"]\n        ProxyClient --> Transport[\"ClientTransport\"]\n        Transport --> BackendServer[\"Backend MCP Server\"]\n    end\n    \n    subgraph \"Client Access\"\n        UserClient[\"User Client\"] --> ProxyServer\n    end\n```\n**Sources**\n:\n[docs/servers/proxy.mdx:278-329](.)\n,\n[examples/in_memory_proxy_example.py:40-50](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 17,
+      "total_chunks": 19,
+      "char_count": 433,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838940"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Client_System:chunk:18",
+    "content": "The\n```\nMCPConfigTransport\n```\nenables single-client access to multiple servers through automatic composition:\n```\ngraph LR\n    subgraph \"MCPConfig Client\"\n        Client[\"Client\"] --> MCPConfigTransport[\"MCPConfigTransport\"]\n        MCPConfigTransport --> CompositeServer[\"FastMCP Composite\"]\n    end\n    \n    subgraph \"Backend Servers\"\n        CompositeServer --> ServerA[\"Weather Server<br/>weather_* tools\"]\n        CompositeServer --> ServerB[\"Calendar Server<br/>calendar_* tools\"]\n    end\n```\n**Sources**\n:\n[src/fastmcp/client/transports.py:817-887](.)\n,\n[docs/clients/client.mdx:124-142](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Client_System.md",
+      "file_name": "FastMCP_Client_System.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 18,
+      "total_chunks": 19,
+      "char_count": 598,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:59.838945"
+    }
+  }
+]

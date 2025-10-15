@@ -1,0 +1,257 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:0",
+    "content": "This document covers the FastMCP component system, which provides a unified framework for managing Tools, Resources, Prompts, and Resource Templates. It explains how these components are created, registered, managed, and composed within FastMCP servers.\nFor information about server composition and mounting mechanisms, see\n[Server Composition and Proxying](#2.3)\n. For details about dependency injection and the Context system, see\n[Context System and Dependencies](#2.2)\n.",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 17,
+      "char_count": 474,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846333"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:1",
+    "content": "FastMCP organizes all server capabilities into four main component types, each sharing common functionality through a base class architecture.",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 17,
+      "char_count": 142,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846348"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:2",
+    "content": "```\ngraph TD\n    FastMCPComponent[\"FastMCPComponent<br/>src/fastmcp/utilities/components.py\"]\n    \n    subgraph \"Tool Components\"\n        Tool[\"Tool<br/>src/fastmcp/tools/tool.py\"]\n        FunctionTool[\"FunctionTool<br/>src/fastmcp/tools/tool.py\"] \n        TransformedTool[\"TransformedTool<br/>src/fastmcp/tools/tool_transform.py\"]\n    end\n    \n    subgraph \"Resource Components\"\n        Resource[\"Resource<br/>src/fastmcp/resources/resource.py\"]\n        FunctionResource[\"FunctionResource<br/>src/fastmcp/resources/resource.py\"]\n        ResourceTemplate[\"ResourceTemplate<br/>src/fastmcp/resources/template.py\"]\n        FunctionResourceTemplate[\"FunctionResourceTemplate<br/>src/fastmcp/resources/template.py\"]\n    end\n    \n    subgraph \"Prompt Components\"\n        Prompt[\"Prompt<br/>src/fastmcp/prompts/prompt.py\"]\n        FunctionPrompt[\"FunctionPrompt<br/>src/fastmcp/prompts/prompt.py\"]\n    end\n    \n    FastMCPComponent --> Tool\n    FastMCPComponent --> Resource\n    FastMCPComponent --> ResourceTemplate\n    FastMCPComponent --> Prompt\n    \n    Tool --> FunctionTool\n    Tool --> TransformedTool\n    Resource --> FunctionResource\n    ResourceTemplate --> FunctionResourceTemplate\n    Prompt --> FunctionPrompt\n```\n**Sources**\n:\n[src/fastmcp/utilities/components.py:28-125](.)\n,\n[src/fastmcp/tools/tool.py:105-240](.)\n,\n[src/fastmcp/resources/resource.py:34-219](.)\n,\n[src/fastmcp/resources/template.py:53-314](.)\n,\n[src/fastmcp/prompts/prompt.py:65-262](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 17,
+      "char_count": 1463,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846354"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:3",
+    "content": "All FastMCP components inherit from\n```\nFastMCPComponent\n```\nand share these properties:\n```\nname\n```\n```\nstr\n```\n```\ntitle\n```\n```\nstr \\| None\n```\n```\ndescription\n```\n```\nstr \\| None\n```\n```\ntags\n```\n```\nset[str]\n```\n```\nmeta\n```\n```\ndict[str, Any] \\| None\n```\n```\nenabled\n```\n```\nbool\n```\n```\nkey\n```\n```\nstr\n```\n, Type = . , Purpose = \n**Sources**\n:\n[src/fastmcp/utilities/components.py:28-69](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 17,
+      "char_count": 399,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846360"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:4",
+    "content": "Each component type has a dedicated manager class that handles registration, retrieval, and execution. The managers follow a consistent pattern and support server composition through mounting.",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 17,
+      "char_count": 192,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846365"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:5",
+    "content": "```\ngraph TD\n    subgraph \"FastMCP Server\"\n        Server[\"FastMCP<br/>server instance\"]\n        \n        ToolManager[\"ToolManager<br/>_tool_manager\"]\n        ResourceManager[\"ResourceManager<br/>_resource_manager\"] \n        PromptManager[\"PromptManager<br/>_prompt_manager\"]\n        \n        Server --> ToolManager\n        Server --> ResourceManager\n        Server --> PromptManager\n    end\n    \n    subgraph \"Local Storage\"\n        LocalTools[\"_tools: dict[str, Tool]\"]\n        LocalResources[\"_resources: dict[str, Resource]\"]\n        LocalTemplates[\"_templates: dict[str, ResourceTemplate]\"]\n        LocalPrompts[\"_prompts: dict[str, Prompt]\"]\n        \n        ToolManager --> LocalTools\n        ResourceManager --> LocalResources\n        ResourceManager --> LocalTemplates\n        PromptManager --> LocalPrompts\n    end\n    \n    subgraph \"Mounted Servers\"\n        MountedServer1[\"MountedServer 1<br/>prefix: 'weather'\"]\n        MountedServer2[\"MountedServer 2<br/>prefix: 'db'\"]\n        \n        ToolManager --> MountedServer1\n        ToolManager --> MountedServer2\n        ResourceManager --> MountedServer1\n        ResourceManager --> MountedServer2\n        PromptManager --> MountedServer1\n        PromptManager --> MountedServer2\n    end\n    \n    subgraph \"Transformations\"\n        ToolTransformations[\"transformations:<br/>dict[str, ToolTransformConfig]\"]\n        ToolManager --> ToolTransformations\n    end\n```\n**Sources**\n:\n[src/fastmcp/tools/tool_manager.py:25-255](.)\n,\n[src/fastmcp/resources/resource_manager.py:28-344](.)\n,\n[src/fastmcp/prompts/prompt_manager.py:21-204](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 17,
+      "char_count": 1589,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846371"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:6",
+    "content": "Each manager provides these core operations:\n```\nadd_tool(tool)\n```\n```\nadd_resource(resource)\n```\n```\nadd_prompt(prompt)\n```\n```\nget_tool(key)\n```\n```\nread_resource(uri)\n```\n```\nget_prompt(key)\n```\n```\nlist_tools()\n```\n```\nlist_resources()\n```\n```\nlist_prompts()\n```\n```\ncall_tool(key, args)\n```\n```\ncreate_resource()\n```\n```\nrender_prompt(name, args)\n```\nAdd Component, Tool Manager = . Add Component, Resource Manager = . Add Component, Prompt Manager = \n**Sources**\n:\n[src/fastmcp/tools/tool_manager.py:108-254](.)\n,\n[src/fastmcp/resources/resource_manager.py:275-344](.)\n,\n[src/fastmcp/prompts/prompt_manager.py:91-204](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 17,
+      "char_count": 627,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846376"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:7",
+    "content": "FastMCP provides a consistent pattern for creating components from Python functions using static factory methods.",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 17,
+      "char_count": 113,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846381"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:8",
+    "content": "```\ngraph LR\n    subgraph \"Python Function\"\n        PyFunc[\"def my_function(args):<br/>    return result\"]\n    end\n    \n    subgraph \"Parsing & Validation\"\n        ParsedFunction[\"ParsedFunction.from_function()<br/>- Extract signature<br/>- Generate JSON schema<br/>- Validate constraints\"]\n    end\n    \n    subgraph \"Component Creation\"\n        ToolFromFunction[\"Tool.from_function()\"]\n        ResourceFromFunction[\"Resource.from_function()\"] \n        PromptFromFunction[\"Prompt.from_function()\"]\n        TemplateFromFunction[\"ResourceTemplate.from_function()\"]\n    end\n    \n    subgraph \"Component Instances\"\n        FunctionTool_[\"FunctionTool<br/>- parameters: JSON schema<br/>- output_schema: JSON schema<br/>- fn: Callable\"]\n        FunctionResource_[\"FunctionResource<br/>- uri: AnyUrl<br/>- mime_type: str<br/>- fn: Callable\"]\n        FunctionPrompt_[\"FunctionPrompt<br/>- arguments: PromptArgument[]<br/>- fn: Callable\"]\n        FunctionResourceTemplate_[\"FunctionResourceTemplate<br/>- uri_template: str<br/>- parameters: JSON schema<br/>- fn: Callable\"]\n    end\n    \n    PyFunc --> ParsedFunction\n    ParsedFunction --> ToolFromFunction\n    ParsedFunction --> ResourceFromFunction\n    ParsedFunction --> PromptFromFunction\n    ParsedFunction --> TemplateFromFunction\n    \n    ToolFromFunction --> FunctionTool_\n    ResourceFromFunction --> FunctionResource_\n    PromptFromFunction --> FunctionPrompt_\n    TemplateFromFunction --> FunctionResourceTemplate_\n```\n**Sources**\n:\n[src/fastmcp/tools/tool.py:354-491](.)\n,\n[src/fastmcp/resources/resource.py:168-219](.)\n,\n[src/fastmcp/prompts/prompt.py:156-262](.)\n,\n[src/fastmcp/resources/template.py:214-313](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 17,
+      "char_count": 1666,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846387"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:9",
+    "content": "All function-based components support automatic Context injection for accessing server capabilities:\n```\n# Context parameter is automatically detected and injected\ndef my_tool(query: str, ctx: Context) -> str:\n    ctx.logger.info(f\"Processing query: {query}\")\n    return f\"Result for {query}\"\n```\nThe parameter detection uses\n```\nfind_kwarg_by_type()\n```\nto identify Context parameters and excludes them from the component's public schema.\n**Sources**\n:\n[src/fastmcp/utilities/types.py:find_kwarg_by_type](.)\n,\n[src/fastmcp/tools/tool.py:407-412](.)\n,\n[src/fastmcp/resources/template.py:245-246](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 17,
+      "char_count": 598,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846392"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:10",
+    "content": "Tools can be transformed to create modified versions with different schemas, argument mappings, or custom behavior. This enables adaptation without code duplication.",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 17,
+      "char_count": 165,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846397"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:11",
+    "content": "```\ngraph TD\n    subgraph \"Original Tool\"\n        ParentTool[\"Tool<br/>name: 'search'<br/>args: {q, category}\"]\n    end\n    \n    subgraph \"Transformation Configuration\"\n        TransformConfig[\"ToolTransformConfig<br/>- name: 'find_products'<br/>- description: 'Search products'<br/>- arguments: ArgTransformConfig[]\"]\n        \n        ArgTransform1[\"ArgTransform<br/>q -> query<br/>description: 'Search query'\"]\n        ArgTransform2[\"ArgTransform<br/>category<br/>hide: true, default: 'products'\"]\n        \n        TransformConfig --> ArgTransform1\n        TransformConfig --> ArgTransform2\n    end\n    \n    subgraph \"Transform Function (Optional)\"\n        CustomFunction[\"async def custom_fn(query: str):<br/>    result = await forward(query=query)<br/>    return format_result(result)\"]\n    end\n    \n    subgraph \"Transformed Tool\"\n        TransformedTool_[\"TransformedTool<br/>name: 'find_products'<br/>args: {query}<br/>parent_tool: Tool<br/>forwarding_fn: Callable\"]\n    end\n    \n    ParentTool --> TransformedTool_\n    TransformConfig --> TransformedTool_\n    CustomFunction --> TransformedTool_\n    \n    subgraph \"Runtime Context\"\n        ForwardFunction[\"forward(**kwargs)<br/>- Maps transformed args<br/>- Calls parent tool\"]\n        ForwardRawFunction[\"forward_raw(**kwargs)<br/>- Direct parent call<br/>- No argument mapping\"]\n        \n        TransformedTool_ --> ForwardFunction\n        TransformedTool_ --> ForwardRawFunction\n    end\n```\n**Sources**\n:\n[src/fastmcp/tools/tool_transform.py:232-517](.)\n,\n[src/fastmcp/tools/tool_transform.py:37-91](.)\n,\n[src/fastmcp/tools/tool_transform.py:93-207](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 17,
+      "char_count": 1615,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846403"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:12",
+    "content": "The\n```\nArgTransform\n```\nclass provides fine-grained control over individual arguments:\n```\nname=\"new_name\"\n```\n```\nhide=True, default=\"constant\"\n```\n```\ndefault=42\n```\n```\ndefault_factory=lambda: time.time()\n```\n```\ntype=str\n```\n```\nrequired=True\n```\nRename, Purpose = Change argument name. Rename, Example = \n**Sources**\n:\n[src/fastmcp/tools/tool_transform.py:93-207](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 17,
+      "char_count": 372,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846408"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:13",
+    "content": "Managers support mounting other servers to create hierarchical component structures. This enables composition of multiple FastMCP servers into larger systems.",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 13,
+      "total_chunks": 17,
+      "char_count": 158,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846413"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:14",
+    "content": "```\ngraph TD\n    subgraph \"Component Manager\"\n        Manager[\"ToolManager/ResourceManager/PromptManager\"]\n    end\n    \n    subgraph \"Loading Methods\"\n        LoadViaServer[\"_load_components(via_server=True)<br/>Filtered Protocol Path<br/>For MCP requests\"]\n        LoadViaManager[\"_load_components(via_server=False)<br/>Manager-to-Manager Path<br/>Complete inventory\"]\n    end\n    \n    subgraph \"Local Components\"\n        LocalDict[\"_tools/_resources/_prompts<br/>Local component storage\"]\n    end\n    \n    subgraph \"Mounted Servers\"\n        MountedList[\"_mounted_servers: list[MountedServer]<br/>- server: FastMCP<br/>- prefix: str<br/>- resource_prefix_format\"]\n        \n        ChildServer1[\"Child Server 1<br/>Filtered via ._list_tools()\"]\n        ChildServer2[\"Child Server 2<br/>Direct via ._tool_manager\"]\n    end\n    \n    Manager --> LoadViaServer\n    Manager --> LoadViaManager\n    \n    LoadViaServer --> LocalDict\n    LoadViaServer --> ChildServer1\n    \n    LoadViaManager --> LocalDict  \n    LoadViaManager --> ChildServer2\n    \n    MountedList --> ChildServer1\n    MountedList --> ChildServer2\n    \n    subgraph \"Prefixing\"\n        PrefixLogic[\"if mounted.prefix:<br/>    prefixed_key = f'{prefix}_{key}'<br/>    component.key = prefixed_key\"]\n    end\n    \n    ChildServer1 --> PrefixLogic\n    ChildServer2 --> PrefixLogic\n```\n**Sources**\n:\n[src/fastmcp/tools/tool_manager.py:55-101](.)\n,\n[src/fastmcp/resources/resource_manager.py:72-190](.)\n,\n[src/fastmcp/prompts/prompt_manager.py:49-89](.)",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 14,
+      "total_chunks": 17,
+      "char_count": 1506,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846418"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:15",
+    "content": "Components support enable/disable operations and automatic notifications to trigger list change events in the MCP protocol.",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 15,
+      "total_chunks": 17,
+      "char_count": 123,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846423"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Component_System_Architecture:chunk:16",
+    "content": "Each component can be enabled or disabled, and state changes automatically notify the Context system:",
+    "metadata": {
+      "source": "fastmcp\\Component_System_Architecture.md",
+      "file_name": "Component_System_Architecture.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 16,
+      "total_chunks": 17,
+      "char_count": 101,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:55.846428"
+    }
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:From_server.py204-211:chunk:0",
+    "content": "if auth is NotSet:\nif fastmcp.settings.server_auth is not None:\nauth = fastmcp.settings.server_auth_class()\nelse:\nauth = None\n```\nSources: [src/fastmcp/server/server.py:204-211](), [src/fastmcp/server/auth/](), [src/fastmcp/settings.py:363-380]()\n\n## Testing and Development Framework\n\nFastMCP provides comprehensive testing utilities through direct server instance connections:\n\n### In-Memory Testing\n\nThe `FastMCPTransport` enables efficient testing without process management:\n\n```python\nasync with Client(server_instance) as client:\n    result = await client.call_tool(\"test_tool\", {})\n    assert result.data == expected_value\n```",
+    "metadata": {
+      "source": "fastmcp\\From_server.py204-211.md",
+      "file_name": "From_server.py204-211.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 2,
+      "char_count": 634,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.361529"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:From_server.py204-211:chunk:1",
+    "content": "The framework includes testing helpers in\n```\nfastmcp.utilities.tests\n```\n:\n- `caplog_for_fastmcp()` : FastMCP-specific log capture\n- `temporary_settings()` : Settings isolation for tests\nSources:\n[tests/server/test_server.py:14-67](.)\n,\n[src/fastmcp/utilities/tests.py](.)\n,\n[src/fastmcp/client/transports.py](.)",
+    "metadata": {
+      "source": "fastmcp\\From_server.py204-211.md",
+      "file_name": "From_server.py204-211.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 2,
+      "char_count": 313,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.361541"
+    }
+  }
+]

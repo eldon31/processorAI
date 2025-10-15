@@ -1,0 +1,182 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:0",
+    "content": "This document covers the automated infrastructure and workflows that maintain the FastMCP project, including AI-driven automation, documentation generation, issue management, and CI/CD pipelines. The infrastructure is primarily built around GitHub Actions workflows and integrates with external AI services for intelligent project maintenance.\nFor information about testing infrastructure and development workflows, see\n[Testing and Development Framework](#8)\n.",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 12,
+      "char_count": 461,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690329"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:1",
+    "content": "The core of FastMCP's infrastructure is the Marvin Context Protocol system, which provides AI-powered assistance for project maintenance, issue triage, and development tasks.",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 12,
+      "char_count": 174,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690345"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:2",
+    "content": "```\ngraph TD\n    subgraph \"Trigger Events\"\n        IssueComment[\"issue_comment (created)\"]\n        PRComment[\"pull_request_review_comment (created)\"]\n        PRReview[\"pull_request_review (submitted)\"]\n        PullRequest[\"pull_request (opened, edited)\"]\n        Issues[\"issues (opened, edited, assigned, labeled)\"]\n        Discussion[\"discussion (created, edited, labeled)\"]\n        DiscussionComment[\"discussion_comment (created)\"]\n    end\n\n    subgraph \"Marvin Workflow\"\n        TriggerCheck[\"Trigger Check<br/>/marvin phrase detection\"]\n        TokenGen[\"Generate Marvin App Token<br/>actions/create-github-app-token\"]\n        EnvSetup[\"Environment Setup<br/>- UV package manager<br/>- Python 3.12<br/>- pre-commit hooks\"]\n        MarvinExec[\"Claude Code Action<br/>anthropics/claude-code-action@beta\"]\n    end\n\n    subgraph \"Available Tools\"\n        WebSearch[\"WebSearch\"]\n        WebFetch[\"WebFetch\"]\n        BashTools[\"Bash Tools<br/>- uv:*<br/>- pre-commit:*<br/>- pytest:*<br/>- ruff:*<br/>- git:*<br/>- gh:*\"]\n        GitHubMCP[\"GitHub MCP Tools<br/>- add_issue_comment<br/>- create_issue<br/>- get_issue<br/>- update_pull_request<br/>- merge_pull_request\"]\n    end\n\n    subgraph \"Authentication\"\n        MarvinApp[\"Marvin GitHub App<br/>MARVIN_APP_ID<br/>MARVIN_APP_PRIVATE_KEY\"]\n        ClaudeAPI[\"Claude API<br/>ANTHROPIC_API_KEY\"]\n    end\n\n    IssueComment --> TriggerCheck\n    PRComment --> TriggerCheck\n    PRReview --> TriggerCheck\n    PullRequest --> TriggerCheck\n    Issues --> TriggerCheck\n    Discussion --> TriggerCheck\n    DiscussionComment --> TriggerCheck\n\n    TriggerCheck --> TokenGen\n    TokenGen --> EnvSetup\n    EnvSetup --> MarvinExec\n\n    MarvinExec --> WebSearch\n    MarvinExec --> WebFetch\n    MarvinExec --> BashTools\n    MarvinExec --> GitHubMCP\n\n    MarvinApp --> TokenGen\n    ClaudeAPI --> MarvinExec\n```\nThe main Marvin workflow is defined in\n[.github/workflows/marvin.yml:1-72](.)\nand triggers on various GitHub events when the\n```\n/marvin\n```\nphrase is detected. The workflow uses the\n```\nanthropics/claude-code-action@beta\n```\naction with extensive tool permissions for code analysis and repository interaction.\n**Sources:**\n[.github/workflows/marvin.yml:1-72](.)",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 12,
+      "char_count": 2205,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690352"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:3",
+    "content": "```\ngraph TD\n    subgraph \"Triage Triggers\"\n        NewIssue[\"issues: opened\"]\n        NewPR[\"pull_request_target: opened\"]\n        ManualTrigger[\"workflow_dispatch\"]\n    end\n\n    subgraph \"Triage Process\"\n        GetLabels[\"gh label list<br/>Retrieve available labels\"]\n        GetIssueDetails[\"mcp__github__get_issue<br/>Fetch issue/PR details\"]\n        GetComments[\"mcp__github__get_issue_comments<br/>Read discussion context\"]\n        GetLinkedIssues[\"mcp__github__get_issue<br/>Check referenced issues\"]\n        AnalyzeContent[\"Claude Analysis<br/>Apply labeling rules\"]\n        ApplyLabels[\"mcp__github__update_issue<br/>Apply selected labels\"]\n    end\n\n    subgraph \"Label Categories\"\n        CoreCategory[\"Core Categories<br/>- bug<br/>- enhancement<br/>- feature<br/>- documentation\"]\n        Priority[\"Priority<br/>- high-priority<br/>- low-priority\"]\n        Status[\"Status<br/>- needs more info<br/>- good first issue<br/>- invalid\"]\n        Area[\"Area Labels<br/>- cli<br/>- client<br/>- server<br/>- auth<br/>- openapi<br/>- http\"]\n    end\n\n    NewIssue --> GetLabels\n    NewPR --> GetLabels\n    ManualTrigger --> GetLabels\n\n    GetLabels --> GetIssueDetails\n    GetIssueDetails --> GetComments\n    GetComments --> GetLinkedIssues\n    GetLinkedIssues --> AnalyzeContent\n    AnalyzeContent --> ApplyLabels\n\n    ApplyLabels --> CoreCategory\n    ApplyLabels --> Priority\n    ApplyLabels --> Status\n    ApplyLabels --> Area\n```\nThe triage system is implemented in\n[.github/workflows/marvin-label-triage.yml:1-158](.)\nand uses sophisticated rules to categorize issues and PRs automatically. The system enforces mutually exclusive core categories and applies area labels only when thematically central.\n**Sources:**\n[.github/workflows/marvin-label-triage.yml:1-158](.)",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 12,
+      "char_count": 1776,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690357"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:4",
+    "content": "```\ngraph TD\n    subgraph \"Documentation Triggers\"\n        MainPush[\"push to main<br/>paths: src/**, pyproject.toml\"]\n        ManualDispatch[\"workflow_dispatch\"]\n    end\n\n    subgraph \"Documentation Generation\"\n        UVSetup[\"UV Setup<br/>astral-sh/setup-uv@v6\"]\n        InstallDeps[\"uv sync --python 3.12\"]\n        InstallJust[\"extractions/setup-just@v3\"]\n        GenerateDocs[\"just api-ref-all<br/>Generate SDK docs\"]\n        CreatePR[\"peter-evans/create-pull-request@v7<br/>Auto-create PR\"]\n    end\n\n    subgraph \"Generated Artifacts\"\n        SDKDocs[\"docs/python-sdk/**<br/>Auto-generated API reference\"]\n        PRBranch[\"marvin/update-sdk-docs<br/>Auto-managed branch\"]\n    end\n\n    MainPush --> UVSetup\n    ManualDispatch --> UVSetup\n    UVSetup --> InstallDeps\n    InstallDeps --> InstallJust\n    InstallJust --> GenerateDocs\n    GenerateDocs --> CreatePR\n    CreatePR --> SDKDocs\n    CreatePR --> PRBranch\n```\nThe SDK documentation workflow\n[.github/workflows/update-sdk-docs.yml:1-75](.)\nautomatically generates API reference documentation from source code docstrings and type annotations using the\n```\njust api-ref-all\n```\ncommand.\n**Sources:**\n[.github/workflows/update-sdk-docs.yml:1-75](.)",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 12,
+      "char_count": 1205,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690363"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:5",
+    "content": "The schema update workflow\n[.github/workflows/update-config-schema.yml:1-92](.)\nmaintains the\n```\nfastmcp.json\n```\nconfiguration schema by generating it from the\n```\nMCPServerConfig\n```\nclass definition:\n```\ngraph TD\n    subgraph \"Schema Sources\"\n        ConfigClass[\"src/fastmcp/utilities/mcp_server_config/**<br/>MCPServerConfig class\"]\n        ExcludeLocal[\"!schema.json<br/>Exclude existing schema\"]\n    end\n\n    subgraph \"Generation Process\"\n        GenerateSchema[\"generate_schema()<br/>Python function call\"]\n        PublicLatest[\"docs/public/schemas/fastmcp.json/latest.json\"]\n        PublicV1[\"docs/public/schemas/fastmcp.json/v1.json\"]\n        LocalSchema[\"src/fastmcp/utilities/mcp_server_config/v1/schema.json\"]\n    end\n\n    subgraph \"Output Locations\"\n        WebAccess[\"Web-accessible schemas<br/>docs/public/schemas/\"]\n        LocalDev[\"Local development<br/>src/fastmcp/utilities/\"]\n    end\n\n    ConfigClass --> GenerateSchema\n    GenerateSchema --> PublicLatest\n    GenerateSchema --> PublicV1\n    GenerateSchema --> LocalSchema\n\n    PublicLatest --> WebAccess\n    PublicV1 --> WebAccess\n    LocalSchema --> LocalDev\n```\n**Sources:**\n[.github/workflows/update-config-schema.yml:1-92](.)",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 12,
+      "char_count": 1203,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690369"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:6",
+    "content": "```\ngraph TD\n    subgraph \"Detection Process\"\n        NewIssue[\"issues: opened\"]\n        TaskAgent[\"Task Tool<br/>Multi-agent coordination\"]\n        ViewIssue[\"GitHub Issue Analysis<br/>Extract summary\"]\n        ParallelSearch[\"3 Parallel Search Agents<br/>Diverse keyword strategies\"]\n        FilterFalsePositives[\"Filter Agent<br/>Remove non-duplicates\"]\n        PostComment[\"Comment with duplicates<br/>Auto-close warning\"]\n    end\n\n    subgraph \"Search Strategy\"\n        Agent1[\"Agent 1<br/>Title-based search\"]\n        Agent2[\"Agent 2<br/>Content-based search\"]\n        Agent3[\"Agent 3<br/>Label/metadata search\"]\n    end\n\n    subgraph \"Automation Rules\"\n        ThreeDayGrace[\"3-day grace period\"]\n        PreventingReactions[\"Thumbs down prevents closure\"]\n        AuthorActivity[\"Author comments prevent closure\"]\n        AutoClose[\"Auto-close with duplicate label\"]\n    end\n\n    NewIssue --> TaskAgent\n    TaskAgent --> ViewIssue\n    ViewIssue --> ParallelSearch\n\n    ParallelSearch --> Agent1\n    ParallelSearch --> Agent2\n    ParallelSearch --> Agent3\n\n    Agent1 --> FilterFalsePositives\n    Agent2 --> FilterFalsePositives\n    Agent3 --> FilterFalsePositives\n    FilterFalsePositives --> PostComment\n\n    PostComment --> ThreeDayGrace\n    ThreeDayGrace --> PreventingReactions\n    PreventingReactions --> AuthorActivity\n    AuthorActivity --> AutoClose\n```\nThe duplicate detection system\n[.github/workflows/marvin-dedupe-issues.yml:1-81](.)\nuses a multi-agent approach with the Task tool to coordinate parallel searches and intelligent filtering.\n**Sources:**\n[.github/workflows/marvin-dedupe-issues.yml:1-81](.)",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 12,
+      "char_count": 1625,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690375"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:7",
+    "content": "The auto-close mechanism is implemented in\n[scripts/auto_close_duplicates.py:1-332](.)\nwith the following key components:\n```\nIssue\n```\n```\nComment\n```\n```\nReaction\n```\n```\nGitHubClient\n```\nIssue Management, Class = . Issue Management, Purpose = \nThe script implements sophisticated logic in\n```\nshould_close_as_duplicate()\n```\n[scripts/auto_close_duplicates.py:216-254](.)\nto check for preventing conditions before auto-closing issues.\n**Sources:**\n[scripts/auto_close_duplicates.py:1-332](.)\n,\n[.github/workflows/auto-close-duplicates.yml:1-29](.)",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 12,
+      "char_count": 549,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690381"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:8",
+    "content": "```\ngraph TD\n    subgraph \"Release Triggers\"\n        ReleasePublished[\"release: published\"]\n        ManualTrigger[\"workflow_dispatch\"]\n    end\n\n    subgraph \"Build Process\"\n        Checkout[\"actions/checkout@v5<br/>fetch-depth: 0\"]\n        UVInstall[\"astral-sh/setup-uv@v6<br/>UV package manager\"]\n        Build[\"uv build<br/>Create distribution\"]\n        Publish[\"uv publish<br/>Upload to PyPI\"]\n    end\n\n    subgraph \"Authentication\"\n        TrustedPublishing[\"id-token: write<br/>PyPI trusted publishing\"]\n    end\n\n    ReleasePublished --> Checkout\n    ManualTrigger --> Checkout\n    Checkout --> UVInstall\n    UVInstall --> Build\n    Build --> Publish\n\n    TrustedPublishing --> Publish\n```\nThe publishing workflow\n[.github/workflows/publish.yml:1-27](.)\nuses PyPI's trusted publishing feature for secure package deployment without managing API tokens.\n**Sources:**\n[.github/workflows/publish.yml:1-27](.)",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 12,
+      "char_count": 909,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690386"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:9",
+    "content": "The Marvin Context Protocol system relies on a GitHub App for authentication:\n- **App ID** : Stored as `MARVIN_APP_ID` secret\n- **Private Key** : Stored as `MARVIN_APP_PRIVATE_KEY` secret\n- **Token Generation** : Uses `actions/create-github-app-token@v2`\n- **Permissions** : Comprehensive access to contents, issues, pull-requests, discussions, and actions",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 12,
+      "char_count": 356,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690392"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:10",
+    "content": "`ANTHROPIC_API_KEY`\nAnthropic Claude, Purpose = AI-powered code analysis and automation. Anthropic Claude, Authentication = ",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 12,
+      "char_count": 124,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690398"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Project_Infrastructure:chunk:11",
+    "content": "All automated actions use the bot identity:\n- **Name** : `marvin-context-protocol[bot]`\n- **Email** : `225465937+marvin-context-protocol[bot]@users.noreply.github.com`\n- **User ID** : `225465937`\nThis ensures consistent attribution for automated contributions and proper GitHub integration.\n**Sources:**\n[.github/workflows/update-sdk-docs.yml:68-69](.)\n,\n[.github/workflows/update-config-schema.yml:85-86](.)",
+    "metadata": {
+      "source": "fastmcp\\Project_Infrastructure.md",
+      "file_name": "Project_Infrastructure.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 12,
+      "char_count": 408,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:04.690403"
+    }
+  }
+]

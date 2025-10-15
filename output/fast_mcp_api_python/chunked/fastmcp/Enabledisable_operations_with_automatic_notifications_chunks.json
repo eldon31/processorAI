@@ -1,0 +1,197 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:0",
+    "content": "def enable(self) -> None:\nsuper().enable()\ntry:\ncontext = get_context()\ncontext._queue_tool_list_changed()  # Notify protocol\nexcept RuntimeError:\npass  # No context available\ndef disable(self) -> None:\nsuper().disable()\n# Similar notification logic\n```\nThis ensures that MCP clients receive updated component lists when components are dynamically enabled or disabled.\n\n**Sources**: [src/fastmcp/tools/tool.py:123-137](), [src/fastmcp/resources/resource.py:53-67](), [src/fastmcp/prompts/prompt.py:72-86](), [src/fastmcp/resources/template.py:72-86]()\n\n# Context System and Dependencies\n\n\n\n\nThis section covers the Context object system and dependency injection mechanisms in FastMCP. The `Context` class provides tools and resources with access to MCP protocol capabilities like logging, sampling, and resource reading, while the dependency injection system automatically provides these capabilities to user functions based on type annotations.\n\nFor information about how components (tools, resources, prompts) are created and managed, see [Component System Architecture](#2.1). For details about server composition and mounting, see [Server Composition and Proxying](#2.3).\n\n## Context Object Architecture\n\nThe `Context` class serves as the primary interface between user-defined tools/resources and the underlying MCP protocol capabilities. It provides a clean, Pythonic API for accessing server session functionality.\n\n```mermaid\ngraph TB\n    subgraph \"Context Object Structure\"\n        Context[\"Context<br/>- fastmcp: weakref[FastMCP]<br/>- _tokens: list[Token]<br/>- _notification_queue: set[str]<br/>- _state: dict[str, Any]\"]\n        \n        subgraph \"MCP Protocol Access\"\n            RequestContext[\"RequestContext<br/>- request_id<br/>- session<br/>- meta<br/>- request\"]\n            ServerSession[\"ServerSession<br/>- send_log_message()<br/>- send_progress_notification()<br/>- create_message()<br/>- elicit()\"]\n        end\n        \n        subgraph \"Context Capabilities\"\n            Logging[\"Logging Methods<br/>- log()<br/>- debug()<br/>- info()<br/>- warning()<br/>- error()\"]\n            Progress[\"Progress Reporting<br/>- report_progress()\"]\n            Sampling[\"AI Sampling<br/>- sample()<br/>- elicit()\"]\n            Resources[\"Resource Access<br/>- read_resource()<br/>- list_roots()\"]\n            State[\"State Management<br/>- set_state()<br/>- get_state()\"]\n            Notifications[\"Notifications<br/>- send_tool_list_changed()<br/>- send_resource_list_changed()<br/>- send_prompt_list_changed()\"]\n        end\n    end\n    \n    Context --> RequestContext\n    RequestContext --> ServerSession\n    Context --> Logging\n    Context --> Progress\n    Context --> Sampling\n    Context --> Resources\n    Context --> State\n    Context --> Notifications\n```\n**Sources:**\n[src/fastmcp/server/context.py:79-123](.)\n,\n[src/fastmcp/server/context.py:159-169](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 13,
+      "char_count": 2872,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262590"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:1",
+    "content": "The\n```\nContext\n```\nobject implements async context manager semantics with inheritance-based state management:\n```\ngraph TD\n    subgraph \"Context Lifecycle\"\n        ContextVar[\"_current_context: ContextVar[Context | None]\"]\n        ParentContext[\"Parent Context<br/>with state\"]\n        ChildContext[\"Child Context<br/>inherits parent state\"]\n        TokenManagement[\"Token Management<br/>_tokens: list[Token]\"]\n    end\n    \n    subgraph \"State Inheritance\"\n        ParentState[\"Parent State<br/>{key1: value1, key2: value2}\"]\n        CopiedState[\"Copied State<br/>copy.deepcopy(parent._state)\"]\n        ChildState[\"Child State<br/>{key1: value1, key2: value2, key3: value3}\"]\n    end\n    \n    ContextVar --> ParentContext\n    ParentContext --> ChildContext\n    ParentState --> CopiedState\n    CopiedState --> ChildState\n    ChildContext --> TokenManagement\n```\n**Sources:**\n[src/fastmcp/server/context.py:53](.)\n,\n[src/fastmcp/server/context.py:138-157](.)\n,\n[src/fastmcp/server/context.py:584-590](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 13,
+      "char_count": 1002,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262606"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:2",
+    "content": "FastMCP uses type annotation-based dependency injection to automatically provide\n```\nContext\n```\nobjects and other dependencies to user functions.\n```\ngraph LR\n    subgraph \"User Function\"\n        UserFunction[\"@server.tool<br/>async def my_tool(x: int, ctx: Context) -> str\"]\n        TypeHints[\"Function Annotations<br/>x: int<br/>ctx: Context\"]\n    end\n    \n    subgraph \"Type Analysis\"\n        FindKwargByType[\"find_kwarg_by_type()<br/>Inspect function signature<br/>Match Context type\"]\n        TypeHints2[\"get_type_hints()<br/>include_extras=True<br/>Handle forward refs\"]\n        IsClassMember[\"is_class_member_of_type()<br/>Handle Union, Annotated\"]\n    end\n    \n    subgraph \"Injection Process\"\n        ContextInjection[\"Context Injection<br/>Provide current context<br/>as 'ctx' parameter\"]\n        FunctionCall[\"Function Execution<br/>my_tool(x=5, ctx=context)\"]\n    end\n    \n    UserFunction --> TypeHints\n    TypeHints --> FindKwargByType\n    FindKwargByType --> TypeHints2\n    TypeHints2 --> IsClassMember\n    IsClassMember --> ContextInjection\n    ContextInjection --> FunctionCall\n```\n**Sources:**\n[src/fastmcp/utilities/types.py:152-176](.)\n,\n[src/fastmcp/utilities/types.py:130-149](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 13,
+      "char_count": 1202,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262612"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:3",
+    "content": "The system handles complex type annotations including unions, forward references, and\n```\nAnnotated\n```\ntypes:\n```\nctx: Context\n```\n```\nissubclass_safe()\n```\n```\nctx: Context \\| None\n```\n```\nctx: Annotated[Context, \"description\"]\n```\n```\nctx: \"Context\"\n```\n```\nget_type_hints()\n```\nDirect Type, Example = . Direct Type, Processing = \n**Sources:**\n[src/fastmcp/utilities/types.py:120-128](.)\n,\n[src/fastmcp/utilities/types.py:54-117](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 13,
+      "char_count": 435,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262618"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:4",
+    "content": "The\n```\nContext\n```\nobject provides access to core MCP protocol capabilities through a clean interface:",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 13,
+      "char_count": 103,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262624"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:5",
+    "content": "```\ngraph TB\n    subgraph \"Logging System\"\n        LogMethods[\"Context Log Methods<br/>- debug(), info(), warning(), error()<br/>- log(message, level, logger_name, extra)\"]\n        LogData[\"LogData<br/>- msg: str<br/>- extra: Mapping[str, Any] | None\"]\n        SessionLog[\"session.send_log_message()<br/>- level: LoggingLevel<br/>- data: LogData<br/>- related_request_id\"]\n    end\n    \n    subgraph \"Progress Reporting\"\n        ReportProgress[\"report_progress()<br/>- progress: float<br/>- total: float | None<br/>- message: str | None\"]\n        ProgressToken[\"request_context.meta.progressToken\"]\n        SessionProgress[\"session.send_progress_notification()\"]\n    end\n    \n    LogMethods --> LogData\n    LogData --> SessionLog\n    ReportProgress --> ProgressToken\n    ProgressToken --> SessionProgress\n```\n**Sources:**\n[src/fastmcp/server/context.py:57-67](.)\n,\n[src/fastmcp/server/context.py:210-234](.)\n,\n[src/fastmcp/server/context.py:170-195](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 13,
+      "char_count": 951,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262630"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:6",
+    "content": "```\ngraph TB\n    subgraph \"Sampling System\"\n        SampleMethod[\"sample()<br/>- messages: str | Sequence[SamplingMessage]<br/>- system_prompt, temperature, max_tokens<br/>- model_preferences\"]\n        SamplingFallback[\"Sampling Handler Fallback<br/>- fastmcp.sampling_handler<br/>- behavior: 'always' | 'fallback'\"]\n        CreateMessage[\"session.create_message()<br/>Returns: CreateMessageResult\"]\n    end\n    \n    subgraph \"Elicitation System\"\n        ElicitMethod[\"elicit()<br/>- message: str<br/>- response_type: type[T] | list[str] | None\"]\n        SchemaGeneration[\"get_elicitation_schema()<br/>Handle primitives, dataclasses, enums\"]\n        ElicitResult[\"AcceptedElicitation[T]<br/>DeclinedElicitation<br/>CancelledElicitation\"]\n    end\n    \n    SampleMethod --> SamplingFallback\n    SamplingFallback --> CreateMessage\n    ElicitMethod --> SchemaGeneration\n    SchemaGeneration --> ElicitResult\n```\n**Sources:**\n[src/fastmcp/server/context.py:361-442](.)\n,\n[src/fastmcp/server/context.py:444-567](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 13,
+      "char_count": 1008,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262635"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:7",
+    "content": "```\ngraph TB\n    subgraph \"Session Management\"\n        SessionId[\"session_id Property<br/>- HTTP headers: mcp-session-id<br/>- Generated UUID fallback<br/>- Cached on session._fastmcp_id\"]\n        ClientId[\"client_id Property<br/>request_context.meta.client_id\"]\n        RequestId[\"request_id Property<br/>str(request_context.request_id)\"]\n    end\n    \n    subgraph \"Resource Access\"\n        ReadResource[\"read_resource(uri)<br/>- str | AnyUrl parameter<br/>- Returns: list[ReadResourceContents]\"]\n        ListRoots[\"list_roots()<br/>- Returns: list[Root]<br/>- Client-provided root directories\"]\n        FastMCPRead[\"fastmcp._mcp_read_resource()<br/>Delegate to server implementation\"]\n    end\n    \n    SessionId --> ClientId\n    ClientId --> RequestId\n    ReadResource --> FastMCPRead\n    ListRoots --> FastMCPRead\n```\n**Sources:**\n[src/fastmcp/server/context.py:250-292](.)\n,\n[src/fastmcp/server/context.py:197-208](.)\n,\n[src/fastmcp/server/context.py:344-347](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 7,
+      "total_chunks": 13,
+      "char_count": 966,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262641"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:8",
+    "content": "The Context system provides request-scoped state management with inheritance semantics:\n```\ngraph TD\n    subgraph \"State Architecture\"\n        ContextState[\"Context._state: dict[str, Any]<br/>Per-context state storage\"]\n        SetState[\"set_state(key: str, value: Any)<br/>Store value in current context\"]\n        GetState[\"get_state(key: str) -> Any<br/>Retrieve value or None\"]\n    end\n    \n    subgraph \"Inheritance Flow\"\n        ParentCtx[\"Parent Context<br/>state = {a: 1, b: 2}\"]\n        ChildCtx[\"Child Context<br/>state = copy.deepcopy(parent._state)\"]\n        ChildMod[\"Child Modifications<br/>state = {a: 1, b: 2, c: 3}\"]\n        ParentUnchanged[\"Parent Unchanged<br/>state = {a: 1, b: 2}\"]\n    end\n    \n    ContextState --> SetState\n    ContextState --> GetState\n    ParentCtx --> ChildCtx\n    ChildCtx --> ChildMod\n    ChildMod --> ParentUnchanged\n```\n**Sources:**\n[src/fastmcp/server/context.py:113-117](.)\n,\n[src/fastmcp/server/context.py:140-144](.)\n,\n[tests/server/test_context.py:134-180](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 8,
+      "total_chunks": 13,
+      "char_count": 1009,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262646"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:9",
+    "content": "FastMCP's type system supports the Context dependency injection through several utility functions:",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 9,
+      "total_chunks": 13,
+      "char_count": 98,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262652"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:10",
+    "content": "```\ngraph LR\n    subgraph \"TypeAdapter Creation\"\n        GetCachedAdapter[\"get_cached_typeadapter(cls)<br/>@lru_cache(maxsize=5000)\"]\n        AnnotationProcess[\"Process Annotations<br/>Annotated[Type, 'string'] →<br/>Annotated[Type, Field(description='string')]\"]\n        TypeAdapterCreate[\"TypeAdapter(processed_function)<br/>Heavy object creation<br/>Cached for reuse\"]\n    end\n    \n    subgraph \"Function Processing\"\n        GetTypeHints[\"get_type_hints(include_extras=True)<br/>Resolve forward references\"]\n        ProcessHints[\"Process Annotations<br/>Handle string descriptions\"]\n        NewFunction[\"Create New Function<br/>With processed annotations\"]\n    end\n    \n    GetCachedAdapter --> AnnotationProcess\n    AnnotationProcess --> GetTypeHints\n    GetTypeHints --> ProcessHints\n    ProcessHints --> NewFunction\n    NewFunction --> TypeAdapterCreate\n```\n**Sources:**\n[src/fastmcp/utilities/types.py:44-117](.)\n,\n[tests/utilities/test_types.py:624-695](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 10,
+      "total_chunks": 13,
+      "char_count": 964,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262657"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:11",
+    "content": "FastMCP provides helper classes for common content types that integrate with the Context system:\n```\nImage\n```\n```\nto_image_content()\n```\n→\n```\nImageContent\n```\n```\nAudio\n```\n```\nto_audio_content()\n```\n→\n```\nAudioContent\n```\n```\nFile\n```\n```\nto_resource_content()\n```\n→\n```\nEmbeddedResource\n```\n, Purpose = . , Key Methods = \n**Sources:**\n[src/fastmcp/utilities/types.py:178-379](.)\n,\n[examples/get_file.py:4](.)\n,\n[examples/get_file.py:15](.)\n,\n[examples/get_file.py:27](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 11,
+      "total_chunks": 13,
+      "char_count": 474,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262663"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Enabledisable_operations_with_automatic_notifications:chunk:12",
+    "content": "```\ngraph TB\n    subgraph \"Type Transformation\"\n        ReplaceType[\"replace_type(type_, type_map)<br/>Transform complex types\"]\n        GetOrigin[\"get_origin(type_)<br/>Extract generic origin\"]\n        GetArgs[\"get_args(type_)<br/>Extract type arguments\"]\n        Recursive[\"Recursive Processing<br/>Handle nested generics\"]\n    end\n    \n    subgraph \"Supported Patterns\"\n        UnionType[\"UnionType | typing.Union<br/>Handle both syntaxes\"]\n        AnnotatedType[\"Annotated[T, ...]<br/>Process first argument\"]\n        GenericType[\"list[T], dict[K, V]<br/>Process all arguments\"]\n    end\n    \n    ReplaceType --> GetOrigin\n    GetOrigin --> GetArgs\n    GetArgs --> Recursive\n    UnionType --> ReplaceType\n    AnnotatedType --> ReplaceType\n    GenericType --> ReplaceType\n```\n**Sources:**\n[src/fastmcp/utilities/types.py:381-415](.)\n,\n[tests/utilities/test_types.py:598-622](.)",
+    "metadata": {
+      "source": "fastmcp\\Enabledisable_operations_with_automatic_notifications.md",
+      "file_name": "Enabledisable_operations_with_automatic_notifications.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 12,
+      "total_chunks": 13,
+      "char_count": 879,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:58.262668"
+    }
+  }
+]

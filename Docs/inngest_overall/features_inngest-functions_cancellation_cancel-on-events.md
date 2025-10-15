@@ -1,0 +1,87 @@
+#### On this page
+
+- [Cancel on Events](\docs\features\inngest-functions\cancellation\cancel-on-events#cancel-on-events)
+- [Tips](\docs\features\inngest-functions\cancellation\cancel-on-events#tips)
+
+Features [Inngest Functions](\docs\features\inngest-functions) [Cancellation](\docs\features\inngest-functions\cancellation)
+
+# Cancel on Events
+
+As you have learned that you can trigger functions to run using events, you can also cancel active functions by sending an event.
+
+For our example, we'll take a reminder app where a user can schedule to be reminded of something in the future at whatever time they want. The user can also delete the reminder if they change their mind and don't want to receive the reminder anymore.
+
+TypeScript Go Python
+
+Delaying code to run for days or weeks is easy with `step.sleepUntil` , but we need a way to be able to stop the function if the user deletes the reminder while our function is "sleeping."
+
+When defining a function, you can also specify the `cancelOn` option which allows you to list one or more events that, when sent to Inngest, will cause the sleep to be terminated and function will be marked as "Canceled."
+
+Here is our schedule reminders function that leverages `cancelOn` :
+
+### inngest/syncContacts.ts
+
+Copy Copied
+
+```
+const scheduleReminder = inngest .createFunction (
+{
+id : "schedule-reminder" ,
+cancelOn : [{
+event : "tasks/reminder.deleted" , // The event name that cancels this function
+// Ensure the cancellation event (async) and the triggering event (event)'s reminderId are the same:
+if : "async.data.reminderId == event.data.reminderId" ,
+}] ,
+}
+{ event : "tasks/reminder.created" } ,
+async ({ event , step }) => {
+await step .sleepUntil ( 'sleep-until-remind-at-time' , event . data .remindAt);
+await step .run ( 'send-reminder-push' , async ({}) => {
+await pushNotificationService .push ( event . data .userId , event . data .reminderBody)
+})
+}
+// ...
+);
+```
+
+Let's break down how this works:
+
+1. Whenever the function is triggered, a cancellation listener is created which waits for an `"tasks/reminder.deleted"` event to be received.
+2. The `if` statement tells Inngest that both the triggering event ( `"tasks/reminder.created"` ) and the cancellation event ( `"tasks/reminder.deleted"` ) have the same exact value for `data.reminderId` in each event payload. This makes sure that an event does not cancel a different reminder.
+
+For more information on writing events, read our guide [on writing expressions](\docs\guides\writing-expressions) .
+
+Here is an example of these two events which will be matched on the `data.reminderId` field:
+
+Copy Copied
+
+```
+{
+"name" : "tasks/reminder.created" ,
+"data" : {
+"userId" : "user_123" ,
+"reminderId" : "reminder_0987654321" ,
+"reminderBody" : "Pick up Jane from the airport"
+}
+}
+```
+
+Copy Copied
+
+```
+{
+"name" : "tasks/reminder.deleted" ,
+"data" : {
+"userId" : "user_123" ,
+"reminderId" : "reminder_0987654321" ,
+}
+}
+```
+
+### [Tips](\docs\features\inngest-functions\cancellation\cancel-on-events#tips)
+
+- You can also optionally specify a `timeout` to only enable cancellation for a period of time.
+- You can configure multiple events to cancel a function, up to five.
+- You can write a more complex matching statement using the `if` field.
+
+Learn more in the full [reference](\docs\reference\typescript\functions\cancel-on) .

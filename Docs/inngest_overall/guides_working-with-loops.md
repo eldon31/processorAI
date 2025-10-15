@@ -1,0 +1,161 @@
+#### On this page
+
+- [Working with Loops in Inngest](\docs\guides\working-with-loops#working-with-loops-in-inngest)
+- [Simple function example](\docs\guides\working-with-loops#simple-function-example)
+- [Loop example](\docs\guides\working-with-loops#loop-example)
+- [Best practices: implementing loops in Inngest](\docs\guides\working-with-loops#best-practices-implementing-loops-in-inngest)
+- [1. Treat each loop iterations as a single step](\docs\guides\working-with-loops#1-treat-each-loop-iterations-as-a-single-step)
+- [2. Place non-deterministic logic inside steps](\docs\guides\working-with-loops#2-place-non-deterministic-logic-inside-steps)
+- [3. Use sleep effectively](\docs\guides\working-with-loops#3-use-sleep-effectively)
+- [Next steps](\docs\guides\working-with-loops#next-steps)
+
+Features [Inngest Functions](\docs\features\inngest-functions) [Steps &amp; Workflows](\docs\features\inngest-functions\steps-workflows)
+
+# Working with Loops in Inngest
+
+In Inngest each step in your function is executed as a separate HTTP request.  This means that for every step in your function, the function is re-entered, starting from the beginning, up to the point where the next step is executed. This [execution model](\docs\learn\how-functions-are-executed) helps in managing retries, timeouts, and ensures robustness in distributed systems.
+
+This page covers how to implement loops in your Inngest functions and avoid common pitfalls.
+
+## [Simple function example](\docs\guides\working-with-loops#simple-function-example)
+
+TypeScript Go Python
+
+Let's start with a simple example to illustrate the concept:
+
+Copy Copied
+
+```
+inngest .createFunction (
+{ id : "simple-function" } ,
+{ event : "test/simple.function" } ,
+async ({ step }) => {
+console .log ( "hello" );
+
+await step .run ( "a" , async () => { console .log ( "a" ) });
+await step .run ( "b" , async () => { console .log ( "b" ) });
+await step .run ( "c" , async () => { console .log ( "c" ) });
+}
+);
+```
+
+In the above example, you will see "hello" printed four times, once for the initial function entry and once for each step execution ( `a` , `b` , and `c` ).
+
+✅ How Inngest executes the code ❌ Common incorrect misconception
+
+Copy Copied
+
+```
+# This is how Inngest executes the code above:
+
+< run start >
+"hello"
+
+"hello"
+"a"
+
+"hello"
+"b"
+
+"hello"
+"c"
+< run complete >
+```
+
+Any non-deterministic logic (like database calls or API calls) must be placed inside a `step.run` call to ensure it is executed correctly within each step.
+
+With this in mind, here is how the previous example can be fixed:
+
+Copy Copied
+
+```
+inngest .createFunction (
+{ id : "simple-function" } ,
+{ event : "test/simple.function" } ,
+async ({ step }) => {
+await step .run ( "hello" , () => { console .log ( "hello" ) });
+
+await step .run ( "a" , async () => { console .log ( "a" ) });
+await step .run ( "b" , async () => { console .log ( "b" ) });
+await step .run ( "c" , async () => { console .log ( "c" ) });
+}
+);
+
+// hello
+// a
+// b
+// c
+```
+
+Now, "hello" is printed only once, as expected.
+
+## [Loop example](\docs\guides\working-with-loops#loop-example)
+
+TypeScript Go Python
+
+Here's [an example](\blog\import-ecommerce-api-data-in-seconds) of an Inngest function that imports all products from a Shopify store into a local system. This function iterates over all pages combining all products into a single array.
+
+Copy Copied
+
+```
+export default inngest .createFunction (
+{ id : "shopify-product-import" } ,
+{ event : "shopify/import.requested" } ,
+async ({ event , step }) => {
+const allProducts = []
+let cursor = null
+let hasMore = true
+
+// Use the event's "data" to pass key info like IDs
+// Note: in this example is deterministic across multiple requests
+// If the returned results must stay in the same order, wrap the db call in step.run()
+const session = await database .getShopifySession ( event . data .storeId)
+
+while (hasMore) {
+const page = await step .run ( `fetch-products- ${ pageNumber } ` , async () => {
+return await shopify . rest . Product .all ({
+session ,
+since_id : cursor ,
+})
+})
+// Combine all of the data into a single list
+allProducts .push ( ... page .products)
+if ( page . products . length === 50 ) {
+cursor = page .products[ 49 ].id
+} else {
+hasMore = false
+}
+}
+
+// Now we have the entire list of products within allProducts!
+}
+)
+```
+
+In the example above, each iteration of the loop is managed using `step.run()` , ensuring that **all non-deterministic logic (like fetching products from Shopify) is encapsulated within a step** . This approach guarantees that if the request fails, it will be retried automatically, in the correct order. This structure aligns with Inngest's execution model, where each step is a separate HTTP request, ensuring robust and consistent loop behavior.
+
+Note that in the example above `getShopifySession` is deterministic across multiple requests (and it's added to all API calls for authorization). If the returned results must stay in the same order, wrap the database call in `step.run()` .
+
+Read more about this use case in the [blog post](\blog\import-ecommerce-api-data-in-seconds) .
+
+## [Best practices: implementing loops in Inngest](\docs\guides\working-with-loops#best-practices-implementing-loops-in-inngest)
+
+To ensure your loops run correctly within [Inngest's execution model](\docs\learn\how-functions-are-executed) :
+
+### [1. Treat each loop iterations as a single step](\docs\guides\working-with-loops#1-treat-each-loop-iterations-as-a-single-step)
+
+In a typical programming environment, loops maintain their state across iterations. In Inngest, each step re-executes the function from the beginning to ensure that only the failed steps will be re-tried. To handle this, treat each loop iteration as a separate step. This way, the loop progresses correctly, and each iteration builds on the previous one.
+
+### [2. Place non-deterministic logic inside steps](\docs\guides\working-with-loops#2-place-non-deterministic-logic-inside-steps)
+
+Place non-deterministic logic (like API calls, database queries, or random number generation) inside `step.run` calls. This ensures that such operations are executed correctly and consistently within each step, preventing repeated execution with each function re-entry.
+
+### [3. Use sleep effectively](\docs\guides\working-with-loops#3-use-sleep-effectively)
+
+When using `step.sleep` inside a loop, ensure it is combined with structuring the loop to handle each iteration as a separate step. This prevents the function from appearing to restart and allows for controlled timing between iterations.
+
+## [Next steps](\docs\guides\working-with-loops#next-steps)
+
+- Docs explanation: [Inngest execution model](\docs\learn\how-functions-are-executed) .
+- Docs guide: [multi-step functions](\docs\guides\multi-step-functions) .
+- Blog post: ["How to import 1000s of items from any E-commerce API in seconds with serverless functions"](\blog\import-ecommerce-api-data-in-seconds) .

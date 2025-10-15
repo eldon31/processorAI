@@ -1,0 +1,107 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Overview:chunk:0",
+    "content": "This document provides a high-level introduction to the FastMCP framework architecture, covering its core purpose, major system components, and how they work together to enable production-ready Model Context Protocol (MCP) applications.\nFor detailed server implementation patterns, see\n[FastMCP Server Core](#2)\n. For client usage and transport mechanisms, see\n[FastMCP Client System](#3)\n. For deployment and configuration specifics, see\n[Configuration Management](#7)\n.",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Overview.md",
+      "file_name": "FastMCP_Overview.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 7,
+      "char_count": 471,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.111108"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Overview:chunk:1",
+    "content": "FastMCP is a comprehensive Python framework for building production-ready MCP servers and clients. The Model Context Protocol (MCP) is a standardized way to connect LLMs to tools and data sources, and FastMCP provides the infrastructure to make these connections robust, secure, and scalable.\nAt its core, FastMCP wraps the low-level MCP protocol with a high-level, Pythonic interface. The framework handles protocol details, authentication, deployment, and advanced patterns like server composition and proxying.\nSources:\n[src/fastmcp/server/server.py:1-84](.)\n,\n[README.md:37-54](.)\n,\n[docs/getting-started/welcome.mdx:21-57](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Overview.md",
+      "file_name": "FastMCP_Overview.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 1,
+      "total_chunks": 7,
+      "char_count": 630,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.111130"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Overview:chunk:2",
+    "content": "FastMCP follows a layered architecture with clear separation between the high-level developer interface, protocol implementation, and transport layers.",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Overview.md",
+      "file_name": "FastMCP_Overview.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 2,
+      "total_chunks": 7,
+      "char_count": 151,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.111139"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Overview:chunk:3",
+    "content": "```\ngraph TB\n    subgraph \"Developer Interface\"\n        FastMCP[\"FastMCP(server.py:125)\"]\n        Context[\"Context(context.py)\"]\n        Client[\"Client(client/__init__.py)\"]\n    end\n    \n    subgraph \"Component Managers\"\n        ToolManager[\"ToolManager(tools/tool_manager.py)\"]\n        ResourceManager[\"ResourceManager(resources/resource_manager.py)\"]\n        PromptManager[\"PromptManager(prompts/prompt_manager.py)\"]\n    end\n    \n    subgraph \"Protocol Layer\"\n        LowLevelServer[\"LowLevelServer(server/low_level.py)\"]\n        MCPProtocol[\"MCP Protocol Handlers\"]\n    end\n    \n    subgraph \"Transport Layer\"\n        StdioTransport[\"stdio_server()\"]\n        HTTPApp[\"create_sse_app(), create_streamable_http_app()\"]\n        FastMCPTransport[\"FastMCPTransport (in-memory)\"]\n    end\n    \n    subgraph \"Component System\"\n        Tools[\"@server.tool decorators\"]\n        Resources[\"@server.resource decorators\"]\n        Prompts[\"@server.prompt decorators\"]\n    end\n    \n    FastMCP --> ToolManager\n    FastMCP --> ResourceManager\n    FastMCP --> PromptManager\n    FastMCP --> LowLevelServer\n    \n    ToolManager --> Tools\n    ResourceManager --> Resources\n    PromptManager --> Prompts\n    \n    LowLevelServer --> MCPProtocol\n    MCPProtocol --> StdioTransport\n    MCPProtocol --> HTTPApp\n    \n    Client --> FastMCPTransport\n    Client --> StdioTransport\n    Client --> HTTPApp\n    \n    Context --> ToolManager\n    Context --> ResourceManager\n    Context --> PromptManager\n```\nSources:\n[src/fastmcp/server/server.py:125-266](.)\n,\n[src/fastmcp/](.)\n[**init**](.)\n[.py:15-20](.)\n,\n[src/fastmcp/server/low_level.py](.)\n,\n[src/fastmcp/tools/tool_manager.py](.)\n,\n[src/fastmcp/resources/resource_manager.py](.)\n,\n[src/fastmcp/prompts/prompt_manager.py](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Overview.md",
+      "file_name": "FastMCP_Overview.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 3,
+      "total_chunks": 7,
+      "char_count": 1751,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.111146"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Overview:chunk:4",
+    "content": "```\ngraph LR\n    subgraph \"Client Request\"\n        ClientCall[\"client.call_tool()\"]\n        Transport[\"Transport Layer\"]\n    end\n    \n    subgraph \"Server Processing\"\n        MCPHandlers[\"_mcp_call_tool(server.py:701)\"]\n        Middleware[\"_apply_middleware(server.py:397)\"]\n        ToolExecution[\"_call_tool(server.py:729)\"]\n        ComponentManager[\"ToolManager.call_tool()\"]\n        UserFunction[\"User @tool Function\"]\n    end\n    \n    subgraph \"Response Path\"\n        ToolResult[\"ToolResult.to_mcp_result()\"]\n        MCPResponse[\"MCP Protocol Response\"]\n        ClientResponse[\"Client receives result\"]\n    end\n    \n    ClientCall --> Transport\n    Transport --> MCPHandlers\n    MCPHandlers --> Middleware\n    Middleware --> ToolExecution\n    ToolExecution --> ComponentManager\n    ComponentManager --> UserFunction\n    \n    UserFunction --> ToolResult\n    ToolResult --> MCPResponse\n    MCPResponse --> ClientResponse\n```\nSources:\n[src/fastmcp/server/server.py:701-752](.)\n,\n[src/fastmcp/server/server.py:397-406](.)\n,\n[src/fastmcp/tools/tool_manager.py](.)",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Overview.md",
+      "file_name": "FastMCP_Overview.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 4,
+      "total_chunks": 7,
+      "char_count": 1062,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.111151"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Overview:chunk:5",
+    "content": "The\n```\nFastMCP\n```\nclass serves as the central orchestrator, managing three core component types and their lifecycle.",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Overview.md",
+      "file_name": "FastMCP_Overview.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 5,
+      "total_chunks": 7,
+      "char_count": 118,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.111157"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:FastMCP_Overview:chunk:6",
+    "content": "```\nToolManager\n```\n```\n@server.tool\n```\n```\nadd_tool()\n```\n,\n```\ncall_tool()\n```\n```\nResourceManager\n```\n```\n@server.resource\n```\n```\nadd_resource()\n```\n,\n```\nread_resource()\n```\n```\nPromptManager\n```\n```\n@server.prompt\n```\n```\nadd_prompt()\n```\n,\n```\nrender_prompt()\n```\nTools, Manager Class = . Tools, Decorator = . Tools, Key Methods = \nThe server initializes these managers in its constructor:",
+    "metadata": {
+      "source": "fastmcp\\FastMCP_Overview.md",
+      "file_name": "FastMCP_Overview.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 6,
+      "total_chunks": 7,
+      "char_count": 397,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:00.111162"
+    }
+  }
+]

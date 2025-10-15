@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_rollbacks.md",
+  "title": "Rollbacks",
+  "num_chunks": 3,
+  "total_chars": 2426,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Rollbacks](\\docs\\features\\inngest-functions\\error-retries\\rollbacks#rollbacks)\n- [Simple rollbacks](\\docs\\features\\inngest-functions\\error-retries\\rollbacks#simple-rollbacks)\nFeatures\n[Inngest Functions](\\docs\\features\\inngest-functions)\n[Errors & Retries](\\docs\\guides\\error-handling)",
+      "char_count": 301,
+      "token_count": 90,
+      "metadata": {
+        "title": "Rollbacks",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_rollbacks.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_rollbacks.md",
+        "file_name": "features_inngest-functions_error-retries_rollbacks.md",
+        "file_size": 2601,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "77a4b3533eae286cc583302dc771661aa99ec5b6b3ecbb372aecfc482d03ea36",
+        "author": null,
+        "created_at": "2025-10-12T23:58:51.215255",
+        "modified_at": "2025-10-12T23:58:51.216017",
+        "page_count": null,
+        "word_count": 413,
+        "extracted_at": "2025-10-13T20:03:23.053833",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 90,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Rollbacks\nUnlike an error being thrown in the main function's body, a failing step (one that has exhausted all retries) will throw a\n```\nStepError\n```\n. This allows you to handle failures for each step individually, where you can recover from the error gracefully.\nIf a step failure isn't handled, the error will bubble up to the function itself, which will then be marked as failed.\nBelow is an attempt to use DALL-E to generate an image from a prompt, and to fall back to Midjourney if it fails. Remember that these calls are split over separate requests, making the code much more durable against timeouts, transient errors, and these dependencies on external APIs.\nTypeScript Go\nCopy Copied\n```\ninngest .createFunction (\n{ id : \"generate-result\" } ,\n{ event : \"prompt.created\" } ,\nasync ({ event , step }) => {\n// try one AI model, if it fails, try another\nlet imageURL : string | null = null ;\nlet via : \"dall-e\" | \"midjourney\" ;\n\ntry {\nimageURL = await step .run ( \"generate-image-dall-e\" , () => {\n// open api call to generate image...\n});\nvia = \"dall-e\" ;\n} catch (err) {\nimageURL = await step .run ( \"generate-image-midjourney\" , () => {\n// midjourney call to generate image...\n});\nvia = \"midjourney\" ;\n}\n\nawait step .run ( \"notify-user\" , () => {\nreturn pusher .trigger ( event . data .channelID , \"image-result\" , {\nimageURL ,\nvia ,\n});\n});\n} ,\n);\n```",
+      "char_count": 1362,
+      "token_count": 348,
+      "metadata": {
+        "title": "Rollbacks",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_rollbacks.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_rollbacks.md",
+        "file_name": "features_inngest-functions_error-retries_rollbacks.md",
+        "file_size": 2601,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "77a4b3533eae286cc583302dc771661aa99ec5b6b3ecbb372aecfc482d03ea36",
+        "author": null,
+        "created_at": "2025-10-12T23:58:51.215255",
+        "modified_at": "2025-10-12T23:58:51.216017",
+        "page_count": null,
+        "word_count": 413,
+        "extracted_at": "2025-10-13T20:03:23.053833",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 348,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Rollbacks\nSimple rollbacks\nWith this pattern, it's possible to assign a small rollback for each step, making sure that every action is safe regardless of how many steps are being run.\nTypeScript Go\nCopy Copied\n```\ninngest .createFunction (\n{ id : \"add-data\" } ,\n{ event : \"app/row.data.added\" } ,\nasync ({ event , step }) => {\n// ignore the error - this step is fine if it fails\nawait step\n.run ( \"non-critical-step\" , () => {\nreturn updateMetric ();\n})\n.catch ();\n\n// Add a rollback to a step\nawait step\n.run ( \"create-row\" , async () => {\nconst row = await createRow ( event . data .rowId);\nawait addDetail ( event . data .entry);\n})\n.catch ((err) =>\nstep .run ( \"rollback-row-creation\" , async () => {\nawait removeRow ( event . data .rowId);\n}) ,\n);\n} ,\n);\n```",
+      "char_count": 763,
+      "token_count": 206,
+      "metadata": {
+        "title": "Rollbacks",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_rollbacks.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_inngest-functions_error-retries_rollbacks.md",
+        "file_name": "features_inngest-functions_error-retries_rollbacks.md",
+        "file_size": 2601,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "77a4b3533eae286cc583302dc771661aa99ec5b6b3ecbb372aecfc482d03ea36",
+        "author": null,
+        "created_at": "2025-10-12T23:58:51.215255",
+        "modified_at": "2025-10-12T23:58:51.216017",
+        "page_count": null,
+        "word_count": 413,
+        "extracted_at": "2025-10-13T20:03:23.053833",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 206,
+        "has_context": true
+      }
+    }
+  ]
+}

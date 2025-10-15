@@ -1,0 +1,1127 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:0",
+    "content": "FastAPI maintains a comprehensive community ecosystem that integrates automated data collection, community recognition systems, and multi-channel engagement platforms. This ecosystem tracks contributor activity across GitHub, manages community expertise recognition, and provides multiple pathways for users to get help and contribute to the project.\nThe community ecosystem encompasses automated data collection scripts that analyze GitHub activity, structured data storage for community metrics, recognition systems for experts and contributors, and engagement channels including documentation, Discord, and social media platforms.\nFor information about the translation automation specifically, see\n[Translation Management](#7.2)\n. For details about external resources and sponsorship display, see\n[External Resources and Sponsorship](#7.3)\n. For GitHub automation workflows, see\n[Community Automation](#7.4)\n.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 75,
+      "char_count": 912,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479876"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:1",
+    "content": "FastAPI provides multiple channels for community interaction, help-seeking, and contribution, documented primarily in the help system across multiple languages.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 75,
+      "char_count": 160,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479890"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:2",
+    "content": "The\n```\ndocs/en/docs/help-fastapi.md\n```\nfile and its translations serve as the central hub for community engagement, providing structured pathways for users to get help and contribute to the project.\n```\ngraph TD\n    subgraph \"Help_Documentation\"\n        HELP_FASTAPI_EN[\"docs/en/docs/help-fastapi.md\"]\n        HELP_FASTAPI_ZH[\"docs/zh/docs/help-fastapi.md\"]\n        HELP_FASTAPI_FR[\"docs/fr/docs/help-fastapi.md\"]\n        HELP_FASTAPI_RU[\"docs/ru/docs/help-fastapi.md\"]\n        HELP_FASTAPI_PT[\"docs/pt/docs/help-fastapi.md\"]\n    end\n    \n    subgraph \"Engagement_Channels\"\n        GITHUB_DISCUSSIONS[\"GitHub Discussions\"]\n        GITHUB_ISSUES[\"GitHub Issues\"]\n        DISCORD_CHAT[\"Discord Chat Server\"]\n        SOCIAL_MEDIA[\"X (Twitter) @fastapi\"]\n        NEWSLETTER[\"FastAPI Newsletter\"]\n    end\n    \n    subgraph \"Community_Actions\"\n        STAR_REPO[\"Star FastAPI Repository\"]\n        WATCH_RELEASES[\"Watch Repository Releases\"]\n        HELP_OTHERS[\"Help Others with Questions\"]\n        CREATE_PRS[\"Create Pull Requests\"]\n        REVIEW_PRS[\"Review Pull Requests\"]\n    end\n    \n    HELP_FASTAPI_EN --> GITHUB_DISCUSSIONS\n    HELP_FASTAPI_EN --> GITHUB_ISSUES\n    HELP_FASTAPI_EN --> DISCORD_CHAT\n    HELP_FASTAPI_EN --> SOCIAL_MEDIA\n    HELP_FASTAPI_EN --> NEWSLETTER\n    \n    GITHUB_DISCUSSIONS --> HELP_OTHERS\n    GITHUB_ISSUES --> CREATE_PRS\n    GITHUB_ISSUES --> REVIEW_PRS\n    DISCORD_CHAT --> HELP_OTHERS\n    HELP_FASTAPI_EN --> STAR_REPO\n    HELP_FASTAPI_EN --> WATCH_RELEASES\n```\nThe help documentation provides structured guidance for different types of community participation, from passive support (starring, watching) to active contribution (answering questions, creating pull requests).\n**Sources:**\n[docs/en/docs/help-fastapi.md:1-257](.)\n,\n[docs/zh/docs/help-fastapi.md:1-149](.)\n,\n[docs/fr/docs/help-fastapi.md:1-105](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 75,
+      "char_count": 1844,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479897"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:3",
+    "content": "The help system establishes clear workflows for community members to provide support to others, with specific guidelines for understanding questions, reproducing problems, and suggesting solutions.\n```\ngraph TD\n    subgraph \"Question_Handling_Process\"\n        UNDERSTAND_QUESTION[\"Understand the question\"]\n        CHECK_CLARITY[\"Check if question is clear\"]\n        UNDERSTAND_PURPOSE[\"Understand purpose and use case\"]\n        ASK_FOR_DETAILS[\"Ask for more details\"]\n    end\n    \n    subgraph \"Problem_Reproduction\"\n        ORIGINAL_CODE[\"Person's original code\"]\n        MINIMAL_EXAMPLE[\"Minimal reproducible example\"]\n        COPY_PASTE_RUNNABLE[\"Copy-paste and run locally\"]\n        REPRODUCE_ERROR[\"See same error or behavior\"]\n    end\n    \n    subgraph \"Solution_Provision\"\n        SUGGEST_SOLUTIONS[\"Suggest solutions\"]\n        BETTER_ALTERNATIVE[\"Better alternative solution\"]\n        UNDERLYING_PROBLEM[\"Understand underlying problem\"]\n        ASK_TO_CLOSE[\"Ask to close issue/discussion\"]\n    end\n    \n    UNDERSTAND_QUESTION --> CHECK_CLARITY\n    CHECK_CLARITY --> UNDERSTAND_PURPOSE\n    UNDERSTAND_PURPOSE --> ASK_FOR_DETAILS\n    \n    ORIGINAL_CODE --> MINIMAL_EXAMPLE\n    MINIMAL_EXAMPLE --> COPY_PASTE_RUNNABLE\n    COPY_PASTE_RUNNABLE --> REPRODUCE_ERROR\n    \n    REPRODUCE_ERROR --> SUGGEST_SOLUTIONS\n    SUGGEST_SOLUTIONS --> BETTER_ALTERNATIVE\n    BETTER_ALTERNATIVE --> UNDERLYING_PROBLEM\n    UNDERLYING_PROBLEM --> ASK_TO_CLOSE\n```\nThis workflow is documented across multiple language versions and emphasizes kindness and understanding in community interactions.\n**Sources:**\n[docs/en/docs/help-fastapi.md:89-125](.)\n,\n[docs/pl/docs/help-fastapi.md:89-125](.)\n,\n[docs/ru/docs/help-fastapi.md:84-116](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 75,
+      "char_count": 1722,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479903"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:4",
+    "content": "The community ecosystem relies on automated data collection from GitHub's APIs to track community engagement across multiple dimensions.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 75,
+      "char_count": 136,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479908"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:5",
+    "content": "The system identifies community experts by analyzing GitHub Discussions activity through the GraphQL API. The\n```\nscripts/people.py\n```\nscript implements a comprehensive tracking system that monitors question-answering patterns.\n```\ngraph TD\n    subgraph \"GitHub_Data_Sources\"\n        GH_DISCUSSIONS[\"GitHub Discussions API\"]\n        GH_GRAPHQL[\"GitHub GraphQL Endpoint\"]\n    end\n    \n    subgraph \"Data_Collection_Scripts\"\n        PEOPLE_SCRIPT[\"scripts/people.py\"]\n        DISCUSSIONS_QUERY[\"discussions_query\"]\n        GET_DISCUSSION_NODES[\"get_discussion_nodes()\"]\n        GET_DISCUSSIONS_EXPERTS[\"get_discussions_experts()\"]\n    end\n    \n    subgraph \"Data_Models\"\n        AUTHOR[\"Author\"]\n        DISCUSSIONS_NODE[\"DiscussionsNode\"] \n        DISCUSSION_EXPERTS_RESULTS[\"DiscussionExpertsResults\"]\n        COMMENTS_NODE[\"CommentsNode\"]\n    end\n    \n    subgraph \"Output_Data\"\n        PEOPLE_YML[\"docs/en/data/people.yml\"]\n        EXPERTS_DATA[\"experts, last_month_experts, etc.\"]\n    end\n    \n    GH_DISCUSSIONS --> PEOPLE_SCRIPT\n    GH_GRAPHQL --> DISCUSSIONS_QUERY\n    DISCUSSIONS_QUERY --> GET_DISCUSSION_NODES\n    GET_DISCUSSION_NODES --> DISCUSSIONS_NODE\n    DISCUSSIONS_NODE --> GET_DISCUSSIONS_EXPERTS\n    GET_DISCUSSIONS_EXPERTS --> DISCUSSION_EXPERTS_RESULTS\n    AUTHOR --> DISCUSSION_EXPERTS_RESULTS\n    COMMENTS_NODE --> DISCUSSIONS_NODE\n    DISCUSSION_EXPERTS_RESULTS --> PEOPLE_YML\n    PEOPLE_YML --> EXPERTS_DATA\n```\nThe system tracks experts across multiple time windows using counters for different periods:\n```\nlast_month_commenters\n```\n,\n```\nthree_months_commenters\n```\n,\n```\nsix_months_commenters\n```\n, and\n```\none_year_commenters\n```\n.\n**Sources:**\n[scripts/people.py:16-61](.)\n,\n[scripts/people.py:170-177](.)\n,\n[scripts/people.py:195-255](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 75,
+      "char_count": 1768,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479914"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:6",
+    "content": "The contributor tracking system analyzes pull request data to identify different types of community contributions, including code contributions, translations, and translation reviews.\n```\ngraph TD\n    subgraph \"GitHub_PR_Data\"\n        GITHUB_PRS[\"GitHub Pull Requests API\"]\n        PRS_QUERY[\"prs_query GraphQL\"]\n    end\n    \n    subgraph \"Contributor_Analysis\"\n        CONTRIBUTORS_SCRIPT[\"scripts/contributors.py\"]\n        GET_PR_NODES[\"get_pr_nodes()\"]\n        GET_CONTRIBUTORS[\"get_contributors()\"]\n        PULL_REQUEST_NODE[\"PullRequestNode\"]\n    end\n    \n    subgraph \"Contribution_Classification\"\n        LANG_ALL_LABEL[\"label: lang-all\"]\n        IS_MERGED[\"state: MERGED\"]\n        REVIEW_NODES[\"ReviewNode\"]\n    end\n    \n    subgraph \"Contributor_Counters\"\n        CONTRIBUTORS_COUNTER[\"contributors Counter\"]\n        TRANSLATORS_COUNTER[\"translators Counter\"] \n        TRANSLATION_REVIEWERS_COUNTER[\"translation_reviewers Counter\"]\n    end\n    \n    subgraph \"Output_Files\"\n        CONTRIBUTORS_YML[\"docs/en/data/contributors.yml\"]\n        TRANSLATORS_YML[\"docs/en/data/translators.yml\"]\n        TRANSLATION_REVIEWERS_YML[\"docs/en/data/translation_reviewers.yml\"]\n    end\n    \n    GITHUB_PRS --> PRS_QUERY\n    PRS_QUERY --> GET_PR_NODES\n    GET_PR_NODES --> PULL_REQUEST_NODE\n    PULL_REQUEST_NODE --> GET_CONTRIBUTORS\n    LANG_ALL_LABEL --> GET_CONTRIBUTORS\n    IS_MERGED --> GET_CONTRIBUTORS\n    REVIEW_NODES --> GET_CONTRIBUTORS\n    GET_CONTRIBUTORS --> CONTRIBUTORS_COUNTER\n    GET_CONTRIBUTORS --> TRANSLATORS_COUNTER\n    GET_CONTRIBUTORS --> TRANSLATION_REVIEWERS_COUNTER\n    CONTRIBUTORS_COUNTER --> CONTRIBUTORS_YML\n    TRANSLATORS_COUNTER --> TRANSLATORS_YML\n    TRANSLATION_REVIEWERS_COUNTER --> TRANSLATION_REVIEWERS_YML\n```\nThe system differentiates between regular contributors and translators by checking for the\n```\nlang-all\n```\nlabel on pull requests, ensuring proper categorization of translation work.\n**Sources:**\n[scripts/contributors.py:18-56](.)\n,\n[scripts/contributors.py:175-204](.)\n,\n[scripts/contributors.py:175-204](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 75,
+      "char_count": 2053,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479920"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:7",
+    "content": "The community data is stored in structured YAML files that serve as the source of truth for community recognition and statistics.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 75,
+      "char_count": 129,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479926"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:8",
+    "content": "The community data follows a consistent schema across different contributor types, with each file containing user information and contribution metrics.\n```\ndocs/en/data/people.yml\n```\n```\nmaintainers\n```\n,\n```\nexperts\n```\n,\n```\nlast_month_experts\n```\n,\n```\nthree_months_experts\n```\n,\n```\nsix_months_experts\n```\n,\n```\none_year_experts\n```\n```\ndocs/en/data/contributors.yml\n```\n```\nlogin\n```\n,\n```\ncount\n```\n,\n```\navatarUrl\n```\n,\n```\nurl\n```\n```\ndocs/en/data/translators.yml\n```\n```\nlogin\n```\n,\n```\ncount\n```\n,\n```\navatarUrl\n```\n,\n```\nurl\n```\n```\ndocs/en/data/translation_reviewers.yml\n```\n```\nlogin\n```\n,\n```\ncount\n```\n,\n```\navatarUrl\n```\n,\n```\nurl\n```\n```\ndocs/en/data/github_sponsors.yml\n```\n```\nsponsors\n```\n, Purpose = . , Key Fields = \n**Sources:**\n[docs/en/data/people.yml:1-715](.)\n,\n[docs/en/data/contributors.yml:1-561](.)\n,\n[docs/en/data/translators.yml:1-500](.)\n,\n[docs/en/data/translation_reviewers.yml:1-500](.)\n,\n[docs/en/data/github_sponsors.yml:1-440](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 75,
+      "char_count": 970,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479932"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:9",
+    "content": "The system maintains a skip list to exclude automated accounts and specific users from community statistics, ensuring accurate representation of human contributors.\n```\ngraph LR\n    subgraph \"User_Filtering\"\n        SKIP_USERS_YML[\"docs/en/data/skip_users.yml\"]\n        TIANGOLO[\"tiangolo\"]\n        CODECOV[\"codecov\"] \n        GITHUB_ACTIONS[\"github-actions\"]\n        PRE_COMMIT_CI[\"pre-commit-ci\"]\n        DEPENDABOT[\"dependabot\"]\n    end\n    \n    subgraph \"Data_Processing\"\n        GET_TOP_USERS[\"get_top_users()\"]\n        SKIP_USERS_CONTAINER[\"skip_users: Container[str]\"]\n        MIN_COUNT_CHECK[\"min_count: int = 2\"]\n    end\n    \n    SKIP_USERS_YML --> TIANGOLO\n    SKIP_USERS_YML --> CODECOV\n    SKIP_USERS_YML --> GITHUB_ACTIONS\n    SKIP_USERS_YML --> PRE_COMMIT_CI\n    SKIP_USERS_YML --> DEPENDABOT\n    SKIP_USERS_CONTAINER --> GET_TOP_USERS\n    MIN_COUNT_CHECK --> GET_TOP_USERS\n```\nThe filtering ensures that bot accounts and the repository maintainer are not included in expert rankings, providing fair recognition for community members.\n**Sources:**\n[docs/en/data/skip_users.yml:1-6](.)\n,\n[scripts/people.py:258-279](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 75,
+      "char_count": 1131,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479938"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:10",
+    "content": "The community data is rendered into a comprehensive recognition page that showcases different types of contributors across multiple categories and time periods.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 75,
+      "char_count": 160,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479944"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:11",
+    "content": "The\n```\ndocs/en/docs/fastapi-people.md\n```\nfile serves as the main community recognition page, using Jinja2 templating to dynamically display community member information.\n```\ngraph TD\n    subgraph \"Community_Data_Sources\"\n        PEOPLE_DATA[\"people data from people.yml\"]\n        CONTRIBUTORS_DATA[\"contributors data from contributors.yml\"]\n        TRANSLATORS_DATA[\"translators data from translators.yml\"]\n        TRANSLATION_REVIEWERS_DATA[\"translation_reviewers data\"]\n        SPONSORS_DATA[\"github_sponsors data\"]\n    end\n    \n    subgraph \"Display_Sections\"\n        CREATOR_SECTION[\"Creator Section\"]\n        TEAM_SECTION[\"Team Section\"]\n        EXPERTS_SECTIONS[\"FastAPI Experts (multiple timeframes)\"]\n        CONTRIBUTORS_SECTION[\"Top Contributors\"]\n        TRANSLATORS_SECTION[\"Top Translators\"]\n        REVIEWERS_SECTION[\"Top Translation Reviewers\"]\n        SPONSORS_SECTION[\"Sponsors Section\"]\n    end\n    \n    subgraph \"Template_Variables\"\n        PEOPLE_MAINTAINERS[\"people.maintainers\"]\n        PEOPLE_EXPERTS[\"people.experts\"]\n        PEOPLE_LAST_MONTH[\"people.last_month_experts\"]\n        CONTRIBUTORS_VALUES[\"contributors.values()\"]\n        TRANSLATORS_VALUES[\"translators.values()\"]\n        GITHUB_SPONSORS[\"github_sponsors.sponsors\"]\n    end\n    \n    PEOPLE_DATA --> PEOPLE_MAINTAINERS\n    PEOPLE_DATA --> PEOPLE_EXPERTS\n    PEOPLE_DATA --> PEOPLE_LAST_MONTH\n    CONTRIBUTORS_DATA --> CONTRIBUTORS_VALUES\n    TRANSLATORS_DATA --> TRANSLATORS_VALUES\n    SPONSORS_DATA --> GITHUB_SPONSORS\n    \n    PEOPLE_MAINTAINERS --> CREATOR_SECTION\n    PEOPLE_EXPERTS --> EXPERTS_SECTIONS\n    PEOPLE_LAST_MONTH --> EXPERTS_SECTIONS\n    CONTRIBUTORS_VALUES --> CONTRIBUTORS_SECTION\n    TRANSLATORS_VALUES --> TRANSLATORS_SECTION\n    TRANSLATION_REVIEWERS_DATA --> REVIEWERS_SECTION\n    GITHUB_SPONSORS --> SPONSORS_SECTION\n```\nThe page displays experts across multiple time windows: last month, 3 months, 6 months, 1 year, and all time, providing both recent and historical recognition.\n**Sources:**\n[docs/en/docs/fastapi-people.md:75-82](.)\n,\n[docs/en/docs/fastapi-people.md:175-195](.)\n,\n[docs/en/docs/fastapi-people.md:199-217](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 75,
+      "char_count": 2139,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479949"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:12",
+    "content": "The community page uses dynamic templating to display user information with avatars, contribution counts, and links to GitHub profiles.\n```\ngraph LR\n    subgraph \"User_Display_Loop\"\n        FOR_USER[\"{% for user in data %}\"]\n        USER_AVATAR[\"user.avatarUrl\"]\n        USER_LOGIN[\"user.login\"] \n        USER_URL[\"user.url\"]\n        USER_COUNT[\"user.count\"]\n    end\n    \n    subgraph \"HTML_Output\"\n        DIV_USER[\"<div class='user'>\"]\n        AVATAR_WRAPPER[\"<div class='avatar-wrapper'>\"]\n        IMG_TAG[\"<img src='{{ user.avatarUrl }}'/>\"]\n        TITLE_DIV[\"<div class='title'>@{{ user.login }}</div>\"]\n        COUNT_DIV[\"<div class='count'>Count: {{ user.count }}</div>\"]\n    end\n    \n    FOR_USER --> USER_AVATAR\n    FOR_USER --> USER_LOGIN\n    FOR_USER --> USER_URL\n    FOR_USER --> USER_COUNT\n    USER_AVATAR --> IMG_TAG\n    USER_LOGIN --> TITLE_DIV\n    USER_COUNT --> COUNT_DIV\n```\nEach user entry includes standardized fields:\n```\nlogin\n```\n,\n```\ncount\n```\n,\n```\navatarUrl\n```\n, and\n```\nurl\n```\n, ensuring consistent display across all community sections.\n**Sources:**\n[docs/en/docs/fastapi-people.md:89-98](.)\n,\n[docs/en/docs/fastapi-people.md:185-194](.)\n,\n[docs/en/docs/fastapi-people.md:207-216](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 75,
+      "char_count": 1215,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479954"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:13",
+    "content": "The community ecosystem includes sophisticated data processing mechanisms that handle content updates, change detection, and automated commits.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 75,
+      "char_count": 143,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479960"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:14",
+    "content": "The system implements content comparison and update logic to prevent unnecessary file modifications and commit noise.\n```\ngraph TD\n    subgraph \"Update_Process\"\n        UPDATE_CONTENT[\"update_content()\"]\n        CONTENT_PATH[\"content_path: Path\"]\n        NEW_CONTENT[\"new_content: Any\"]\n    end\n    \n    subgraph \"Content_Comparison\"\n        OLD_CONTENT[\"old_content from file\"]\n        YAML_DUMP[\"yaml.dump() formatting\"]\n        CONTENT_COMPARISON[\"old_content == new_content\"]\n    end\n    \n    subgraph \"Update_Decision\"\n        NO_CHANGE[\"return False\"]\n        WRITE_FILE[\"content_path.write_text()\"]\n        RETURN_TRUE[\"return True\"]\n    end\n    \n    UPDATE_CONTENT --> CONTENT_PATH\n    UPDATE_CONTENT --> NEW_CONTENT\n    CONTENT_PATH --> OLD_CONTENT\n    NEW_CONTENT --> YAML_DUMP\n    OLD_CONTENT --> CONTENT_COMPARISON\n    YAML_DUMP --> CONTENT_COMPARISON\n    CONTENT_COMPARISON -->|\"equal\"| NO_CHANGE\n    CONTENT_COMPARISON -->|\"different\"| WRITE_FILE\n    WRITE_FILE --> RETURN_TRUE\n```\nThe system uses consistent YAML formatting with\n```\nsort_keys=False\n```\n,\n```\nwidth=200\n```\n, and\n```\nallow_unicode=True\n```\nto ensure stable content comparison.\n**Sources:**\n[scripts/people.py:304-313](.)\n,\n[scripts/contributors.py:226-235](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 75,
+      "char_count": 1240,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479965"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:15",
+    "content": "The scripts include automated Git workflow management for creating pull requests with updated community data.\n```\ngraph TD\n    subgraph \"Git_Setup\"\n        GIT_CONFIG_USER[\"git config user.name github-actions\"]\n        GIT_CONFIG_EMAIL[\"git config user.email github-actions@github.com\"]\n        BRANCH_NAME[\"branch_name = fastapi-people-contributors-{hex}\"]\n    end\n    \n    subgraph \"Git_Operations\"\n        GIT_CHECKOUT[\"git checkout -b branch_name\"]\n        GIT_ADD[\"git add updated_files\"]\n        GIT_COMMIT[\"git commit -m message\"]\n        GIT_PUSH[\"git push origin branch_name\"]\n    end\n    \n    subgraph \"PR_Creation\"\n        REPO_CREATE_PULL[\"repo.create_pull()\"]\n        PR_TITLE[\"title: message\"]\n        PR_BASE[\"base: master\"]\n        PR_HEAD[\"head: branch_name\"]\n    end\n    \n    GIT_CONFIG_USER --> GIT_CONFIG_EMAIL\n    GIT_CONFIG_EMAIL --> BRANCH_NAME\n    BRANCH_NAME --> GIT_CHECKOUT\n    GIT_CHECKOUT --> GIT_ADD\n    GIT_ADD --> GIT_COMMIT\n    GIT_COMMIT --> GIT_PUSH\n    GIT_PUSH --> REPO_CREATE_PULL\n    REPO_CREATE_PULL --> PR_TITLE\n    REPO_CREATE_PULL --> PR_BASE\n    REPO_CREATE_PULL --> PR_HEAD\n```\nThe automated workflow creates descriptive commit messages like \"👥 Update FastAPI People - Contributors and Translators\" and generates random branch names using\n```\nsecrets.token_hex(4)\n```\n.\n**Sources:**\n[scripts/contributors.py:284-311](.)\n,\n[scripts/people.py:367-394](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 75,
+      "char_count": 1397,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479971"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:16",
+    "content": "This document covers FastAPI's automated system for recognizing and managing community contributors and experts. The system tracks GitHub Discussions participation, Pull Request contributions, translations, and sponsorship to create community recognition pages.\nFor information about the translation workflow automation, see\n[Translation Management](#7.2)\n. For external sponsorship and community resources, see\n[External Resources and Sponsorship](#7.3)\n.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 16,
+      "total_chunks": 75,
+      "char_count": 456,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479976"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:17",
+    "content": "The Contributors and Experts Management system automatically identifies and recognizes community members across multiple contribution categories:\n- **FastAPI Experts** : Users who help answer questions in GitHub Discussions\n- **Contributors** : Users who create merged Pull Requests\n- **Translators** : Contributors who submit translation Pull Requests\n- **Translation Reviewers** : Users who review and approve translations\n- **Sponsors** : Financial supporters through GitHub Sponsors\nThe system operates through automated data collection scripts that query GitHub APIs, process contribution data, and generate YAML files consumed by documentation pages.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 17,
+      "total_chunks": 75,
+      "char_count": 656,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479982"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:18",
+    "content": "```\ngraph TD\n    subgraph \"GitHub APIs\"\n        GQL[\"GitHub GraphQL API\"]\n        REST[\"GitHub REST API\"]\n        SPONSORS[\"GitHub Sponsors API\"]\n    end\n    \n    subgraph \"Collection Scripts\"\n        PEOPLE[\"scripts/people.py\"]\n        CONTRIB[\"scripts/contributors.py\"]\n    end\n    \n    subgraph \"Data Storage\"\n        PEOPLE_YML[\"docs/en/data/people.yml\"]\n        CONTRIB_YML[\"docs/en/data/contributors.yml\"]\n        TRANS_YML[\"docs/en/data/translators.yml\"]\n        REVIEW_YML[\"docs/en/data/translation_reviewers.yml\"]\n        SPONSORS_YML[\"docs/en/data/github_sponsors.yml\"]\n        SKIP_YML[\"docs/en/data/skip_users.yml\"]\n    end\n    \n    subgraph \"Documentation\"\n        PEOPLE_MD[\"docs/en/docs/fastapi-people.md\"]\n    end\n    \n    GQL --> PEOPLE\n    REST --> CONTRIB\n    SPONSORS --> SPONSORS_YML\n    \n    PEOPLE --> PEOPLE_YML\n    CONTRIB --> CONTRIB_YML\n    CONTRIB --> TRANS_YML\n    CONTRIB --> REVIEW_YML\n    \n    PEOPLE_YML --> PEOPLE_MD\n    CONTRIB_YML --> PEOPLE_MD\n    TRANS_YML --> PEOPLE_MD\n    REVIEW_YML --> PEOPLE_MD\n    SPONSORS_YML --> PEOPLE_MD\n    SKIP_YML --> PEOPLE_MD\n```\n**Data Collection and Documentation Flow**\nSources:\n[scripts/people.py:1-316](.)\n,\n[scripts/contributors.py:1-316](.)\n,\n[docs/en/data/people.yml:1-715](.)\n,\n[docs/en/docs/fastapi-people.md:1-306](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 18,
+      "total_chunks": 75,
+      "char_count": 1298,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479988"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:19",
+    "content": "The experts detection system analyzes GitHub Discussions to identify users who consistently help answer questions in the FastAPI community.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 19,
+      "total_chunks": 75,
+      "char_count": 139,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479993"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:20",
+    "content": "```\ngraph TD\n    subgraph \"GraphQL Response Structure\"\n        REPO[\"DiscussionsRepository\"]\n        DISCUSSIONS[\"Discussions\"]\n        EDGES[\"DiscussionsEdge[]\"]\n        NODE[\"DiscussionsNode\"]\n        COMMENTS[\"DiscussionsComments\"]\n        COMMENT_NODE[\"DiscussionsCommentsNode\"]\n        REPLIES[\"Replies\"]\n        REPLY_NODE[\"CommentsNode\"]\n        AUTHOR[\"Author\"]\n    end\n    \n    REPO --> DISCUSSIONS\n    DISCUSSIONS --> EDGES\n    EDGES --> NODE\n    NODE --> COMMENTS\n    NODE --> AUTHOR\n    COMMENTS --> COMMENT_NODE\n    COMMENT_NODE --> REPLIES\n    COMMENT_NODE --> AUTHOR\n    REPLIES --> REPLY_NODE\n    REPLY_NODE --> AUTHOR\n```\n**GitHub Discussions Data Structure**\nThe system uses specific Pydantic models to parse GitHub GraphQL responses:\n```\nDiscussionsNode\n```\n```\nnumber\n```\n,\n```\nauthor\n```\n,\n```\ncreatedAt\n```\n,\n```\ncomments\n```\n```\nDiscussionsCommentsNode\n```\n```\ncreatedAt\n```\n,\n```\nauthor\n```\n,\n```\nreplies\n```\n```\nAuthor\n```\n```\nlogin\n```\n,\n```\navatarUrl\n```\n,\n```\nurl\n```\n```\nDiscussionExpertsResults\n```\n```\ncommenters\n```\n, time-based counters,\n```\nauthors\n```\n, Purpose = . , Key Fields = \nSources:\n[scripts/people.py:64-177](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 20,
+      "total_chunks": 75,
+      "char_count": 1155,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.479998"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:21",
+    "content": "```\ngraph LR\n    subgraph \"Time Windows\"\n        MONTH[\"last_month_commenters\"]\n        THREE[\"three_months_commenters\"] \n        SIX[\"six_months_commenters\"]\n        YEAR[\"one_year_commenters\"]\n        ALL[\"commenters\"]\n    end\n    \n    subgraph \"Processing Logic\"\n        GET_DISCUSSIONS[\"get_discussion_nodes()\"]\n        ANALYZE[\"get_discussions_experts()\"]\n        FILTER[\"get_top_users()\"]\n    end\n    \n    subgraph \"Expert Categories\"\n        MONTH_EXPERTS[\"last_month_experts\"]\n        THREE_EXPERTS[\"three_months_experts\"] \n        SIX_EXPERTS[\"six_months_experts\"]\n        YEAR_EXPERTS[\"one_year_experts\"]\n        ALL_EXPERTS[\"experts\"]\n    end\n    \n    GET_DISCUSSIONS --> ANALYZE\n    ANALYZE --> MONTH\n    ANALYZE --> THREE\n    ANALYZE --> SIX\n    ANALYZE --> YEAR\n    ANALYZE --> ALL\n    \n    MONTH --> FILTER\n    THREE --> FILTER\n    SIX --> FILTER\n    YEAR --> FILTER  \n    ALL --> FILTER\n    \n    FILTER --> MONTH_EXPERTS\n    FILTER --> THREE_EXPERTS\n    FILTER --> SIX_EXPERTS\n    FILTER --> YEAR_EXPERTS\n    FILTER --> ALL_EXPERTS\n```\n**Expert Detection Algorithm Flow**\nThe algorithm tracks participation over multiple time windows:\n- **Last Month** : 30 days ago to now\n- **3 Months** : 90 days ago to now\n- **6 Months** : 180 days ago to now\n- **1 Year** : 365 days ago to now\n- **All Time** : Complete history\nKey logic in\n```\nget_discussions_experts()\n```\n:\n1. Excludes discussion authors from being counted as helpers for their own discussions\n2. Tracks the most recent comment time per user per discussion\n3. Increments counters based on time window inclusion\n4. Uses `Counter[str]` for efficient counting and ranking\nSources:\n[scripts/people.py:195-255](.)\n,\n[scripts/people.py:258-280](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 21,
+      "total_chunks": 75,
+      "char_count": 1714,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480004"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:22",
+    "content": "The contributors system analyzes Pull Requests to categorize different types of contributions and identify translation workflow participants.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 22,
+      "total_chunks": 75,
+      "char_count": 141,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480009"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:23",
+    "content": "```\ngraph TD\n    subgraph \"PR Data Collection\"\n        PRS_QUERY[\"prs_query GraphQL\"]\n        GET_PR_NODES[\"get_pr_nodes()\"]\n        PR_NODE[\"PullRequestNode\"]\n    end\n    \n    subgraph \"Classification Logic\"\n        CHECK_LABELS[\"Check for 'lang-all' label\"]\n        CHECK_STATE[\"Check if state == 'MERGED'\"]\n        CHECK_REVIEWS[\"Process review nodes\"]\n    end\n    \n    subgraph \"Categorization\"\n        CONTRIBUTORS[\"contributors Counter\"]\n        TRANSLATORS[\"translators Counter\"] \n        REVIEWERS[\"translation_reviewers Counter\"]\n    end\n    \n    PRS_QUERY --> GET_PR_NODES\n    GET_PR_NODES --> PR_NODE\n    PR_NODE --> CHECK_LABELS\n    PR_NODE --> CHECK_STATE\n    PR_NODE --> CHECK_REVIEWS\n    \n    CHECK_LABELS --> TRANSLATORS\n    CHECK_STATE --> CONTRIBUTORS\n    CHECK_REVIEWS --> REVIEWERS\n```\n**Pull Request Processing Pipeline**\nThe system distinguishes contributions by analyzing PR metadata:\n```\nlang-all\n```\n```\ncontributors\n```\n```\nlang-all\n```\n```\ntranslators\n```\n```\nlang-all\n```\n```\ntranslation_reviewers\n```\nRegular Contributor, Detection Logic = . Regular Contributor, Counter = \nSources:\n[scripts/contributors.py:175-204](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 23,
+      "total_chunks": 75,
+      "char_count": 1148,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480015"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:24",
+    "content": "The processed data generates multiple YAML files with consistent structure:\n```\ngraph LR\n    subgraph \"Generated Files\"\n        CONTRIB_DATA[\"contributors.yml\"]\n        TRANS_DATA[\"translators.yml\"] \n        REVIEW_DATA[\"translation_reviewers.yml\"]\n        PEOPLE_DATA[\"people.yml\"]\n    end\n    \n    subgraph \"Common Structure\"\n        USER_LOGIN[\"user.login\"]\n        USER_COUNT[\"user.count\"]\n        USER_AVATAR[\"user.avatarUrl\"]\n        USER_URL[\"user.url\"]\n    end\n    \n    CONTRIB_DATA --> USER_LOGIN\n    CONTRIB_DATA --> USER_COUNT\n    CONTRIB_DATA --> USER_AVATAR\n    CONTRIB_DATA --> USER_URL\n    \n    TRANS_DATA --> USER_LOGIN\n    REVIEW_DATA --> USER_LOGIN\n    PEOPLE_DATA --> USER_LOGIN\n```\n**Standardized User Data Structure**\nAll user data follows the pattern established by the\n```\nget_users_to_write()\n```\nfunction, ensuring consistency across different contribution types.\nSources:\n[scripts/contributors.py:207-224](.)\n,\n[scripts/people.py:282-301](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 24,
+      "total_chunks": 75,
+      "char_count": 967,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480021"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:25",
+    "content": "Both collection scripts include automated Git workflow integration for updating community data.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 25,
+      "total_chunks": 75,
+      "char_count": 95,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480026"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:26",
+    "content": "```\nmain()\n```\n```\nupdate_content()\n```\n```\nsubprocess.run()\n```\n```\ngit checkout -b\n```\n```\nrepo.create_pull()\n```\nData Collection, Function = . Data Collection, Purpose = \nThe system only creates PRs when data has actually changed, using YAML content comparison:\n```\ndef update_content(*, content_path: Path, new_content: Any) -> bool:\n    old_content = content_path.read_text(encoding=\"utf-8\")\n    new_content = yaml.dump(new_content, sort_keys=False, width=200, allow_unicode=True)\n    if old_content == new_content:\n        return False\n```\nSources:\n[scripts/people.py:304-314](.)\n,\n[scripts/contributors.py:226-235](.)\n,\n[scripts/contributors.py:284-311](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 26,
+      "total_chunks": 75,
+      "char_count": 663,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480032"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:27",
+    "content": "Both scripts use Pydantic Settings for configuration:\n```\ngithub_token\n```\n```\ngithub_repository\n```\n```\nhttpx_timeout\n```\n```\nsleep_interval\n```\n, Purpose = . , Default = \nThe\n```\nsleep_interval\n```\nin\n```\npeople.py\n```\nhandles GitHub's secondary rate limits for GraphQL queries.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 27,
+      "total_chunks": 75,
+      "char_count": 280,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480037"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:28",
+    "content": "The system excludes certain automated users via\n```\nskip_users.yml\n```\n:\n- `tiangolo` (project creator, counted separately)\n- `codecov` , `github-actions` , `pre-commit-ci` , `dependabot` (bots)\nSources:\n[scripts/people.py:118-123](.)\n,\n[scripts/contributors.py:115-119](.)\n,\n[docs/en/data/skip_users.yml:1-6](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 28,
+      "total_chunks": 75,
+      "char_count": 312,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480043"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:29",
+    "content": "The community data integrates into documentation through template rendering in\n```\nfastapi-people.md\n```\n:",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 29,
+      "total_chunks": 75,
+      "char_count": 106,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480048"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:30",
+    "content": "```\npeople.experts\n```\n```\npeople.yml\n```\n```\npeople.last_month_experts\n```\n```\npeople.yml\n```\n```\ncontributors\n```\n```\ncontributors.yml\n```\n```\ntranslators\n```\n```\ntranslators.yml\n```\n```\ntranslation_reviewers\n```\n```\ntranslation_reviewers.yml\n```\n```\ngithub_sponsors\n```\n```\ngithub_sponsors.yml\n```\n, Source = . , Usage = \nThe documentation uses Jinja2-style templating to render user lists with avatars, usernames, and contribution counts.\nSources:\n[docs/en/docs/fastapi-people.md:17-293](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 30,
+      "total_chunks": 75,
+      "char_count": 494,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480054"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:31",
+    "content": "This document covers FastAPI's AI-powered translation workflow, which automatically translates documentation into multiple languages and coordinates community review through GitHub Discussions and automated workflows.\nFor information about the broader documentation system architecture, see\n[Documentation System](#6.1)\n. For community management aspects, see\n[Contributors and Experts Management](#7.1)\n.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 31,
+      "total_chunks": 75,
+      "char_count": 405,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480059"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:32",
+    "content": "FastAPI maintains documentation in 11+ languages through an automated translation system that combines AI-powered translation with community review processes. The system uses OpenAI's GPT-4o model to translate English documentation, manages file synchronization across languages, and coordinates review workflows through GitHub Discussions.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 32,
+      "total_chunks": 75,
+      "char_count": 340,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480064"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:33",
+    "content": "The translation system centers around the\n```\nAgent\n```\nclass from pydantic-ai, configured with OpenAI's GPT-4o model. The\n```\ntranslate_page()\n```\nfunction in\n[scripts/translate.py:97-158](.)\nhandles individual page translation with sophisticated prompt engineering.\n```\nflowchart TD\n    subgraph \"Translation Pipeline\"\n        A[\"English Source\"] --> B[\"translate_page()\"]\n        B --> C[\"Agent('openai:gpt-4o')\"]\n        C --> D[\"Language-Specific Output\"]\n    end\n    \n    subgraph \"Prompt System\"\n        E[\"general_prompt\"] --> F[\"lang_prompt_content\"]\n        F --> G[\"old_translation\"]\n        G --> H[\"Combined Prompt\"]\n    end\n    \n    subgraph \"File Management\"\n        I[\"generate_lang_path()\"] --> J[\"Path Mapping\"]\n        K[\"iter_en_paths_to_translate()\"] --> L[\"Source Discovery\"]\n    end\n    \n    H --> C\n    J --> B\n    L --> B\n```\n**Translation Pipeline Architecture**\nThe system uses a multi-layered prompting approach. The\n```\ngeneral_prompt\n```\nvariable\n[scripts/translate.py:26-66](.)\nprovides base translation instructions, while language-specific prompts from\n```\ndocs/{lang}/llm-prompt.md\n```\nfiles add terminology guidelines and style preferences.\nSources:\n[scripts/translate.py:122-157](.)\n,\n[scripts/translate.py:26-66](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 33,
+      "total_chunks": 75,
+      "char_count": 1252,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480070"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:34",
+    "content": "The translation system maintains a structured file organization where English documentation in\n```\ndocs/en/docs/\n```\nmaps to translated versions in\n```\ndocs/{lang}/docs/\n```\n. Two key functions handle this mapping:\n```\ngenerate_lang_path()\n```\n```\ndocs/en/docs/tutorial/first-steps.md\n```\n```\ndocs/es/docs/tutorial/first-steps.md\n```\n```\ngenerate_en_path()\n```\n```\ndocs/es/docs/tutorial/first-steps.md\n```\n```\ndocs/en/docs/tutorial/first-steps.md\n```\n, Purpose = . , Input = . , Output = \nThe\n```\nnon_translated_sections\n```\ntuple\n[scripts/translate.py:14-23](.)\nexcludes specific content types like API reference, release notes, and management documentation from automatic translation.\nSources:\n[scripts/translate.py:76-94](.)\n,\n[scripts/translate.py:14-23](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 34,
+      "total_chunks": 75,
+      "char_count": 761,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480075"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:35",
+    "content": "The CLI interface provides multiple translation commands through the\n```\ntyper\n```\napp:\n```\nflowchart LR\n    subgraph \"Translation Commands\"\n        A[\"translate_page\"] --> B[\"Single File\"]\n        C[\"translate_lang\"] --> D[\"Full Language\"]\n        E[\"update_outdated\"] --> F[\"Git-Based Staleness\"]\n        G[\"add_missing\"] --> H[\"New Files\"]\n        I[\"update_and_add\"] --> J[\"Combined Operation\"]\n    end\n    \n    subgraph \"Maintenance Commands\"\n        K[\"list_outdated\"] --> L[\"Git Comparison\"]\n        M[\"list_missing\"] --> N[\"File Existence Check\"]\n        O[\"remove_removable\"] --> P[\"Cleanup Orphans\"]\n    end\n    \n    subgraph \"GitHub Integration\"\n        Q[\"make_pr\"] --> R[\"Branch Creation\"]\n        R --> S[\"Commit Changes\"]\n        S --> T[\"Create Pull Request\"]\n    end\n```\n**Translation Command Architecture**\nThe\n```\nlist_outdated()\n```\nfunction\n[scripts/translate.py:276-295](.)\nuses Git commit timestamps to identify translations that need updates when English source files have been modified more recently than their translated counterparts.\nSources:\n[scripts/translate.py:192-324](.)\n,\n[scripts/translate.py:276-295](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 35,
+      "total_chunks": 75,
+      "char_count": 1139,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480080"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:36",
+    "content": "The GitHub Actions workflow\n```\n.github/workflows/translate.yml\n```\nprovides a manual dispatch interface for running translation operations with different commands and target languages.\n```\nflowchart TD\n    subgraph \"Workflow Dispatch\"\n        A[\"Manual Trigger\"] --> B[\"Command Selection\"]\n        B --> C[\"Language Parameter\"]\n        C --> D[\"Optional File Path\"]\n    end\n    \n    subgraph \"Environment Setup\"\n        E[\"ubuntu-latest\"] --> F[\"Python 3.11\"]\n        F --> G[\"uv Package Manager\"]\n        G --> H[\"Translation Dependencies\"]\n    end\n    \n    subgraph \"Execution\"\n        I[\"translate.py command\"] --> J[\"make_pr\"]\n        J --> K[\"GitHub PR Creation\"]\n    end\n    \n    subgraph \"Secrets\"\n        L[\"FASTAPI_TRANSLATIONS\"] --> M[\"GitHub Token\"]\n        N[\"OPENAI_API_KEY\"] --> O[\"AI Translation\"]\n    end\n    \n    D --> I\n    H --> I\n    M --> J\n    O --> I\n```\n**GitHub Actions Translation Workflow**\nThe workflow supports command options including\n```\ntranslate-page\n```\n,\n```\ntranslate-lang\n```\n,\n```\nupdate-outdated\n```\n,\n```\nadd-missing\n```\n,\n```\nupdate-and-add\n```\n, and\n```\nremove-all-removable\n```\n[.github/workflows/translate.yml:10-19](.)\n.\nSources:\n[.github/workflows/translate.yml:1-78](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 36,
+      "total_chunks": 75,
+      "char_count": 1218,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480086"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:37",
+    "content": "The\n```\nmake_pr()\n```\nfunction\n[scripts/translate.py:328-367](.)\nhandles automated PR creation with Git configuration, branch management, and GitHub API integration through the\n```\nPyGithub\n```\nlibrary.\nSources:\n[scripts/translate.py:328-367](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 37,
+      "total_chunks": 75,
+      "char_count": 245,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480092"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:38",
+    "content": "The notification system in\n```\nscripts/notify_translations.py\n```\ncoordinates translation reviews through GitHub Discussions using GraphQL queries to track translation PRs and notify community reviewers.\n```\nflowchart TD\n    subgraph \"Discussion Management\"\n        A[\"get_graphql_translation_discussions()\"] --> B[\"Language Discussion Mapping\"]\n        B --> C[\"lang_to_discussion_map\"]\n    end\n    \n    subgraph \"PR Monitoring\"\n        D[\"GitHub Event\"] --> E[\"PR Label Analysis\"]\n        E --> F[\"Translation Detection\"]\n        F --> G[\"Language Extraction\"]\n    end\n    \n    subgraph \"Notification Logic\"\n        H[\"awaiting_label\"] --> I[\"New Notification\"]\n        J[\"approved_label\"] --> K[\"Done Notification\"]\n        L[\"PR State Check\"] --> M[\"Comment Management\"]\n    end\n    \n    subgraph \"GraphQL Operations\"\n        N[\"all_discussions_query\"] --> O[\"Discussion Discovery\"]\n        P[\"add_comment_mutation\"] --> Q[\"Create Notification\"]\n        R[\"update_comment_mutation\"] --> S[\"Mark Complete\"]\n    end\n    \n    C --> F\n    G --> I\n    I --> Q\n    K --> S\n```\n**GitHub Discussions Coordination Architecture**\nThe system uses specific labels for translation workflow management:\n```\nawaiting-review\n```\n,\n```\nlang-all\n```\n, and\n```\napproved-1\n```\n[scripts/notify_translations.py:13-15](.)\n. The\n```\nquestions_translations_category_id\n```\nconstant\n[scripts/notify_translations.py:19](.)\nidentifies the GitHub Discussions category for translation coordination.\nSources:\n[scripts/notify_translations.py:13-15](.)\n,\n[scripts/notify_translations.py:21-84](.)\n,\n[scripts/notify_translations.py:349-373](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 38,
+      "total_chunks": 75,
+      "char_count": 1613,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480097"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:39",
+    "content": "The notification system tracks three primary states for translation PRs:\n```\nawaiting-review\n```\n```\nnew_translation_message\n```\n```\napproved-1\n```\n```\ndone_translation_message\n```\nAwaiting Review, Trigger = . Awaiting Review, Action = . Awaiting Review, Message Type = \nSources:\n[scripts/notify_translations.py:360-427](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 39,
+      "total_chunks": 75,
+      "char_count": 323,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480103"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:40",
+    "content": "Each supported language has a dedicated prompt file at\n```\ndocs/{lang}/llm-prompt.md\n```\nthat provides translation guidelines, terminology preferences, and style instructions. The Spanish prompt file\n[docs/es/llm-prompt.md:1-99](.)\nexemplifies this approach with specific translation rules for technical terms.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 40,
+      "total_chunks": 75,
+      "char_count": 310,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480108"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:41",
+    "content": "The\n```\nget_langs()\n```\nfunction\n[scripts/translate.py:72-73](.)\nloads language configurations from\n```\ndocs/language_names.yml\n```\n, providing the mapping between language codes and display names used throughout the translation system.\nSources:\n[scripts/translate.py:72-73](.)\n,\n[docs/es/llm-prompt.md:1-99](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 41,
+      "total_chunks": 75,
+      "char_count": 311,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480114"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:42",
+    "content": "The translation system implements sophisticated diff minimization to preserve existing translations when updating content. When\n```\nold_translation\n```\nexists\n[scripts/translate.py:128-144](.)\n, the system instructs the AI to minimize changes by preserving correct lines and only updating content that reflects changes in the English source.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 42,
+      "total_chunks": 75,
+      "char_count": 341,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480120"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:43",
+    "content": "The\n```\ngeneral_prompt\n```\nincludes specific instructions for handling code snippets, technical terms, and markdown formatting\n[scripts/translate.py:27-37](.)\n. Code fragments surrounded by backticks remain untranslated, and console/terminal examples preserve their original English content.\nSources:\n[scripts/translate.py:128-144](.)\n,\n[scripts/translate.py:27-37](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 43,
+      "total_chunks": 75,
+      "char_count": 368,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480126"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:44",
+    "content": "The translation management system integrates with several other FastAPI infrastructure components:\n- **Documentation Build System** : Translated files feed into the MkDocs build pipeline covered in [Documentation System](#6.1)\n- **CI/CD Pipeline** : Translation workflows integrate with the broader automation system described in [CI/CD Pipeline](#6.2)\n- **Community Management** : Translation coordination connects with contributor recognition systems detailed in [Contributors and Experts Management](#7.1)\nSources:\n[scripts/translate.py:1-371](.)\n,\n[.github/workflows/translate.yml:1-78](.)\n,\n[scripts/notify_translations.py:1-433](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 44,
+      "total_chunks": 75,
+      "char_count": 637,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480133"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:45",
+    "content": "This document covers the FastAPI project's external resources management system and sponsorship infrastructure. It explains how the project organizes and maintains community-contributed content, manages sponsorship information, and facilitates community engagement across multiple languages.\nFor information about contributor recognition and GitHub discussions experts, see\n[Contributors and Experts Management](#7.1)\n. For details about translation coordination, see\n[Translation Management](#7.2)\n.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 45,
+      "total_chunks": 75,
+      "char_count": 500,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480138"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:46",
+    "content": "The FastAPI project maintains a comprehensive database of external resources including articles, podcasts, talks, and GitHub repositories. This system is implemented through a structured YAML data file that feeds into documentation generation.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 46,
+      "total_chunks": 75,
+      "char_count": 243,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480144"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:47",
+    "content": "The external links system uses a hierarchical YAML structure to organize content by type and language:\n```\ngraph TD\n    A[\"external_links.yml\"] --> B[\"Articles\"]\n    A --> C[\"Podcasts\"] \n    A --> D[\"Talks\"]\n    \n    B --> E[\"English\"]\n    B --> F[\"German\"]\n    B --> G[\"Japanese\"]\n    B --> H[\"Portuguese\"]\n    B --> I[\"Russian\"]\n    B --> J[\"Vietnamese\"]\n    B --> K[\"Taiwanese\"]\n    B --> L[\"Spanish\"]\n    \n    E --> M[\"Individual Articles\"]\n    M --> N[\"author\"]\n    M --> O[\"author_link\"]\n    M --> P[\"link\"]\n    M --> Q[\"title\"]\n    \n    R[\"GitHub API\"] --> S[\"topic_repos\"]\n    S --> T[\"External Links Page\"]\n    \n    A --> T[\"docs/en/docs/external-links.md\"]\n```\n**External Links Data Flow Architecture**\nSources:\n[docs/en/data/external_links.yml:1-419](.)\n,\n[docs/en/docs/external-links.md:1-40](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 47,
+      "total_chunks": 75,
+      "char_count": 807,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480150"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:48",
+    "content": "The system organizes external resources into three main categories:\n```\nauthor\n```\n,\n```\nauthor_link\n```\n,\n```\nlink\n```\n,\n```\ntitle\n```\n```\nauthor\n```\n,\n```\nauthor_link\n```\n,\n```\nlink\n```\n,\n```\ntitle\n```\n```\nauthor\n```\n,\n```\nauthor_link\n```\n,\n```\nlink\n```\n,\n```\ntitle\n```\nArticles, Purpose = Blog posts, tutorials, guides. Articles, Data Fields = \nEach content item contains standardized metadata fields that enable consistent rendering and attribution across all languages.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 48,
+      "total_chunks": 75,
+      "char_count": 474,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480157"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:49",
+    "content": "The system automatically fetches and displays GitHub repositories with the\n```\nfastapi\n```\ntopic:\n```\ngraph LR\n    A[\"GitHub API\"] --> B[\"topic_repos query\"]\n    B --> C[\"Repository Data\"]\n    C --> D[\"stars count\"]\n    C --> E[\"name\"]\n    C --> F[\"html_url\"]\n    C --> G[\"owner_login\"]\n    C --> H[\"owner_html_url\"]\n    \n    I[\"external-links.md template\"] --> J[\"{% for repo in topic_repos %}\"]\n    J --> K[\"Rendered Repository List\"]\n```\n**GitHub Repository Data Integration**\nSources:\n[docs/en/docs/external-links.md:31-39](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 49,
+      "total_chunks": 75,
+      "char_count": 530,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480162"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:50",
+    "content": "The FastAPI project implements a multi-tiered sponsorship system that supports both direct project sponsorship and ecosystem tool sponsorship.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 50,
+      "total_chunks": 75,
+      "char_count": 142,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480168"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:51",
+    "content": "```\ngraph TD\n    A[\"FastAPI Sponsorship\"] --> B[\"GitHub Sponsors\"]\n    B --> C[\"tiangolo\"]\n    \n    D[\"Ecosystem Sponsorship\"] --> E[\"Pydantic\"]\n    D --> F[\"Starlette/Uvicorn\"]\n    \n    E --> G[\"Samuel Colvin\"]\n    F --> H[\"Encode\"]\n    \n    I[\"Community Benefits\"] --> J[\"Documentation Badges\"]\n    I --> K[\"Recognition\"]\n    I --> L[\"Support Tiers\"]\n    \n    C --> I\n    G --> I\n    H --> I\n```\n**Sponsorship Ecosystem Architecture**\nThe sponsorship system recognizes that FastAPI depends on foundational tools and encourages supporting the entire ecosystem.\nSources:\n[docs/en/docs/help-fastapi.md:250-257](.)\n,\n[docs/zh/docs/help-fastapi.md:129-145](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 51,
+      "total_chunks": 75,
+      "char_count": 656,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480174"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:52",
+    "content": "The sponsorship information is maintained across multiple language versions with consistent messaging:\n```\ndocs/en/docs/help-fastapi.md\n```\n```\ndocs/zh/docs/help-fastapi.md\n```\n```\ndocs/fr/docs/help-fastapi.md\n```\n```\ndocs/pl/docs/help-fastapi.md\n```\n```\ndocs/ru/docs/help-fastapi.md\n```\n```\ndocs/pt/docs/help-fastapi.md\n```\n```\ndocs/ja/docs/help-fastapi.md\n```\nEnglish, File Path = . English, Key Sections = \nSources:\n[docs/en/docs/help-fastapi.md:250-257](.)\n,\n[docs/zh/docs/help-fastapi.md:129-148](.)\n,\n[docs/fr/docs/help-fastapi.md:87-104](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 52,
+      "total_chunks": 75,
+      "char_count": 547,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480179"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:53",
+    "content": "The project implements comprehensive systems for community engagement that integrate with external platforms and resources.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 53,
+      "total_chunks": 75,
+      "char_count": 123,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480185"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:54",
+    "content": "```\ngraph TD\n    A[\"Community Help System\"] --> B[\"GitHub Discussions\"]\n    A --> C[\"GitHub Issues\"]\n    A --> D[\"Discord Chat\"]\n    \n    E[\"Getting Help\"] --> F[\"Newsletter Subscription\"]\n    E --> G[\"X/Twitter Following\"]\n    E --> H[\"GitHub Watching\"]\n    \n    I[\"Providing Help\"] --> J[\"Answer Questions\"]\n    I --> K[\"Review PRs\"]\n    I --> L[\"Create Content\"]\n    \n    M[\"Recognition\"] --> N[\"FastAPI Expert Status\"]\n    M --> O[\"Contributor Acknowledgment\"]\n    \n    J --> N\n    K --> N\n    L --> P[\"external_links.yml\"]\n    P --> Q[\"Community Visibility\"]\n```\n**Community Engagement Flow**\nSources:\n[docs/en/docs/help-fastapi.md:72-125](.)\n,\n[docs/en/docs/help-fastapi.md:213-227](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 54,
+      "total_chunks": 75,
+      "char_count": 691,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480191"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:55",
+    "content": "Contributors can add their FastAPI-related content through a structured process:\n1. **Content Creation** : Authors create articles, videos, podcasts, or talks about FastAPI\n2. **Submission** : Contributors edit the `external_links.yml` file via GitHub PR\n3. **Placement** : New links are added to the beginning of the appropriate section\n4. **Review** : The FastAPI team reviews and merges the contribution\n5. **Publication** : Content appears on the external links documentation page\n```\ngraph LR\n    A[\"Content Creator\"] --> B[\"Create FastAPI Content\"]\n    B --> C[\"Fork Repository\"]\n    C --> D[\"Edit external_links.yml\"]\n    D --> E[\"Submit Pull Request\"]\n    E --> F[\"Review Process\"]\n    F --> G[\"Merge to Master\"]\n    G --> H[\"Documentation Rebuild\"]\n    H --> I[\"Public Visibility\"]\n    \n    J[\"Link Placement Rules\"] --> K[\"Start of Section\"]\n    J --> L[\"Proper Category\"]\n    J --> M[\"Language Organization\"]\n```\n**External Content Contribution Workflow**\nSources:\n[docs/en/docs/help-fastapi.md:201-203](.)\n,\n[docs/en/docs/external-links.md:10-12](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 55,
+      "total_chunks": 75,
+      "char_count": 1061,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480196"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:56",
+    "content": "The external resources system uses a template-based approach to render the YAML data into documentation:\n```\ngraph TD\n    A[\"external_links.yml\"] --> B[\"MkDocs Processing\"]\n    B --> C[\"Jinja2 Template\"]\n    C --> D[\"external-links.md\"]\n    \n    E[\"Template Logic\"] --> F[\"{% for section_name, section_content in external_links.items() %}\"]\n    F --> G[\"{% for lang_name, lang_content in section_content.items() %}\"]\n    G --> H[\"{% for item in lang_content %}\"]\n    \n    I[\"GitHub API Integration\"] --> J[\"topic_repos data\"]\n    J --> K[\"Repository rendering\"]\n    \n    L[\"Build Process\"] --> M[\"Static Site Generation\"]\n    M --> N[\"Multi-language Sites\"]\n```\n**Data Processing and Rendering Pipeline**\nThe template system iterates through the hierarchical YAML structure to generate organized documentation sections for each content type and language.\nSources:\n[docs/en/docs/external-links.md:15-29](.)\n,\n[docs/en/docs/external-links.md:35-39](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 56,
+      "total_chunks": 75,
+      "char_count": 949,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480201"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:57",
+    "content": "The system includes several mechanisms to ensure content quality and relevance:\n- **Structured Data Validation** : YAML schema enforcement for required fields\n- **Link Placement Rules** : New content added to section beginnings for visibility\n- **Multi-language Consistency** : Parallel structure across all language versions\n- **Community Review** : Pull request review process for all submissions\n- **Automated GitHub Integration** : Dynamic repository listings via GitHub API\nSources:\n[docs/en/data/external_links.yml:1-419](.)\n,\n[docs/en/docs/help-fastapi.md:201-203](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 57,
+      "total_chunks": 75,
+      "char_count": 574,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480207"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:58",
+    "content": "This document covers the automated systems that manage community interactions and notifications within the FastAPI project. These systems handle notifications for documentation deployments, translation reviews, and other community-driven activities through GitHub integrations.\nFor information about contributor tracking and expert identification, see\n[Contributors and Experts Management](#7.1)\n. For details about the translation workflow itself, see\n[Translation Management](#7.2)\n.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 58,
+      "total_chunks": 75,
+      "char_count": 485,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480212"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:59",
+    "content": "The FastAPI project uses two primary automation scripts to manage community notifications:\nDocumentation Deployment Notifications, Purpose = Notify PRs about documentation preview deployments. Documentation Deployment Notifications, Trigger = GitHub Actions workflow completion. Translation Community Notifications, Purpose = Notify language communities about translation PRs. Translation Community Notifications, Trigger = PR label changes",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 59,
+      "total_chunks": 75,
+      "char_count": 440,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480217"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:60",
+    "content": "The\n```\ndeploy_docs_status\n```\nsystem automatically updates pull requests with documentation preview links and deployment status information when documentation changes are detected.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 60,
+      "total_chunks": 75,
+      "char_count": 181,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480224"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:61",
+    "content": "The system operates through the\n```\nSettings\n```\nclass which configures GitHub repository access and deployment parameters:\n```\ngraph TD\n    subgraph \"deploy_docs_status.py\"\n        Settings[\"Settings\"]\n        LinkData[\"LinkData\"]\n        main_func[\"main()\"]\n    end\n    \n    subgraph \"GitHub Integration\"\n        GitHub_API[\"Github API\"]\n        PR_object[\"Pull Request\"]\n        commit_status[\"Commit Status\"]\n        pr_comment[\"PR Comment\"]\n    end\n    \n    subgraph \"Documentation Processing\"\n        docs_files[\"docs/ files\"]\n        lang_links[\"lang_links dict\"]\n        preview_links[\"Preview Links\"]\n    end\n    \n    Settings --> main_func\n    main_func --> GitHub_API\n    GitHub_API --> PR_object\n    main_func --> docs_files\n    docs_files --> lang_links\n    lang_links --> LinkData\n    LinkData --> preview_links\n    preview_links --> pr_comment\n    main_func --> commit_status\n    \n    PR_object --> commit_status\n    PR_object --> pr_comment\n```",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 61,
+      "total_chunks": 75,
+      "char_count": 960,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480229"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:62",
+    "content": "The system creates different commit statuses based on deployment state:\n- **Pending** : When deployment is in progress [scripts/deploy_docs_status.py:50-57](.)\n- **Success (No Changes)** : When no documentation files were modified [scripts/deploy_docs_status.py:40-48](.)\n- **Success (Deployed)** : When documentation is successfully deployed [scripts/deploy_docs_status.py:58-63](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 62,
+      "total_chunks": 75,
+      "char_count": 383,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480235"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:63",
+    "content": "The system processes documentation files to generate preview links using regex matching:\n1. Identifies files matching pattern `docs/([^/]+)/docs/(.*)` [scripts/deploy_docs_status.py:71-74](.)\n2. Converts file paths to URL paths by handling `index.md` and `.md` extensions [scripts/deploy_docs_status.py:76-84](.)\n3. Generates `LinkData` objects containing preview, previous, and English reference links [scripts/deploy_docs_status.py:85-91](.)\n**Sources:**\n[scripts/deploy_docs_status.py:1-126](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 63,
+      "total_chunks": 75,
+      "char_count": 497,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480240"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:64",
+    "content": "The\n```\nnotify_translations\n```\nsystem manages notifications to language-specific discussion threads when translation pull requests are opened, reviewed, or completed.",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 64,
+      "total_chunks": 75,
+      "char_count": 167,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480246"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:65",
+    "content": "```\ngraph TD\n    subgraph \"notify_translations.py Components\"\n        Settings_nt[\"Settings\"]\n        PartialGitHubEvent[\"PartialGitHubEvent\"]\n        Comment[\"Comment\"]\n        AllDiscussionsDiscussionNode[\"AllDiscussionsDiscussionNode\"]\n    end\n    \n    subgraph \"GitHub GraphQL Integration\"\n        all_discussions_query[\"all_discussions_query\"]\n        translation_discussion_query[\"translation_discussion_query\"]\n        add_comment_mutation[\"add_comment_mutation\"]\n        update_comment_mutation[\"update_comment_mutation\"]\n    end\n    \n    subgraph \"Processing Logic\"\n        get_graphql_translation_discussions[\"get_graphql_translation_discussions()\"]\n        get_graphql_translation_discussion_comments[\"get_graphql_translation_discussion_comments()\"]\n        create_comment_func[\"create_comment()\"]\n        update_comment_func[\"update_comment()\"]\n    end\n    \n    subgraph \"Label Processing\"\n        awaiting_label[\"awaiting-review\"]\n        lang_all_label[\"lang-all\"]\n        approved_label[\"approved-1\"]\n        lang_specific[\"lang-{code}\"]\n    end\n    \n    Settings_nt --> get_graphql_translation_discussions\n    all_discussions_query --> get_graphql_translation_discussions\n    get_graphql_translation_discussions --> AllDiscussionsDiscussionNode\n    \n    translation_discussion_query --> get_graphql_translation_discussion_comments\n    get_graphql_translation_discussion_comments --> Comment\n    \n    add_comment_mutation --> create_comment_func\n    update_comment_mutation --> update_comment_func\n    \n    lang_specific --> get_graphql_translation_discussions\n    awaiting_label --> create_comment_func\n    approved_label --> update_comment_func\n```",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 65,
+      "total_chunks": 75,
+      "char_count": 1665,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480251"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:66",
+    "content": "The system uses specific GitHub labels to trigger notifications:\n```\nawaiting-review\n```\n```\nlang-all\n```\n```\nlang-{code}\n```\n```\napproved-1\n```\n, Purpose = . , Action = ",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 66,
+      "total_chunks": 75,
+      "char_count": 170,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480257"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:67",
+    "content": "The system uses four main GraphQL operations:\n1. **Discussion Discovery** : `all_discussions_query` finds translation discussions [scripts/notify_translations.py:21-41](.)\n2. **Comment Retrieval** : `translation_discussion_query` gets existing comments [scripts/notify_translations.py:43-60](.)\n3. **Comment Creation** : `add_comment_mutation` creates new notifications [scripts/notify_translations.py:62-72](.)\n4. **Comment Updates** : `update_comment_mutation` marks translations as complete [scripts/notify_translations.py:74-84](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 67,
+      "total_chunks": 75,
+      "char_count": 535,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480262"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:68",
+    "content": "The system uses two message templates:\n- **New Translation** : `new_translation_message` announces new PRs requiring review [scripts/notify_translations.py:361](.)\n- **Completed Translation** : `done_translation_message` marks translations as finished [scripts/notify_translations.py:362](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 68,
+      "total_chunks": 75,
+      "char_count": 291,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480268"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:69",
+    "content": "To avoid multiple simultaneous notifications, the system includes a randomized delay:\n```\nsleep_time = random.random() * 10  # 0-10 seconds\n```\nThis prevents race conditions when multiple labels are applied simultaneously\n[scripts/notify_translations.py:329-334](.)\n.\n**Sources:**\n[scripts/notify_translations.py:1-433](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 69,
+      "total_chunks": 75,
+      "char_count": 322,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480273"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:70",
+    "content": "Both automation systems integrate with GitHub Actions workflows through environment variables and event data:",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 70,
+      "total_chunks": 75,
+      "char_count": 109,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480279"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:71",
+    "content": "Both scripts use\n```\nBaseSettings\n```\nfrom Pydantic for configuration management:\n- `github_repository` : Target repository identifier\n- `github_token` : Authentication token for API access\n- Event-specific parameters (commit SHA, PR number, etc.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 71,
+      "total_chunks": 75,
+      "char_count": 247,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480284"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:72",
+    "content": "The\n```\nnotify_translations\n```\nsystem processes GitHub webhook events:\n1. Reads event data from `github_event_path` [scripts/notify_translations.py:315-320](.)\n2. Extracts PR number from event or settings [scripts/notify_translations.py:322-326](.)\n3. Processes PR labels to determine language scope [scripts/notify_translations.py:336-347](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 72,
+      "total_chunks": 75,
+      "char_count": 344,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480290"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:73",
+    "content": "Both systems implement comprehensive error handling:\n- HTTP response validation [scripts/notify_translations.py:224-229](.)\n- GraphQL error checking [scripts/notify_translations.py:231-236](.)\n- Missing resource handling [scripts/deploy_docs_status.py:34-36](.)\n**Sources:**\n[scripts/deploy_docs_status.py:9-16](.)\n,\n[scripts/notify_translations.py:178-188](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 73,
+      "total_chunks": 75,
+      "char_count": 360,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480295"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Community_Ecosystem:chunk:74",
+    "content": "The translation notification system specifically targets the \"Questions: Translations\" discussion category using the category ID\n```\nDIC_kwDOCZduT84CT5P9\n```\n[scripts/notify_translations.py:19](.)\n. This integration enables:\n- Automatic discovery of language-specific discussion threads\n- Targeted notifications to relevant community members\n- Persistent comment tracking to avoid duplicate notifications\n- Status updates when translations are completed\nThe system maintains a mapping between language codes and discussion threads, allowing precise targeting of notifications to the appropriate community groups\n[scripts/notify_translations.py:350-358](.)\n.\n**Sources:**\n[scripts/notify_translations.py:18-20](.)\n,\n[scripts/notify_translations.py:349-373](.)",
+    "metadata": {
+      "source": "fastapi\\Community_Ecosystem.md",
+      "file_name": "Community_Ecosystem.md",
+      "subfolder": "fastapi",
+      "chunk_index": 74,
+      "total_chunks": 75,
+      "char_count": 758,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:34.480302"
+    }
+  }
+]

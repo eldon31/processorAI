@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  qdrant-mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.qdrant-mcp
+    container_name: qdrant-mcp-server
+    environment:
+      - QDRANT_HOST=host.docker.internal
+      - QDRANT_PORT=6333
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    volumes:
+      - ./mcp_server:/app/mcp_server:ro
+      - ./src:/app/src:ro

@@ -1,0 +1,97 @@
+#### On this page
+
+- [Background jobs](\docs\guides\background-jobs#background-jobs)
+- [How to create background jobs](\docs\guides\background-jobs#how-to-create-background-jobs)
+- [1. Create a function that runs in the background](\docs\guides\background-jobs#1-create-a-function-that-runs-in-the-background)
+- [2. Trigger the function](\docs\guides\background-jobs#2-trigger-the-function)
+- [2. Trigger the function](\docs\guides\background-jobs#2-trigger-the-function-2)
+- [2. Trigger the function](\docs\guides\background-jobs#2-trigger-the-function-3)
+- [Further reading](\docs\guides\background-jobs#further-reading)
+
+Features [Events &amp; Triggers](\docs\features\events-triggers)
+
+# Background jobs
+
+This guide will walk you through creating background jobs with retries in a few minutes.
+
+By running background tasks in Inngest:
+
+- You don't need to create queues, workers, or subscriptions.
+- You can run background jobs on serverless functions without setting up infrastructure.
+- You can enqueue jobs to run in the future, similar to a task queue, without any configuration.
+
+## [How to create background jobs](\docs\guides\background-jobs#how-to-create-background-jobs)
+
+TypeScript Go Python
+
+Background jobs in Inngest are executed in response to a trigger (an event or cron).
+
+The example below shows a background job that uses an event (here called `app/user.created` ) to send an email to new signups. It consists of two parts: creating the function that runs in the background and triggering the function.
+
+👉 To be able to use the code below, remember to make first [serve your functions in your Inngest API](\docs\learn\serving-inngest-functions) to make it available to Inngest.
+
+### [1. Create a function that runs in the background](\docs\guides\background-jobs#1-create-a-function-that-runs-in-the-background)
+
+Let's walk through the code step by step:
+
+1. We [create a new Inngest function](\docs\reference\functions\create) , which will run in the background any time the `app/user.created` event is sent to Inngest.
+2. We send an email reliably using the [`step.run()`](\docs\reference\functions\step-run) method. Every [Inngest step](\docs\steps) is automatically retried upon failure.
+3. We pause the execution of the function until a specific date using [`step.sleepUntil()`](\docs\reference\functions\step-sleep-until) . The function will be resumed automatically, across server restarts or serverless functions. You don't have to worry about scale, memory leaks, connections, or restarts.
+4. We resume execution and perform other tasks.
+
+Copy Copied
+
+```
+import { Inngest } from "inngest" ;
+const inngest = new Inngest ({ id : "signup-flow" });
+
+export const sendSignUpEmail = inngest .createFunction (
+{ id : "send-signup-email" } ,
+{ event : "app/user.created" } ,
+({ event , step }) => {
+await step .run ( "send-the-user-a-signup-email" , async () => {
+await sesclient .clientsendEmail ({
+to : event . data .user_email ,
+subject : "Welcome to Inngest!"
+message: "..." ,
+});
+});
+await step .sleepUntil ( "wait-for-the-future" , "2023-02-01T16:30:00" );
+
+await step .run ( "do-some-work-in-the-future" , async () => {
+// Code here runs in the future automatically.
+});
+}
+);
+```
+
+### [2. Trigger the function](\docs\guides\background-jobs#2-trigger-the-function)
+
+Your `sendSignUpEmail` function will be triggered whenever Inngest receives an event called `app/user.created` . is received. You send this event to Inngest like so:
+
+Copy Copied
+
+```
+await inngest .send ({
+name : "app/user.created" , // This matches the event used in `createFunction`
+data : {
+email : "test@example.com" ,
+// any data you want to send
+} ,
+});
+```
+
+When you send an event to Inngest, it automatically finds any functions that are triggered by the event ID and automatically runs those functions in the background. The entire JSON object you pass in to `inngest.send()` will be available to your functions.
+
+💡 Tip: You can create many functions which listen to the same event, and all of them will run in the background. Learn more about this pattern in our ["Fan out" guide](\docs\guides\fan-out-jobs) .
+
+## [Further reading](\docs\guides\background-jobs#further-reading)
+
+More information on background jobs:
+
+- [Email sequence examples](\docs\examples\email-sequence) implemented with Inngest.
+- [Customer story: Soundcloud](\customers\soundcloud) : building scalable video pipelines with Inngest to streamline dynamic video generation.
+- [Customer story: GitBook](\customers\gitbook) : how GitBook scaled background job processing with Inngest.
+- [Customer story: Fey](\customers\fey) : how Fey cut execution time and costs by 50x in data-intensive processes.
+- Blog post: [building Truckload](\blog\mux-migrating-video-collections) , a tool for heavy video migration between hosting platforms, from Mux.
+- Blog post: building *banger.show* 's [video rendering pipeline](\blog\banger-video-rendering-pipeline) .

@@ -1,0 +1,90 @@
+#### On this page
+
+- [Delayed Functions](\docs\guides\delayed-functions#delayed-functions)
+- [Platform support](\docs\guides\delayed-functions#platform-support)
+- [Delaying jobs](\docs\guides\delayed-functions#delaying-jobs)
+- [Running at specific times](\docs\guides\delayed-functions#running-at-specific-times)
+- [Running at specific times](\docs\guides\delayed-functions#running-at-specific-times-2)
+- [How it works](\docs\guides\delayed-functions#how-it-works)
+
+Features [Events &amp; Triggers](\docs\features\events-triggers)
+
+# Delayed Functions
+
+You can easily enqueue jobs in the future with Inngest. Inngest offers two ways to run jobs in the future: delaying jobs for a specific amount of time (up to a year, and for free plan up to seven days), or running code at a specific date and time. There are some benefits to enqueuing jobs using Inngest:
+
+- It works across any provider or platform
+- Delaying jobs is durable, and works across server restarts, serverless functions, and redeploys
+- You can enqueue jobs into the far future
+- Serverless functions are fully supported on all platforms
+- Our SDK bypasses serverless function timeouts on all platforms
+- You never need to manage queues or backlogs
+
+### [Platform support](\docs\guides\delayed-functions#platform-support)
+
+**This works across all providers and platforms** , whether you run serverless functions or use servers like express. **It also bypasses serverless function timeouts** on all platforms, so you can sleep for a longer time than your provider supports.
+
+## [Delaying jobs](\docs\guides\delayed-functions#delaying-jobs)
+
+TypeScript Go Python
+
+You can delay jobs using the [`step.sleep()`](\docs\reference\functions\step-sleep) method:
+
+Copy Copied
+
+```
+import { Inngest } from "inngest" ;
+
+const inngest = new Inngest ({ id : "signup-flow" });
+
+export const fn = inngest .createFunction (
+{ id : "send-signup-email" } ,
+{ event : "app/user.created" } ,
+async ({ event , step }) => {
+await step .sleep ( "wait-a-moment" , "1 hour" );
+await step .run ( "do-some-work-in-the-future" , async () => {
+// This runs after 1 hour
+});
+}
+);
+```
+
+For more information on `step.sleep()` read [the reference](\docs\reference\functions\step-sleep) .
+
+## [Running at specific times](\docs\guides\delayed-functions#running-at-specific-times)
+
+You can run jobs at a specific time using the [`step.sleepUntil()`](\docs\reference\functions\step-sleep-until) method:
+
+Copy Copied
+
+```
+import { Inngest } from "inngest" ;
+
+const inngest = new Inngest ({ id : "signup-flow" });
+
+export const fn = inngest .createFunction (
+{ id : "send-signup-email" } ,
+{ event : "app/user.created" } ,
+async ({ event , step }) => {
+await step .sleepUntil ( "wait-for-iso-string" , "2023-04-01T12:30:00" );
+
+// You can also sleep until a timestamp within the event data.  This lets you
+// pass in a time for you to run the job:
+await step .sleepUntil ( "wait-for-timestamp" , event . data .run_at); // Assuming event.data.run_at is a timestamp.
+
+await step .run ( "do-some-work-in-the-future" , async () => {
+// This runs at the specified time.
+});
+}
+);
+```
+
+For more information on `step.sleepUntil()` [read the reference](\docs\reference\functions\step-sleep-until) .
+
+## [How it works](\docs\guides\delayed-functions#how-it-works)
+
+In both methods, **the function controls when it runs** .  You control the flow of your code by calling `sleep` or `sleepUntil` within your function directly,
+
+instead of using the queue to manage your code's timing.  This keeps your logic together and makes your code easier to modify.
+
+Inngest *stops the function from running* for whatever time is specified.  When you call `step.sleep` or `step.sleepUntil` the function automatically stops running any future work. The function then tells the Inngest executor that it should be re-invoked at a future time.  We re-call the function at the next step, skipping any previous work.  This is how we bypass serverless function time limits and work across server restarts or redeploys.

@@ -1,0 +1,152 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:0",
+    "content": "This document covers FastAPI's dependency injection system, which provides automatic resolution and injection of dependencies into path operation functions. The system analyzes function signatures to identify dependencies, validates parameters, and manages the lifecycle of dependency instances including caching and cleanup.\nFor information about parameter validation and handling, see\n[Parameter Validation and Handling](#2.3)\n. For security-specific dependency injection, see\n[Security Components](#2.5)\n.",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 10,
+      "char_count": 508,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612705"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:1",
+    "content": "FastAPI's dependency injection system consists of three main components: dependency analysis, dependency resolution, and lifecycle management. The system automatically discovers dependencies through function signature inspection and resolves them recursively during request processing.",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 10,
+      "char_count": 285,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612724"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:2",
+    "content": "```\ngraph TB\n    subgraph \"Request Processing\"\n        REQUEST[\"HTTP Request\"]\n        ROUTING[\"Route Handler\"]\n        RESPONSE[\"HTTP Response\"]\n    end\n    \n    subgraph \"Dependency System\"\n        ANALYSIS[\"get_dependant()\"]\n        RESOLVER[\"solve_dependencies()\"]\n        CACHE[\"Dependency Cache\"]\n    end\n    \n    subgraph \"Dependency Types\"\n        PARAMS[\"Parameter Dependencies\"]\n        FUNCS[\"Function Dependencies\"]\n        CLASSES[\"Class Dependencies\"]\n        SECURITY[\"Security Dependencies\"]\n    end\n    \n    subgraph \"Parameter Sources\"\n        PATH[\"Path Parameters\"]\n        QUERY[\"Query Parameters\"]\n        BODY[\"Request Body\"]\n        HEADERS[\"Headers\"]\n        COOKIES[\"Cookies\"]\n    end\n    \n    REQUEST --> ROUTING\n    ROUTING --> ANALYSIS\n    ANALYSIS --> RESOLVER\n    RESOLVER --> CACHE\n    RESOLVER --> PARAMS\n    RESOLVER --> FUNCS\n    RESOLVER --> CLASSES\n    RESOLVER --> SECURITY\n    \n    PARAMS --> PATH\n    PARAMS --> QUERY\n    PARAMS --> BODY\n    PARAMS --> HEADERS\n    PARAMS --> COOKIES\n    \n    RESOLVER --> RESPONSE\n```\nSources:\n[fastapi/routing.py:292-299](.)\n,\n[fastapi/dependencies/utils.py:572-695](.)\n,\n[fastapi/dependencies/models.py:15-37](.)",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 10,
+      "char_count": 1188,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612733"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:3",
+    "content": "The\n```\nDependant\n```\ndataclass represents the dependency structure of a function, containing categorized parameters and sub-dependencies. Each dependant tracks parameter types, security requirements, and caching behavior.\n```\npath_params\n```\n```\nList[ModelField]\n```\n```\nquery_params\n```\n```\nList[ModelField]\n```\n```\nheader_params\n```\n```\nList[ModelField]\n```\n```\ncookie_params\n```\n```\nList[ModelField]\n```\n```\nbody_params\n```\n```\nList[ModelField]\n```\n```\ndependencies\n```\n```\nList[Dependant]\n```\n```\nsecurity_requirements\n```\n```\nList[SecurityRequirement]\n```\n```\ncall\n```\n```\nOptional[Callable]\n```\n```\nuse_cache\n```\n```\nbool\n```\n, Type = . , Purpose = \nSources:\n[fastapi/dependencies/models.py:15-37](.)",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 10,
+      "char_count": 707,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612740"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:4",
+    "content": "The\n```\nDepends\n```\nclass marks function parameters as dependencies, triggering automatic resolution by the dependency injection system.\n```\n# From fastapi/params.py\nclass Depends:\n    def __init__(self, dependency: Optional[Callable] = None, *, use_cache: bool = True)\n```\nThe\n```\ndependency\n```\nparameter specifies the callable to invoke, while\n```\nuse_cache\n```\ncontrols whether results should be cached for the request duration.\nSources:\n[fastapi/params.py:1-774](.)",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 10,
+      "char_count": 470,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612747"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:5",
+    "content": "The\n```\nget_dependant\n```\nfunction analyzes function signatures to extract dependency information, categorizing parameters by their types and annotations.\n```\ngraph TD\n    FUNCTION[\"Function Definition\"] --> SIGNATURE[\"get_typed_signature()\"]\n    SIGNATURE --> PARAMS[\"Parameter Analysis\"]\n    PARAMS --> DEPENDS_CHECK{\"Has Depends()\"}\n    PARAMS --> PARAM_TYPE{\"Parameter Type\"}\n    \n    DEPENDS_CHECK -->|Yes| SUB_DEP[\"get_param_sub_dependant()\"]\n    DEPENDS_CHECK -->|No| FIELD_TYPE[\"Field Type Analysis\"]\n    \n    PARAM_TYPE --> REQUEST_TYPE{\"Request/Response Type\"}\n    REQUEST_TYPE -->|Yes| SPECIAL_PARAM[\"Special Parameter\"]\n    REQUEST_TYPE -->|No| FIELD_TYPE\n    \n    FIELD_TYPE --> PATH_PARAM{\"Path Parameter\"}\n    FIELD_TYPE --> QUERY_PARAM{\"Query Parameter\"}\n    FIELD_TYPE --> BODY_PARAM{\"Body Parameter\"}\n    FIELD_TYPE --> HEADER_PARAM{\"Header Parameter\"}\n    \n    SUB_DEP --> DEPENDANT[\"Dependant Structure\"]\n    SPECIAL_PARAM --> DEPENDANT\n    PATH_PARAM --> DEPENDANT\n    QUERY_PARAM --> DEPENDANT\n    BODY_PARAM --> DEPENDANT\n    HEADER_PARAM --> DEPENDANT\n```\nSources:\n[fastapi/dependencies/utils.py:265-314](.)\n,\n[fastapi/dependencies/utils.py:348-511](.)",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 10,
+      "char_count": 1176,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612755"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:6",
+    "content": "The\n```\nanalyze_param\n```\nfunction classifies function parameters into dependency types based on annotations and default values:\n- **Explicit Dependencies** : Parameters with `Depends()` annotations\n- **Request Objects** : `Request` , `WebSocket` , `Response` , `BackgroundTasks` types\n- **Path Parameters** : Parameters matching path template variables\n- **Query Parameters** : Scalar types without special annotations\n- **Body Parameters** : Complex types or explicit `Body()` annotations\n- **Header/Cookie Parameters** : Parameters with `Header()` or `Cookie()` annotations\nSources:\n[fastapi/dependencies/utils.py:348-511](.)\n,\n[fastapi/dependencies/utils.py:317-338](.)",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 10,
+      "char_count": 673,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612762"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:7",
+    "content": "The\n```\nsolve_dependencies\n```\nfunction recursively resolves dependencies using a depth-first approach with caching and lifecycle management.\n```\ngraph TD\n    START[\"solve_dependencies()\"] --> INIT[\"Initialize Values Dict\"]\n    INIT --> LOOP[\"For Each Sub-Dependency\"]\n    \n    LOOP --> OVERRIDE_CHECK{\"Override Available?\"}\n    OVERRIDE_CHECK -->|Yes| USE_OVERRIDE[\"Use Override Function\"]\n    OVERRIDE_CHECK -->|No| CACHE_CHECK{\"Result Cached?\"}\n    \n    CACHE_CHECK -->|Yes| USE_CACHED[\"Use Cached Result\"]\n    CACHE_CHECK -->|No| RESOLVE_TYPE{\"Dependency Type\"}\n    \n    RESOLVE_TYPE --> GENERATOR{\"Generator Function\"}\n    RESOLVE_TYPE --> ASYNC_FUNC{\"Async Function\"}\n    RESOLVE_TYPE --> SYNC_FUNC{\"Sync Function\"]\n    \n    GENERATOR --> ENTER_CONTEXT[\"Enter Context Manager\"]\n    ASYNC_FUNC --> AWAIT_CALL[\"await dependency()\"]\n    SYNC_FUNC --> THREAD_CALL[\"run_in_threadpool()\"]\n    \n    USE_OVERRIDE --> STORE_RESULT[\"Store in Values\"]\n    USE_CACHED --> STORE_RESULT\n    ENTER_CONTEXT --> STORE_RESULT\n    AWAIT_CALL --> STORE_RESULT\n    THREAD_CALL --> STORE_RESULT\n    \n    STORE_RESULT --> CACHE_RESULT[\"Cache if Enabled\"]\n    CACHE_RESULT --> NEXT_DEP{\"More Dependencies?\"}\n    NEXT_DEP -->|Yes| LOOP\n    NEXT_DEP -->|No| PARAMS[\"Resolve Parameters\"]\n    \n    PARAMS --> RETURN[\"Return SolvedDependency\"]\n```\nSources:\n[fastapi/dependencies/utils.py:572-695](.)",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 10,
+      "char_count": 1376,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612769"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:8",
+    "content": "The dependency resolution process returns a\n```\nSolvedDependency\n```\nobject containing all resolved values and metadata:\n```\nvalues\n```\n```\nDict[str, Any]\n```\n```\nerrors\n```\n```\nList[Any]\n```\n```\nbackground_tasks\n```\n```\nBackgroundTasks\n```\n```\nresponse\n```\n```\nResponse\n```\n```\ndependency_cache\n```\n```\nDict\n```\n, Type = . , Purpose = \nSources:\n[fastapi/dependencies/utils.py:563-570](.)",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 10,
+      "char_count": 388,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612777"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Dependency_Injection:chunk:9",
+    "content": "Dependencies are cached by default using a cache key derived from the function and security scopes. Caching prevents redundant computations when the same dependency is used multiple times in a request.",
+    "metadata": {
+      "source": "fastapi\\Dependency_Injection.md",
+      "file_name": "Dependency_Injection.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 10,
+      "char_count": 201,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:37.612785"
+    }
+  }
+]

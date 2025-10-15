@@ -1,0 +1,287 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:0",
+    "content": "This document provides comprehensive examples of MCP server implementations using both the low-level\n```\nServer\n```\nclass and the high-level\n```\nFastMCP\n```\nframework. These examples demonstrate various MCP capabilities including tools, resources, prompts, progress reporting, and different transport mechanisms.\nFor client-side examples and integration patterns, see\n[Client Examples](#9.2)\n. For detailed FastMCP framework documentation, see\n[FastMCP Server Framework](#2)\n.",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 19,
+      "char_count": 476,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566623"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:1",
+    "content": "The MCP Python SDK provides two primary approaches for building servers, each suited for different use cases and complexity levels.",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 19,
+      "char_count": 131,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566640"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:2",
+    "content": "```\ngraph TB\n    subgraph \"High-Level Framework\"\n        FastMCP[\"FastMCP\"]\n        Decorators[\"@tool, @resource, @prompt\"]\n        AutoSchema[\"Automatic Schema Generation\"]\n    end\n    \n    subgraph \"Low-Level Implementation\"\n        LowLevelServer[\"Server\"]\n        RequestHandlers[\"@app.call_tool(), @app.list_resources()\"]\n        ManualSchema[\"Manual Schema Definition\"]\n    end\n    \n    subgraph \"Transport Layer\"\n        StdioTransport[\"stdio_server()\"]\n        SSETransport[\"SseServerTransport\"]\n        StreamableHTTP[\"StreamableHTTPSessionManager\"]\n    end\n    \n    subgraph \"Core Protocol\"\n        MCPTypes[\"mcp.types\"]\n        SessionMessage[\"SessionMessage\"]\n        JSONRPCLayer[\"JSON-RPC Protocol\"]\n    end\n    \n    FastMCP --> LowLevelServer\n    Decorators --> RequestHandlers\n    AutoSchema --> ManualSchema\n    \n    LowLevelServer --> StdioTransport\n    LowLevelServer --> SSETransport\n    LowLevelServer --> StreamableHTTP\n    \n    StdioTransport --> JSONRPCLayer\n    SSETransport --> JSONRPCLayer\n    StreamableHTTP --> JSONRPCLayer\n    \n    JSONRPCLayer --> MCPTypes\n    JSONRPCLayer --> SessionMessage\n```\nSources:\n[examples/servers/simple-resource/mcp_simple_resource/server.py:1-94](.)\n,\n[examples/servers/simple-tool/mcp_simple_tool/server.py:1-94](.)\n,\n[examples/snippets/servers/structured_output.py:1-98](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 19,
+      "char_count": 1335,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566646"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:3",
+    "content": "The low-level\n```\nServer\n```\nclass provides direct control over MCP protocol handling and is suitable for complex server implementations requiring fine-grained control.",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 19,
+      "char_count": 168,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566652"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:4",
+    "content": "The simple resource server demonstrates fundamental resource serving capabilities using the low-level\n```\nServer\n```\nclass.\n```\ngraph LR\n    subgraph \"simple-resource Server\"\n        ServerInstance[\"Server('mcp-simple-resource')\"]\n        ListResourcesHandler[\"@app.list_resources()\"]\n        ReadResourceHandler[\"@app.read_resource()\"]\n        ResourceData[\"SAMPLE_RESOURCES dict\"]\n    end\n    \n    subgraph \"Transport Support\"\n        StdioMode[\"stdio transport\"]\n        SSEMode[\"SSE transport + Starlette\"]\n    end\n    \n    subgraph \"Resource Schema\"\n        FileUrlSchema[\"FileUrl('file:///name.txt')\"]\n        ResourceType[\"types.Resource\"]\n        ContentType[\"ReadResourceContents\"]\n    end\n    \n    ServerInstance --> ListResourcesHandler\n    ServerInstance --> ReadResourceHandler\n    ListResourcesHandler --> ResourceData\n    ReadResourceHandler --> ResourceData\n    \n    ServerInstance --> StdioMode\n    ServerInstance --> SSEMode\n    \n    ListResourcesHandler --> ResourceType\n    ReadResourceHandler --> ContentType\n    ResourceType --> FileUrlSchema\n```\nSources:\n[examples/servers/simple-resource/mcp_simple_resource/server.py:34-58](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 19,
+      "char_count": 1151,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566659"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:5",
+    "content": "The simple tool server shows HTTP client functionality and tool execution patterns.\n```\ngraph LR\n    subgraph \"simple-tool Server\"\n        ToolServer[\"Server('mcp-website-fetcher')\"]\n        CallToolHandler[\"@app.call_tool()\"]\n        ListToolsHandler[\"@app.list_tools()\"]\n        FetchFunction[\"fetch_website()\"]\n    end\n    \n    subgraph \"HTTP Integration\"\n        HttpxClient[\"create_mcp_http_client()\"]\n        UserAgent[\"MCP Test Server headers\"]\n        ResponseProcessing[\"response.text -> TextContent\"]\n    end\n    \n    subgraph \"Tool Schema\"\n        ToolDefinition[\"types.Tool\"]\n        InputSchema[\"JSON Schema validation\"]\n        ContentBlocks[\"list[types.ContentBlock]\"]\n    end\n    \n    CallToolHandler --> FetchFunction\n    FetchFunction --> HttpxClient\n    HttpxClient --> UserAgent\n    FetchFunction --> ResponseProcessing\n    \n    ListToolsHandler --> ToolDefinition\n    ToolDefinition --> InputSchema\n    CallToolHandler --> ContentBlocks\n```\nSources:\n[examples/servers/simple-tool/mcp_simple_tool/server.py:32-58](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 19,
+      "char_count": 1036,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566664"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:6",
+    "content": "The simple prompt server demonstrates template-based prompt generation.\n```\ngraph LR\n    subgraph \"simple-prompt Server\"\n        PromptServer[\"Server('mcp-simple-prompt')\"]\n        ListPromptsHandler[\"@app.list_prompts()\"]\n        GetPromptHandler[\"@app.get_prompt()\"]\n        CreateMessages[\"create_messages()\"]\n    end\n    \n    subgraph \"Prompt Schema\"\n        PromptType[\"types.Prompt\"]\n        PromptArgument[\"types.PromptArgument\"]\n        PromptMessage[\"types.PromptMessage\"]\n        TextContent[\"types.TextContent\"]\n    end\n    \n    subgraph \"Dynamic Content\"\n        ContextParam[\"context argument\"]\n        TopicParam[\"topic argument\"]\n        MessageGeneration[\"Dynamic message building\"]\n    end\n    \n    ListPromptsHandler --> PromptType\n    PromptType --> PromptArgument\n    GetPromptHandler --> CreateMessages\n    CreateMessages --> PromptMessage\n    PromptMessage --> TextContent\n    \n    CreateMessages --> ContextParam\n    CreateMessages --> TopicParam\n    CreateMessages --> MessageGeneration\n```\nSources:\n[examples/servers/simple-prompt/mcp_simple_prompt/server.py:44-77](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 19,
+      "char_count": 1093,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566671"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:7",
+    "content": "StreamableHTTP transport enables bidirectional communication with session management and resumability features.",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 19,
+      "char_count": 111,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566677"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:8",
+    "content": "```\ngraph TB\n    subgraph \"StreamableHTTP Server\"\n        StreamableServer[\"Server('mcp-streamable-http-demo')\"]\n        SessionManager[\"StreamableHTTPSessionManager\"]\n        EventStore[\"InMemoryEventStore\"]\n        StarletteApp[\"Starlette ASGI app\"]\n    end\n    \n    subgraph \"Notification System\"\n        ToolWithNotifications[\"start-notification-stream tool\"]\n        LogMessages[\"ctx.session.send_log_message()\"]\n        ResourceUpdates[\"ctx.session.send_resource_updated()\"]\n        RequestContext[\"ctx.request_id\"]\n    end\n    \n    subgraph \"Resumability Features\"\n        EventIds[\"Unique event IDs\"]\n        LastEventId[\"Last-Event-ID header\"]\n        EventReplay[\"Missed event replay\"]\n    end\n    \n    subgraph \"CORS & Middleware\"\n        CORSMiddleware[\"CORS with Mcp-Session-Id\"]\n        SessionIdHeader[\"Session ID exposure\"]\n    end\n    \n    StreamableServer --> SessionManager\n    SessionManager --> EventStore\n    SessionManager --> StarletteApp\n    \n    ToolWithNotifications --> LogMessages\n    ToolWithNotifications --> ResourceUpdates\n    LogMessages --> RequestContext\n    \n    EventStore --> EventIds\n    EventStore --> LastEventId\n    EventStore --> EventReplay\n    \n    StarletteApp --> CORSMiddleware\n    CORSMiddleware --> SessionIdHeader\n```\nSources:\n[examples/servers/simple-streamablehttp/mcp_simple_streamablehttp/server.py:47-165](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 19,
+      "char_count": 1365,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566683"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:9",
+    "content": "```\ngraph LR\n    subgraph \"Stateless Server\"\n        StatelessServer[\"Server('mcp-streamable-http-stateless-demo')\"]\n        StatelessManager[\"StreamableHTTPSessionManager(stateless=True)\"]\n        NoEventStore[\"event_store=None\"]\n    end\n    \n    subgraph \"Simplified Architecture\"\n        NoResumability[\"No resumability support\"]\n        NoEventReplay[\"No event replay\"]\n        SimplerSetup[\"Simpler configuration\"]\n    end\n    \n    subgraph \"Same Features\"\n        NotificationSupport[\"Notification streaming\"]\n        SessionManagement[\"Session management\"]\n        CORSSupport[\"CORS middleware\"]\n    end\n    \n    StatelessServer --> StatelessManager\n    StatelessManager --> NoEventStore\n    NoEventStore --> NoResumability\n    NoEventStore --> NoEventReplay\n    NoEventStore --> SimplerSetup\n    \n    StatelessManager --> NotificationSupport\n    StatelessManager --> SessionManagement\n    StatelessManager --> CORSSupport\n```\nSources:\n[examples/servers/simple-streamablehttp-stateless/mcp_simple_streamablehttp_stateless/server.py:97-140](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 19,
+      "char_count": 1049,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566688"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:10",
+    "content": "FastMCP provides a decorator-based approach for rapid server development with automatic schema generation and simplified setup.",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 19,
+      "char_count": 127,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566694"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:11",
+    "content": "```\ngraph TB\n    subgraph \"FastMCP Structured Output\"\n        FastMCPInstance[\"FastMCP('Structured Output Example')\"]\n        ToolDecorators[\"@mcp.tool() decorators\"]\n        AutomaticSchema[\"Automatic schema generation\"]\n    end\n    \n    subgraph \"Data Structure Types\"\n        PydanticModel[\"WeatherData(BaseModel)\"]\n        TypedDict[\"LocationInfo(TypedDict)\"]\n        RegularDict[\"dict[str, float]\"]\n        RegularClass[\"UserProfile class\"]\n        UntypedClass[\"UntypedConfig (no schema)\"]\n    end\n    \n    subgraph \"Schema Generation\"\n        PydanticSchema[\"Pydantic -> JSON Schema\"]\n        TypedDictSchema[\"TypedDict -> JSON Schema\"]\n        DictSchema[\"dict[K,V] -> JSON Schema\"]\n        ClassSchema[\"Typed class -> JSON Schema\"]\n        NoSchema[\"Untyped -> No schema\"]\n    end\n    \n    subgraph \"Return Value Wrapping\"\n        StructuredReturn[\"Complex types as-is\"]\n        SimpleWrapping[\"Simple types wrapped in 'result'\"]\n        ListWrapping[\"Lists wrapped in 'result'\"]\n    end\n    \n    ToolDecorators --> AutomaticSchema\n    \n    PydanticModel --> PydanticSchema\n    TypedDict --> TypedDictSchema\n    RegularDict --> DictSchema\n    RegularClass --> ClassSchema\n    UntypedClass --> NoSchema\n    \n    AutomaticSchema --> StructuredReturn\n    AutomaticSchema --> SimpleWrapping\n    AutomaticSchema --> ListWrapping\n```\nSources:\n[examples/snippets/servers/structured_output.py:9-98](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 19,
+      "char_count": 1402,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566700"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:12",
+    "content": "```\ngraph LR\n    subgraph \"Direct Execution\"\n        FastMCPApp[\"FastMCP('My App')\"]\n        ToolFunction[\"hello() function\"]\n        ToolDecorator[\"@mcp.tool()\"]\n        RunMethod[\"mcp.run()\"]\n    end\n    \n    subgraph \"Execution Flow\"\n        MainFunction[\"main() entry point\"]\n        DirectExecution[\"python servers/direct_execution.py\"]\n        UVRun[\"uv run direct-execution-server\"]\n    end\n    \n    subgraph \"Auto-Configuration\"\n        DefaultTransport[\"Automatic transport selection\"]\n        SchemaGeneration[\"Automatic schema from type hints\"]\n        CLIHandling[\"Built-in CLI argument handling\"]\n    end\n    \n    ToolDecorator --> ToolFunction\n    ToolFunction --> FastMCPApp\n    FastMCPApp --> RunMethod\n    \n    MainFunction --> RunMethod\n    MainFunction --> DirectExecution\n    MainFunction --> UVRun\n    \n    RunMethod --> DefaultTransport\n    ToolDecorator --> SchemaGeneration\n    RunMethod --> CLIHandling\n```\nSources:\n[examples/snippets/servers/direct_execution.py:10-27](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 19,
+      "char_count": 997,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566706"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:13",
+    "content": "The integration tests demonstrate various MCP features through focused example servers.",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 13,
+      "total_chunks": 19,
+      "char_count": 87,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566712"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:14",
+    "content": "```\ngraph LR\n    subgraph \"Progress Example\"\n        ProgressTool[\"long_running_task tool\"]\n        ProgressCallback[\"progress_callback parameter\"]\n        ProgressUpdates[\"Sequential progress reports\"]\n    end\n    \n    subgraph \"Progress Implementation\"\n        StepIteration[\"for i in range(steps)\"]\n        ProgressCalculation[\"(i + 1) / steps\"]\n        MessageFormat[\"'Step {i+1}/{steps}'\"]\n    end\n    \n    subgraph \"Client Integration\"\n        ClientCallback[\"progress_callback function\"]\n        ProgressCollection[\"progress_updates list\"]\n        Validation[\"Progress validation in tests\"]\n    end\n    \n    ProgressTool --> ProgressCallback\n    ProgressCallback --> ProgressUpdates\n    \n    ProgressUpdates --> StepIteration\n    StepIteration --> ProgressCalculation\n    ProgressCalculation --> MessageFormat\n    \n    ProgressCallback --> ClientCallback\n    ClientCallback --> ProgressCollection\n    ProgressCollection --> Validation\n```\nSources:\n[tests/server/fastmcp/test_integration.py:392-440](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 14,
+      "total_chunks": 19,
+      "char_count": 1008,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566717"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:15",
+    "content": "```\ngraph LR\n    subgraph \"Notification Example\"\n        NotificationTool[\"process_data tool\"]\n        LogLevels[\"debug, info, warning, error\"]\n        ResourceNotification[\"ResourceListChangedNotification\"]\n    end\n    \n    subgraph \"Collection System\"\n        NotificationCollector[\"NotificationCollector class\"]\n        ProgressNotifications[\"progress_notifications list\"]\n        LogMessages[\"log_messages list\"]\n        ResourceNotifications[\"resource_notifications list\"]\n    end\n    \n    subgraph \"Message Handling\"\n        GenericHandler[\"handle_generic_notification()\"]\n        MessageRouting[\"Route by notification type\"]\n        ClientHandler[\"message_handler parameter\"]\n    end\n    \n    NotificationTool --> LogLevels\n    NotificationTool --> ResourceNotification\n    \n    LogLevels --> NotificationCollector\n    ResourceNotification --> NotificationCollector\n    NotificationCollector --> ProgressNotifications\n    NotificationCollector --> LogMessages\n    NotificationCollector --> ResourceNotifications\n    \n    NotificationCollector --> GenericHandler\n    GenericHandler --> MessageRouting\n    MessageRouting --> ClientHandler\n```\nSources:\n[tests/server/fastmcp/test_integration.py:524-569](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 15,
+      "total_chunks": 19,
+      "char_count": 1210,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566722"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:16",
+    "content": "```\ngraph TB\n    subgraph \"Sampling Example\"\n        SamplingTool[\"generate_poem tool\"]\n        SamplingCallback[\"sampling_callback function\"]\n        CreateMessageRequest[\"CreateMessageRequestParams\"]\n        CreateMessageResult[\"CreateMessageResult\"]\n    end\n    \n    subgraph \"Elicitation Example\"\n        ElicitationTool[\"book_table tool\"]\n        ElicitationCallback[\"elicitation_callback function\"]\n        ElicitRequest[\"ElicitRequestParams\"]\n        ElicitResult[\"ElicitResult\"]\n    end\n    \n    subgraph \"Callback Integration\"\n        ClientSession[\"ClientSession parameters\"]\n        CallbackRegistration[\"sampling_callback/elicitation_callback\"]\n        TestSimulation[\"Simulated LLM/user responses\"]\n    end\n    \n    SamplingTool --> SamplingCallback\n    SamplingCallback --> CreateMessageRequest\n    SamplingCallback --> CreateMessageResult\n    \n    ElicitationTool --> ElicitationCallback\n    ElicitationCallback --> ElicitRequest\n    ElicitationCallback --> ElicitResult\n    \n    SamplingCallback --> ClientSession\n    ElicitationCallback --> ClientSession\n    ClientSession --> CallbackRegistration\n    CallbackRegistration --> TestSimulation\n```\nSources:\n[tests/server/fastmcp/test_integration.py:442-521](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 16,
+      "total_chunks": 19,
+      "char_count": 1225,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566728"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:17",
+    "content": "All server examples support multiple transport configurations, allowing flexible deployment options.",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 17,
+      "total_chunks": 19,
+      "char_count": 100,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566734"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Server_Examples:chunk:18",
+    "content": "```\ngraph TB\n    subgraph \"Transport Selection\"\n        ClickOption[\"@click.option('--transport')\"]\n        TransportChoice[\"Choice(['stdio', 'sse'])\"]\n        ConditionalSetup[\"if transport == 'sse'\"]\n    end\n    \n    subgraph \"STDIO Setup\"\n        StdioImport[\"from mcp.server.stdio import stdio_server\"]\n        StdioContext[\"async with stdio_server() as streams\"]\n        AppRun[\"app.run(streams[0], streams[1], options)\"]\n    end\n    \n    subgraph \"SSE Setup\"\n        SSEImport[\"from mcp.server.sse import SseServerTransport\"]\n        StarletteSetup[\"Starlette app configuration\"]\n        RouteSetup[\"Route('/sse') + Mount('/messages/')\"]\n        UvicornRun[\"uvicorn.run(starlette_app)\"]\n    end\n    \n    ClickOption --> TransportChoice\n    TransportChoice --> ConditionalSetup\n    \n    ConditionalSetup --> StdioImport\n    StdioImport --> StdioContext\n    StdioContext --> AppRun\n    \n    ConditionalSetup --> SSEImport\n    SSEImport --> StarletteSetup\n    StarletteSetup --> RouteSetup\n    RouteSetup --> UvicornRun\n```\nSources:\n[examples/servers/simple-resource/mcp_simple_resource/server.py:60-93](.)\n,\n[examples/servers/simple-tool/mcp_simple_tool/server.py:60-93](.)\n,\n[examples/servers/simple-prompt/mcp_simple_prompt/server.py:79-112](.)",
+    "metadata": {
+      "source": "python-sdk\\Server_Examples.md",
+      "file_name": "Server_Examples.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 18,
+      "total_chunks": 19,
+      "char_count": 1250,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:27.566739"
+    }
+  }
+]

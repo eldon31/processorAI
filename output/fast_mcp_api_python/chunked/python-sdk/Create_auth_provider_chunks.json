@@ -1,0 +1,17 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Create_auth_provider:chunk:0",
+    "content": "auth_provider = OAuthClientProvider(\nserver_url=\"https://api.example.com/v1/mcp\",\nclient_metadata=client_metadata,\nstorage=my_token_storage,\nredirect_handler=my_redirect_handler,\ncallback_handler=my_callback_handler\n)",
+    "metadata": {
+      "source": "python-sdk\\Create_auth_provider.md",
+      "file_name": "Create_auth_provider.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 1,
+      "char_count": 217,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:13.643251"
+    }
+  }
+]

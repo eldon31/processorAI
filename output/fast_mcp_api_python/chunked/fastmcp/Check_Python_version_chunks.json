@@ -1,0 +1,17 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Check_Python_version:chunk:0",
+    "content": "python --version",
+    "metadata": {
+      "source": "fastmcp\\Check_Python_version.md",
+      "file_name": "Check_Python_version.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 1,
+      "char_count": 16,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.902033"
+    }
+  }
+]

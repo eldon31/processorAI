@@ -1,0 +1,64 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_rest-api.md",
+  "title": "REST API",
+  "num_chunks": 2,
+  "total_chars": 225,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [REST API](\\docs\\reference\\rest-api#rest-api)",
+      "char_count": 60,
+      "token_count": 20,
+      "metadata": {
+        "title": "REST API",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_rest-api.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_rest-api.md",
+        "file_name": "reference_rest-api.md",
+        "file_size": 242,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "d632c807453fbfaf4c632cb1c1374f144c797d7b2840825c50ffcc692472b65a",
+        "author": null,
+        "created_at": "2025-10-13T00:01:20.103959",
+        "modified_at": "2025-10-13T00:01:20.104467",
+        "page_count": null,
+        "word_count": 24,
+        "extracted_at": "2025-10-13T20:04:49.823147",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 20,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "REST API\nYou can view our REST API docs at our API reference portal:\n[https://api-docs.inngest.com/docs/inngest-api](https://api-docs.inngest.com/docs/inngest-api)\n.",
+      "char_count": 165,
+      "token_count": 48,
+      "metadata": {
+        "title": "REST API",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_rest-api.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\reference_rest-api.md",
+        "file_name": "reference_rest-api.md",
+        "file_size": 242,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "d632c807453fbfaf4c632cb1c1374f144c797d7b2840825c50ffcc692472b65a",
+        "author": null,
+        "created_at": "2025-10-13T00:01:20.103959",
+        "modified_at": "2025-10-13T00:01:20.104467",
+        "page_count": null,
+        "word_count": 24,
+        "extracted_at": "2025-10-13T20:04:49.823147",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 2,
+        "token_count": 48,
+        "has_context": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,242 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:0",
+    "content": "This document provides a comprehensive overview of FastAPI, a modern, high-performance web framework for building APIs with Python. It covers the framework's core architecture, key features, and fundamental concepts that developers need to understand when working with FastAPI applications.\nFor detailed information about specific FastAPI components and subsystems, see\n[Core Architecture](#2)\n. For deployment and production considerations, see\n[Deployment and Production Considerations](#4.4)\n. For testing approaches, see\n[Testing Infrastructure](#5)\n.",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 16,
+      "char_count": 555,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615386"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:1",
+    "content": "FastAPI is a web framework designed for building REST APIs with Python, leveraging standard Python type hints to provide automatic validation, serialization, and interactive documentation generation. The framework prioritizes developer productivity, runtime performance, and production readiness while maintaining standards compliance with OpenAPI and JSON Schema specifications.\n**Sources:**\n[README.md:30-41](.)\n,\n[docs/en/docs/index.md:36-47](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 16,
+      "char_count": 448,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615399"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:2",
+    "content": "FastAPI is built on two foundational libraries that provide complementary capabilities:\n```\ngraph TD\n    FastAPI[\"FastAPI Framework\"]\n    Starlette[\"Starlette\"]\n    Pydantic[\"Pydantic\"]\n    \n    FastAPI --> Starlette\n    FastAPI --> Pydantic\n    \n    Starlette --> WebLayer[\"Web Layer\"]\n    Starlette --> ASGI[\"ASGI Interface\"]\n    Starlette --> Routing[\"Request Routing\"]\n    \n    Pydantic --> DataValidation[\"Data Validation\"]\n    Pydantic --> TypeSystem[\"Type System\"]\n    Pydantic --> Serialization[\"Serialization\"]\n    \n    WebLayer --> HTTPHandling[\"HTTP Request/Response\"]\n    ASGI --> AsyncSupport[\"Asynchronous Processing\"]\n    Routing --> PathParams[\"Path Parameters\"]\n    \n    DataValidation --> RequestBody[\"Request Body Validation\"]\n    TypeSystem --> TypeHints[\"Python Type Hints\"]\n    Serialization --> JSONConversion[\"JSON Conversion\"]\n```",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 16,
+      "char_count": 855,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615404"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:3",
+    "content": "The framework relies on two primary dependencies that handle different aspects of API functionality:\nStarlette, Responsibility = Web layer and ASGI handling. Starlette, Key Features = Request routing, middleware, WebSocket support, testing utilities. Pydantic, Responsibility = Data validation and serialization. Pydantic, Key Features = Type-based validation, automatic parsing, JSON schema generation\n**Sources:**\n[README.md:126-129](.)\n,\n[docs/en/docs/index.md:124-127](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 16,
+      "char_count": 475,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615409"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:4",
+    "content": "FastAPI processes incoming requests through a structured pipeline that integrates type validation with HTTP handling:\n```\nflowchart LR\n    Request[\"HTTP Request\"] --> Router[\"FastAPI Router\"]\n    Router --> ParamExtraction[\"Parameter Extraction\"]\n    ParamExtraction --> PathParams[\"Path Parameters\"]\n    ParamExtraction --> QueryParams[\"Query Parameters\"] \n    ParamExtraction --> Headers[\"Headers\"]\n    ParamExtraction --> RequestBody[\"Request Body\"]\n    \n    PathParams --> PydanticValidation[\"Pydantic Validation\"]\n    QueryParams --> PydanticValidation\n    Headers --> PydanticValidation\n    RequestBody --> PydanticValidation\n    \n    PydanticValidation --> HandlerFunction[\"Handler Function\"]\n    HandlerFunction --> ResponseData[\"Response Data\"]\n    ResponseData --> Serialization[\"JSON Serialization\"]\n    Serialization --> HTTPResponse[\"HTTP Response\"]\n    \n    PydanticValidation --> ValidationError[\"Validation Error\"]\n    ValidationError --> ErrorResponse[\"Error Response\"]\n```\nThe framework automatically handles parameter extraction, type validation, and response serialization based on Python type annotations declared in handler functions.\n**Sources:**\n[README.md:387-404](.)\n,\n[docs/en/docs/index.md:385-402](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 16,
+      "char_count": 1229,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615413"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:5",
+    "content": "FastAPI provides several integrated capabilities that distinguish it from other Python web frameworks:",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 16,
+      "char_count": 102,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615419"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:6",
+    "content": "```\ngraph TD\n    TypeHints[\"Python Type Hints\"]\n    HandlerFunctions[\"Handler Functions\"]\n    PydanticModels[\"Pydantic Models\"]\n    \n    TypeHints --> OpenAPISchema[\"OpenAPI Schema Generation\"]\n    HandlerFunctions --> OpenAPISchema\n    PydanticModels --> OpenAPISchema\n    \n    OpenAPISchema --> SwaggerUI[\"Swagger UI (/docs)\"]\n    OpenAPISchema --> ReDoc[\"ReDoc (/redoc)\"]\n    OpenAPISchema --> JSONSchema[\"JSON Schema\"]\n    \n    SwaggerUI --> InteractiveAPI[\"Interactive API Testing\"]\n    ReDoc --> StaticDocs[\"Static Documentation\"]\n    JSONSchema --> CodeGeneration[\"Client Code Generation\"]\n```\nThe framework automatically generates OpenAPI-compliant documentation from type-annotated Python code, eliminating the need for separate documentation maintenance.\n**Sources:**\n[README.md:261-273](.)\n,\n[docs/en/docs/index.md:259-271](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 16,
+      "char_count": 837,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615423"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:7",
+    "content": "FastAPI achieves high performance through several architectural decisions:\nASGI Foundation, Implementation = Built on Starlette's ASGI implementation. ASGI Foundation, Benefit = Asynchronous request handling. Type Validation, Implementation = Pydantic's optimized C extensions. Type Validation, Benefit = Fast data parsing and validation. Minimal Overhead, Implementation = Direct integration without abstraction layers. Minimal Overhead, Benefit = Reduced request processing latency\nIndependent benchmarks position FastAPI among the fastest Python web frameworks, comparable to NodeJS and Go implementations.\n**Sources:**\n[README.md:449-453](.)\n,\n[docs/en/docs/index.md:447-451](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 16,
+      "char_count": 682,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615428"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:8",
+    "content": "FastAPI supports multiple installation configurations to accommodate different use cases:",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 16,
+      "char_count": 89,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615432"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:9",
+    "content": "The recommended installation includes commonly used dependencies:\n```\npip install \"fastapi[standard]\"\n```\nThis installation includes:\n- `uvicorn` - ASGI server for development and production\n- `fastapi-cli` - Command-line interface for FastAPI applications\n- `httpx` - HTTP client for testing\n- `jinja2` - Template engine support\n- `python-multipart` - Form parsing capabilities",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 16,
+      "char_count": 378,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615437"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:10",
+    "content": "For production environments with specific dependency requirements:\n```\npip install fastapi\n```\nThis provides only the core FastAPI functionality without optional dependencies.\n**Sources:**\n[README.md:131-486](.)\n,\n[docs/en/docs/index.md:129-484](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 16,
+      "char_count": 248,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615441"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:11",
+    "content": "FastAPI maintains full compatibility with established API standards:\n```\ngraph LR\n    FastAPI --> OpenAPISpec[\"OpenAPI 3.0+\"]\n    FastAPI --> JSONSchema[\"JSON Schema\"]\n    \n    OpenAPISpec --> SwaggerEcosystem[\"Swagger Ecosystem\"]\n    OpenAPISpec --> APIClients[\"API Client Generators\"]\n    OpenAPISpec --> APIGateways[\"API Gateways\"]\n    \n    JSONSchema --> DataValidation[\"Data Validation\"]\n    JSONSchema --> TypeSafety[\"Type Safety\"]\n    JSONSchema --> Documentation[\"Schema Documentation\"]\n    \n    SwaggerEcosystem --> SwaggerUI[\"Swagger UI\"]\n    SwaggerEcosystem --> SwaggerCodegen[\"Swagger Codegen\"]\n    APIClients --> MultiLanguage[\"Multi-language Clients\"]\n```\nThis standards compliance ensures interoperability with existing API tooling and enables automatic client generation for multiple programming languages.\n**Sources:**\n[README.md:41-47](.)\n,\n[docs/en/docs/index.md:41-47](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 16,
+      "char_count": 892,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615446"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:12",
+    "content": "FastAPI supports rapid development through integrated tooling:\n```\nfastapi dev main.py\n```\n```\n/docs\n```\n```\nmypy\n```\n,\n```\npytest\n```\n```\nTestClient\n```\nFastAPI CLI, Purpose = Development server with auto-reload. FastAPI CLI, Command = \nThe framework's development experience emphasizes fast iteration cycles with immediate feedback through automatic documentation updates and development server reloading.\n**Sources:**\n[README.md:202-238](.)\n,\n[docs/en/docs/index.md:200-236](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 16,
+      "char_count": 480,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615450"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:13",
+    "content": "FastAPI maintains an active community with supporting tools and resources:",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 16,
+      "char_count": 74,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615454"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:14",
+    "content": "The project receives sponsorship from cloud providers and development tool companies, ensuring continued maintenance and development. Major sponsors include infrastructure providers that offer FastAPI deployment guides and optimized hosting solutions.",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 16,
+      "char_count": 251,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615459"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:FastAPI_Overview:chunk:15",
+    "content": "- **Typer** - Command-line interface framework using similar design principles\n- **SQLModel** - Database ORM integration designed for FastAPI compatibility\n- **Starlette** - Underlying ASGI framework\n- **Pydantic** - Data validation library\n**Sources:**\n[README.md:45-68](.)\n,\n[docs/en/data/sponsors.yml:1-61](.)\n,\n[docs/en/docs/index.md:51-66](.)",
+    "metadata": {
+      "source": "fastapi\\FastAPI_Overview.md",
+      "file_name": "FastAPI_Overview.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 16,
+      "char_count": 347,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:43.615463"
+    }
+  }
+]

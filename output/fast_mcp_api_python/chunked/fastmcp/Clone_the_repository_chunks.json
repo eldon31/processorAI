@@ -1,0 +1,17 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Clone_the_repository:chunk:0",
+    "content": "git clone https://github.com/jlowin/fastmcp\ncd fastmcp",
+    "metadata": {
+      "source": "fastmcp\\Clone_the_repository.md",
+      "file_name": "Clone_the_repository.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 1,
+      "char_count": 54,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.916773"
+    }
+  }
+]

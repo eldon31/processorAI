@@ -1,0 +1,17 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastmcp:Common_error_testing_pattern:chunk:0",
+    "content": "async def test_timeout(self, server_url: str):\nwith pytest.raises(McpError, match=\"Timed out\"):\nasync with Client(transport=Transport(server_url), timeout=0.02) as client:\nawait client.call_tool(\"sleep\", {\"seconds\": 0.05})\n```\n### Authentication Test Patterns\n\n```python\n# OAuth testing pattern\nasync def test_unauthorized_access(self, mcp_server_url: str):\n    with pytest.raises(httpx.HTTPStatusError) as exc_info:\n        async with Client(mcp_server_url) as client:\n            await client.list_tools()\n    \n    assert exc_info.value.response.status_code == 401\n```\nSources:\n[tests/client/test_streamable_http.py:222-248](.)\n,\n[tests/server/auth/providers/test_descope.py:156-164](.)",
+    "metadata": {
+      "source": "fastmcp\\Common_error_testing_pattern.md",
+      "file_name": "Common_error_testing_pattern.md",
+      "subfolder": "fastmcp",
+      "chunk_index": 0,
+      "total_chunks": 1,
+      "char_count": 688,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:54.965992"
+    }
+  }
+]

@@ -1,0 +1,437 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:0",
+    "content": "This document covers how FastAPI processes and serializes responses from path operation functions into HTTP responses. It explains the default response behavior, serialization pipeline, response model validation, and custom response classes. For information about request handling and parameter validation, see\n[Parameter Validation and Handling](#2.3)\n. For error handling mechanisms, see\n[Error Handling](#2.7)\n.",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 29,
+      "char_count": 414,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782804"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:1",
+    "content": "FastAPI automatically converts path operation return values into HTTP responses using\n```\nJSONResponse\n```\nas the default response class. When a path operation function returns data, FastAPI applies the following default behavior:\n- **Automatic JSON Conversion** : Return values are serialized to JSON using the `jsonable_encoder`\n- **Content-Type Headers** : HTTP headers are automatically set to `application/json`\n- **Status Codes** : Default status code is 200, unless explicitly specified\n- **Response Model Validation** : If a `response_model` is declared, the return value is validated against it\nThe default response class can be overridden at the application level or per-route using the\n```\nresponse_class\n```\nparameter.\nSources:\n[fastapi/applications.py:354-373](.)\n,\n[fastapi/routing.py:454-456](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 29,
+      "char_count": 810,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782820"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:2",
+    "content": "```\ngraph TD\n    A[\"Path Operation Return Value\"] --> B[\"_prepare_response_content()\"]\n    B --> C{\"Is BaseModel?\"}\n    C -->|Yes| D[\"Check ORM Mode\"]\n    D --> E{\"ORM Mode Enabled?\"}\n    E -->|Yes| F[\"Return Model As-Is\"]\n    E -->|No| G[\"_model_dump()\"]\n    C -->|No| H{\"Is List?\"}\n    H -->|Yes| I[\"Process Each Item Recursively\"]\n    H -->|No| J{\"Is Dict?\"}\n    J -->|Yes| K[\"Process Each Value Recursively\"]\n    J -->|No| L{\"Is Dataclass?\"}\n    L -->|Yes| M[\"dataclasses.asdict()\"]\n    L -->|No| N[\"Return Value As-Is\"]\n    \n    G --> O[\"Serialized Content\"]\n    I --> O\n    K --> O\n    M --> O\n    N --> O\n    F --> O\n```\nThe\n```\n_prepare_response_content\n```\nfunction handles the initial content preparation by recursively processing different data types and applying serialization rules based on the\n```\nexclude_unset\n```\n,\n```\nexclude_defaults\n```\n, and\n```\nexclude_none\n```\nparameters.\nSources:\n[fastapi/routing.py:80-124](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 29,
+      "char_count": 935,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782826"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:3",
+    "content": "```\ngraph TD\n    A[\"Response Content\"] --> B[\"jsonable_encoder()\"]\n    B --> C{\"Custom Encoder?\"}\n    C -->|Yes| D[\"Apply Custom Encoder\"]\n    C -->|No| E{\"Pydantic BaseModel?\"}\n    E -->|Yes| F[\"_model_dump()\"]\n    E -->|No| G{\"Dataclass?\"}\n    G -->|Yes| H[\"dataclasses.asdict()\"]\n    G -->|No| I{\"Built-in Type?\"}\n    I -->|Yes| J[\"Return As-Is\"]\n    I -->|No| K{\"In ENCODERS_BY_TYPE?\"}\n    K -->|Yes| L[\"Apply Type Encoder\"]\n    K -->|No| M[\"Try dict() or vars()\"]\n    \n    D --> N[\"JSON-Compatible Output\"]\n    F --> N\n    H --> N\n    J --> N\n    L --> N\n    M --> N\n```\nThe\n```\njsonable_encoder\n```\nprovides comprehensive type conversion with support for custom encoders, Pydantic models, dataclasses, and various Python built-in types including datetime, UUID, Enum, and Path objects.\nSources:\n[fastapi/encoders.py:102-343](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 29,
+      "char_count": 833,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782831"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:4",
+    "content": "When a path operation declares a\n```\nresponse_model\n```\n, FastAPI creates response fields during route initialization:\n```\ngraph TD\n    A[\"APIRoute.__init__()\"] --> B{\"response_model specified?\"}\n    B -->|Yes| C[\"create_model_field()\"]\n    C --> D[\"Create Response Field\"]\n    D --> E[\"create_cloned_field()\"]\n    E --> F[\"Create Secure Cloned Field\"]\n    B -->|No| G[\"Set response_field = None\"]\n    \n    F --> H[\"Store in route.response_field\"]\n    G --> H\n```\nThe cloned field ensures that Pydantic submodel inheritance doesn't bypass validation, preventing security issues where a subclass with additional fields might be returned directly.\nSources:\n[fastapi/routing.py:507-530](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 29,
+      "char_count": 686,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782837"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:5",
+    "content": "```\ngraph TD\n    A[\"Raw Response Content\"] --> B[\"serialize_response()\"]\n    B --> C{\"Response Field Exists?\"}\n    C -->|Yes| D[\"_prepare_response_content()\"]\n    D --> E[\"field.validate()\"]\n    E --> F{\"Validation Errors?\"}\n    F -->|Yes| G[\"Raise ResponseValidationError\"]\n    F -->|No| H{\"Has field.serialize?\"}\n    H -->|Yes| I[\"field.serialize()\"]\n    H -->|No| J[\"jsonable_encoder()\"]\n    C -->|No| K[\"Direct jsonable_encoder()\"]\n    \n    I --> L[\"Validated Response Content\"]\n    J --> L\n    K --> L\n```\nThe\n```\nserialize_response\n```\nfunction validates response content against the declared response model, ensuring type safety and proper serialization. It handles both Pydantic v1 and v2 compatibility through the\n```\nhasattr(field, \"serialize\")\n```\ncheck.\nSources:\n[fastapi/routing.py:144-203](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 29,
+      "char_count": 806,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782842"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:6",
+    "content": "FastAPI supports various response classes that inherit from Starlette's\n```\nResponse\n```\n:\n```\nJSONResponse\n```\n```\napplication/json\n```\n```\nORJSONResponse\n```\n```\napplication/json\n```\n```\norjson\n```\n```\nHTMLResponse\n```\n```\ntext/html\n```\n```\nPlainTextResponse\n```\n```\ntext/plain\n```\n```\nRedirectResponse\n```\n```\nFileResponse\n```\n```\nStreamingResponse\n```\n, Media Type = . , Use Case = ",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 29,
+      "char_count": 386,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782848"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:7",
+    "content": "```\ngraph TD\n    A[\"Path Operation\"] --> B{\"Returns Response Instance?\"}\n    B -->|Yes| C[\"Use Response Directly\"]\n    B -->|No| D[\"Get response_class from Route\"]\n    D --> E[\"Create Response Instance\"]\n    E --> F[\"Apply Serialized Content\"]\n    C --> G[\"Apply Background Tasks\"]\n    F --> G\n    G --> H[\"Set Status Code\"]\n    H --> I[\"Extend Headers\"]\n    I --> J[\"Final HTTP Response\"]\n```\nWhen a path operation returns a\n```\nResponse\n```\ninstance directly, FastAPI bypasses the serialization pipeline. Otherwise, it uses the declared\n```\nresponse_class\n```\nto wrap the serialized content.\nSources:\n[fastapi/routing.py:307-342](.)\n,\n[docs/en/docs/advanced/custom-response.md:1-86](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 29,
+      "char_count": 687,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782853"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:8",
+    "content": "```\nsequenceDiagram\n    participant Client\n    participant \"get_request_handler\" as Handler\n    participant \"run_endpoint_function\" as Endpoint\n    participant \"serialize_response\" as Serializer\n    participant \"Response Class\" as ResponseClass\n    \n    Client->>Handler: HTTP Request\n    Handler->>Endpoint: Call Path Operation\n    Endpoint->>Handler: Return Value\n    Handler->>Serializer: Raw Response + Response Field\n    Serializer->>Serializer: Validate Against Response Model\n    Serializer->>Handler: Serialized Content\n    Handler->>ResponseClass: Create Response Instance\n    ResponseClass->>Handler: HTTP Response Object\n    Handler->>Client: HTTP Response\n```",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 29,
+      "char_count": 671,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782859"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:9",
+    "content": "The\n```\nget_request_handler\n```\nfunction orchestrates the complete response generation process:\n1. **Endpoint Execution** : Calls the path operation function via `run_endpoint_function`\n2. **Response Type Check** : Determines if return value is already a `Response` instance\n3. **Content Serialization** : Applies `serialize_response` with response model validation\n4. **Response Construction** : Creates response instance with proper status codes and headers\n5. **Background Tasks** : Attaches any background tasks to the response\n6. **Body Validation** : Ensures response body is allowed for the status code\nSources:\n[fastapi/routing.py:241-356](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 29,
+      "char_count": 650,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782864"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:10",
+    "content": "```\ngraph TD\n    A[\"Response Generation\"] --> B{\"Status Code Set?\"}\n    B -->|Yes| C[\"Use Explicit Status Code\"]\n    B -->|No| D{\"Route Status Code?\"}\n    D -->|Yes| E[\"Use Route Default\"]\n    D -->|No| F[\"Use Response Class Default\"]\n    \n    C --> G[\"Apply Status Code\"]\n    E --> G\n    F --> G\n    G --> H[\"Check Body Allowed for Status\"]\n    H --> I{\"Body Allowed?\"}\n    I -->|No| J[\"Set Empty Body\"]\n    I -->|Yes| K[\"Keep Response Body\"]\n    J --> L[\"Extend Response Headers\"]\n    K --> L\n```\nFastAPI automatically manages status codes based on the hierarchy of explicit parameters, route defaults, and response class defaults. It also validates that response bodies are appropriate for the status code (e.g., no body for 204 No Content).\nSources:\n[fastapi/routing.py:317-342](.)\n,\n[fastapi/utils.py:42-56](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 29,
+      "char_count": 815,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782869"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:11",
+    "content": "This document covers FastAPI's security infrastructure, including authentication schemes (OAuth2, HTTP Basic/Bearer, API Key, OpenID Connect), security dependencies, and permission scopes. For broader API documentation concepts, see\n[API Documentation System](#3)\n. For error handling in security contexts, see\n[Error Handling](#2.7)\n.",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 29,
+      "char_count": 335,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782875"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:12",
+    "content": "FastAPI provides a comprehensive security system with multiple authentication schemes integrated into the dependency injection framework. The security components handle authentication, authorization, token validation, and scope-based permissions through a collection of base classes, concrete implementations, and utilities that automatically integrate with OpenAPI documentation generation.",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 29,
+      "char_count": 391,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782881"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:13",
+    "content": "```\ngraph TB\n    subgraph \"Base Classes\"\n        SecurityBase[\"SecurityBase\"]\n    end\n    \n    subgraph \"Authentication Schemes\"\n        OAuth2[\"OAuth2\"]\n        HTTPBase[\"HTTPBase\"]\n        HTTPBasic[\"HTTPBasic\"]\n        HTTPBearer[\"HTTPBearer\"]\n        APIKeyQuery[\"APIKeyQuery\"]\n        APIKeyHeader[\"APIKeyHeader\"]\n        APIKeyCookie[\"APIKeyCookie\"]\n        OpenIdConnect[\"OpenIdConnect\"]\n    end\n    \n    subgraph \"Request Models\"\n        OAuth2PasswordRequestForm[\"OAuth2PasswordRequestForm\"]\n        HTTPBasicCredentials[\"HTTPBasicCredentials\"]\n        HTTPAuthorizationCredentials[\"HTTPAuthorizationCredentials\"]\n    end\n    \n    subgraph \"Security Dependencies\"\n        SecurityRequirement[\"SecurityRequirement\"]\n        SecurityScopes[\"SecurityScopes\"]\n        SecurityParam[\"params.Security()\"]\n    end\n    \n    subgraph \"OpenAPI Integration\"\n        OpenAPISecurityDef[\"get_openapi_security_definitions()\"]\n        SecuritySchemes[\"securitySchemes\"]\n    end\n    \n    SecurityBase --> OAuth2\n    SecurityBase --> HTTPBase\n    SecurityBase --> APIKeyQuery\n    SecurityBase --> APIKeyHeader  \n    SecurityBase --> APIKeyCookie\n    SecurityBase --> OpenIdConnect\n    HTTPBase --> HTTPBasic\n    HTTPBase --> HTTPBearer\n    \n    OAuth2 --> OAuth2PasswordRequestForm\n    HTTPBasic --> HTTPBasicCredentials\n    HTTPBearer --> HTTPAuthorizationCredentials\n    \n    SecurityParam --> SecurityRequirement\n    SecurityRequirement --> SecurityScopes\n    \n    SecurityBase --> OpenAPISecurityDef\n    OpenAPISecurityDef --> SecuritySchemes\n```\nSources:\n[fastapi/security/base.py](.)\n,\n[fastapi/security/oauth2.py:308-441](.)\n,\n[fastapi/security/http.py:69-340](.)\n,\n[fastapi/security/api_key.py](.)\n,\n[fastapi/dependencies/models.py:8-12](.)\n,\n[fastapi/openapi/utils.py:78-92](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 29,
+      "char_count": 1778,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782886"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:14",
+    "content": "The\n```\nSecurityBase\n```\nclass serves as the foundation for all security schemes in FastAPI. It provides the basic interface that all authentication mechanisms inherit from and ensures consistent integration with the dependency injection system.\nSources:\n[fastapi/security/base.py](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 29,
+      "char_count": 284,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782891"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:15",
+    "content": "The\n```\nSecurityRequirement\n```\ndataclass represents security requirements for operations, containing a reference to the security scheme and any required scopes:\n```\nsecurity_scheme\n```\n```\nSecurityBase\n```\n```\nscopes\n```\n```\nOptional[Sequence[str]]\n```\n, Type = . , Description = \nSources:\n[fastapi/dependencies/models.py:8-12](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 29,
+      "char_count": 331,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782897"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:16",
+    "content": "The\n```\nOAuth2\n```\nclass implements OAuth2 authentication flows. It accepts flow configurations and integrates with OpenAPI documentation generation.\n```\ngraph TB\n    OAuth2Class[\"OAuth2\"]\n    OAuthFlowsModel[\"OAuthFlowsModel\"]\n    OAuth2Model[\"OAuth2Model\"]\n    CallMethod[\"__call__(request: Request)\"]\n    AuthHeader[\"request.headers.get('Authorization')\"]\n    \n    OAuth2Class --> OAuthFlowsModel\n    OAuth2Class --> OAuth2Model\n    OAuth2Class --> CallMethod\n    CallMethod --> AuthHeader\n```\nKey initialization parameters:\n- `flows` - OAuth2 flow definitions ( `OAuthFlowsModel` )\n- `scheme_name` - Security scheme name for OpenAPI\n- `description` - Security scheme description\n- `auto_error` - Whether to automatically raise errors for missing auth\nSources:\n[fastapi/security/oauth2.py:308-441](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 16,
+      "total_chunks": 29,
+      "char_count": 803,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782902"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:17",
+    "content": "The\n```\nOAuth2PasswordRequestForm\n```\nclass handles login form data according to OAuth2 password flow specifications:\n```\nusername\n```\n```\nstr\n```\n```\npassword\n```\n```\nstr\n```\n```\nscope\n```\n```\nstr\n```\n```\ngrant_type\n```\n```\nstr\n```\n```\nclient_id\n```\n```\nstr\n```\n```\nclient_secret\n```\n```\nstr\n```\n, Type = . , Required = . , Description = \nThe form data is automatically parsed from request form fields and made available as a dependency.\nSources:\n[fastapi/security/oauth2.py:16-149](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 17,
+      "total_chunks": 29,
+      "char_count": 486,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782908"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:18",
+    "content": "The\n```\nHTTPBasic\n```\nclass implements HTTP Basic authentication, extracting and validating Base64-encoded credentials from the\n```\nAuthorization\n```\nheader.\n```\ngraph LR\n    HTTPBasicAuth[\"HTTPBasic\"]\n    AuthHeader[\"Authorization: Basic <base64>\"]\n    Base64Decode[\"b64decode()\"]\n    HTTPBasicCredentials[\"HTTPBasicCredentials\"]\n    UsernamePassword[\"username:password\"]\n    \n    AuthHeader --> HTTPBasicAuth\n    HTTPBasicAuth --> Base64Decode\n    Base64Decode --> UsernamePassword\n    UsernamePassword --> HTTPBasicCredentials\n```\nReturns\n```\nHTTPBasicCredentials\n```\ncontaining\n```\nusername\n```\nand\n```\npassword\n```\nfields.\nSources:\n[fastapi/security/http.py:97-217](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 18,
+      "total_chunks": 29,
+      "char_count": 673,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782913"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:19",
+    "content": "The\n```\nHTTPBearer\n```\nclass implements HTTP Bearer token authentication, extracting tokens from the\n```\nAuthorization\n```\nheader.\nReturns\n```\nHTTPAuthorizationCredentials\n```\ncontaining:\n- `scheme` - The authorization scheme (e.g., \"Bearer\")\n- `credentials` - The token value\nSources:\n[fastapi/security/http.py:220-340](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 19,
+      "total_chunks": 29,
+      "char_count": 323,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782919"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:20",
+    "content": "FastAPI provides three API key authentication classes for different token locations:\n```\nAPIKeyQuery\n```\n```\n?api_key=token\n```\n```\nAPIKeyHeader\n```\n```\nX-API-Key: token\n```\n```\nAPIKeyCookie\n```\n```\nCookie: api_key=token\n```\n, Token Location = . , Usage = \nAll API key classes inherit from\n```\nAPIKeyBase\n```\nand return the extracted key value as a string.\nSources:\n[fastapi/security/api_key.py:23-237](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 20,
+      "total_chunks": 29,
+      "char_count": 405,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782924"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:21",
+    "content": "The\n```\nOpenIdConnect\n```\nclass implements OpenID Connect authentication with a configurable OpenID Connect URL.\nKey parameter:\n- `openIdConnectUrl` - The OpenID Connect discovery endpoint URL\nSources:\n[fastapi/security/open_id_connect_url.py:11-77](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 21,
+      "total_chunks": 29,
+      "char_count": 252,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782929"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:22",
+    "content": "```\ngraph TB\n    APIRoute[\"APIRoute\"]\n    Dependant[\"Dependant\"]\n    SecurityParams[\"params.Security()\"]\n    SecurityRequirement[\"SecurityRequirement\"]\n    SecurityScopes[\"SecurityScopes\"]\n    \n    GetSubDependant[\"get_sub_dependant()\"]\n    SolveDependencies[\"solve_dependencies()\"]\n    SecurityBase[\"SecurityBase instance\"]\n    \n    APIRoute --> Dependant\n    SecurityParams --> GetSubDependant\n    GetSubDependant --> SecurityRequirement\n    SecurityRequirement --> Dependant\n    Dependant --> SolveDependencies\n    SolveDependencies --> SecurityScopes\n    SecurityBase --> SecurityRequirement\n```\nThe dependency system processes security components through several key functions:\n1. **`get_sub_dependant()`** - Creates `SecurityRequirement` objects from `params.Security` annotations\n2. **`solve_dependencies()`** - Resolves security dependencies and populates `SecurityScopes`\n3. **Security scheme** **`__call__`** - Executes authentication logic during request processing\nSources:\n[fastapi/dependencies/utils.py:142-171](.)\n,\n[fastapi/routing.py:292-298](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 22,
+      "total_chunks": 29,
+      "char_count": 1062,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782935"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:23",
+    "content": "The\n```\nSecurityScopes\n```\nclass aggregates all security scopes required by a request's dependency tree. It is automatically injected when security dependencies are present:\n```\ngraph LR\n    SecurityDep[\"Security(get_user, scopes=['read'])\"]\n    SecurityScopes[\"SecurityScopes\"]\n    UserFunc[\"get_user(security_scopes: SecurityScopes)\"]\n    ScopeValidation[\"validate required scopes\"]\n    \n    SecurityDep --> SecurityScopes\n    SecurityScopes --> UserFunc\n    UserFunc --> ScopeValidation\n```\nKey attributes:\n- `scopes` - List of all required scope strings\n- `scope_str` - Space-separated scope string for WWW-Authenticate headers\nSources:\n[fastapi/security/oauth2.py:57](.)\n,\n[fastapi/dependencies/utils.py:685-687](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 23,
+      "total_chunks": 29,
+      "char_count": 720,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782940"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:24",
+    "content": "FastAPI automatically generates OpenAPI security schemas through the\n```\nget_openapi_security_definitions()\n```\nfunction:\n```\ngraph TB\n    FlatDependant[\"get_flat_dependant()\"]\n    SecurityRequirements[\"security_requirements\"]\n    SecurityScheme[\"security_requirement.security_scheme\"]\n    JSONEncoder[\"jsonable_encoder()\"]\n    SecurityDefinitions[\"security_definitions\"]\n    OperationSecurity[\"operation_security\"]\n    \n    FlatDependant --> SecurityRequirements\n    SecurityRequirements --> SecurityScheme\n    SecurityScheme --> JSONEncoder\n    JSONEncoder --> SecurityDefinitions\n    SecurityRequirements --> OperationSecurity\n```\nThe function processes security requirements to generate:\n- **Security Definitions** : OpenAPI security scheme objects\n- **Operation Security** : Per-operation security requirements with scopes\nSources:\n[fastapi/openapi/utils.py:78-92](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 24,
+      "total_chunks": 29,
+      "char_count": 872,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782946"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:25",
+    "content": "Security schemes are integrated into the OpenAPI specification through several key areas:\n```\ncomponents.securitySchemes\n```\n```\nmodel\n```\n```\npaths.{path}.{method}.security\n```\n```\nSecurityRequirement.scopes\n```\n```\npaths.{path}.{method}.parameters\n```\n, Content = . , Source = \nThe integration ensures that interactive documentation (Swagger UI, ReDoc) displays proper authentication interfaces and security requirements.\nSources:\n[fastapi/openapi/utils.py:282-288](.)\n,\n[fastapi/openapi/utils.py:534-537](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 25,
+      "total_chunks": 29,
+      "char_count": 510,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782952"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:26",
+    "content": "```\ngraph TB\n    Request[\"HTTP Request\"]\n    BearerExtract[\"OAuth2PasswordBearer\"]\n    TokenPresent{\"Token Present?\"}\n    JWTDecode[\"JWT decode & verify\"]\n    ScopeExtract[\"Extract token scopes\"]\n    UserLookup[\"Database user lookup\"]\n    ScopeValidation[\"SecurityScopes validation\"]\n    UserActive{\"User Active?\"}\n    AuthenticatedUser[\"Authenticated User\"]\n    \n    HTTPException401[\"HTTPException(401, 'Not authenticated')\"]\n    HTTPException403[\"HTTPException(403, 'Insufficient permissions')\"]\n    HTTPExceptionInactive[\"HTTPException(400, 'Inactive user')\"]\n    \n    Request --> BearerExtract\n    BearerExtract --> TokenPresent\n    TokenPresent -->|No| HTTPException401\n    TokenPresent -->|Yes| JWTDecode\n    JWTDecode --> ScopeExtract\n    ScopeExtract --> UserLookup\n    UserLookup --> ScopeValidation\n    ScopeValidation -->|Fail| HTTPException403\n    ScopeValidation -->|Pass| UserActive\n    UserActive -->|No| HTTPExceptionInactive\n    UserActive -->|Yes| AuthenticatedUser\n    \n    style BearerExtract fill:#f9f9f9\n    style ScopeValidation fill:#f9f9f9\n```\nThe token validation pipeline processes authentication through multiple stages:\n1. **Token Extraction** : `OAuth2PasswordBearer` extracts Bearer token from Authorization header\n2. **Token Validation** : Decode and verify JWT signature and expiration\n3. **Scope Extraction** : Parse scopes from token payload\n4. **User Resolution** : Look up user details from token subject\n5. **Scope Authorization** : Validate token scopes against required scopes via `SecurityScopes`\n6. **User Status** : Verify user account is active and permitted\nSources:\n[docs/en/docs/tutorial/security/oauth2-jwt.md:158-166](.)\n,\n[docs/en/docs/advanced/security/oauth2-scopes.md:155-192](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 26,
+      "total_chunks": 29,
+      "char_count": 1733,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782957"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:27",
+    "content": "Security components integrate seamlessly with FastAPI's dependency injection system through several mechanisms:\n```\nOAuth2PasswordBearer\n```\n```\nDepends()\n```\n```\nOAuth2PasswordRequestForm\n```\n```\nDepends()\n```\n```\nSecurity()\n```\n```\nSecurityScopes\n```\n, Integration Method = . , Purpose = \n```\ngraph LR\n    PathOperation[\"@app.get('/protected')\"]\n    SecurityDep[\"Security(get_current_user, scopes=['read'])\"]\n    GetCurrentUser[\"get_current_user(security_scopes, token=Depends(oauth2_scheme))\"]\n    OAuth2Scheme[\"oauth2_scheme: OAuth2PasswordBearer\"]\n    SecurityScopesParam[\"security_scopes: SecurityScopes\"]\n    \n    PathOperation --> SecurityDep\n    SecurityDep --> GetCurrentUser\n    GetCurrentUser --> OAuth2Scheme\n    GetCurrentUser --> SecurityScopesParam\n    \n    style SecurityDep fill:#f9f9f9\n    style OAuth2Scheme fill:#f9f9f9\n```\nThe dependency system automatically:\n- Injects `SecurityScopes` with aggregated scope requirements\n- Resolves `OAuth2PasswordBearer` to extract and return tokens\n- Validates dependency chains for proper security configuration\n- Documents security requirements in OpenAPI schema\nSources:\n[docs/en/docs/advanced/security/oauth2-scopes.md:194-234](.)\n,\n[fastapi/](.)\n[**init**](.)\n[.py:20](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 27,
+      "total_chunks": 29,
+      "char_count": 1234,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782962"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Response_Handling:chunk:28",
+    "content": "FastAPI automatically generates OpenAPI security documentation from security components:\n```\ngraph TB\n    SecurityScheme[\"OAuth2PasswordBearer(tokenUrl='/token', scopes={'read': 'Read access'})\"]\n    OpenAPIDoc[\"OpenAPI Security Scheme\"]\n    SwaggerUI[\"Interactive Docs UI\"]\n    AuthorizeButton[\"'Authorize' Button\"]\n    ScopeSelection[\"Scope Selection UI\"]\n    \n    SecurityScheme --> OpenAPIDoc\n    OpenAPIDoc --> SwaggerUI\n    SwaggerUI --> AuthorizeButton\n    AuthorizeButton --> ScopeSelection\n    \n    style SecurityScheme fill:#f9f9f9\n    style OpenAPIDoc fill:#f9f9f9\n```\nThe security documentation includes:\n- OAuth2 flow definitions and token URLs\n- Available scopes with descriptions\n- Security requirements for each endpoint\n- Interactive authentication forms in documentation UI\nSources:\n[docs/en/docs/tutorial/security/first-steps.md:177-185](.)\n,\n[docs/en/docs/advanced/security/oauth2-scopes.md:76-83](.)",
+    "metadata": {
+      "source": "fastapi\\Response_Handling.md",
+      "file_name": "Response_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 28,
+      "total_chunks": 29,
+      "char_count": 920,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:52.782967"
+    }
+  }
+]

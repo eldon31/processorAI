@@ -1,0 +1,212 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:0",
+    "content": "The Model Context Protocol (MCP) Python SDK is a comprehensive framework for building servers and clients that enable Large Language Models to access external tools, data, and services in a standardized way. This SDK implements the complete MCP specification, providing both high-level developer-friendly APIs and low-level protocol implementations.\nThe SDK enables developers to create MCP servers that expose resources (data), tools (functions), and prompts (templates) to LLM applications, as well as MCP clients that can discover and interact with these servers. For detailed implementation guidance on building servers, see\n[FastMCP Server Framework](#2)\n. For client development, see\n[Client Framework](#3)\n. For protocol-level details, see\n[Protocol & Message System](#4)\n.",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 14,
+      "char_count": 780,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761200"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:1",
+    "content": "The MCP Python SDK is organized into several distinct layers, each serving specific roles in the protocol implementation:\n```\ngraph TB\n    subgraph \"Application Layer\"\n        UserServers[\"User MCP Servers<br/>(@tool, @resource, @prompt decorators)\"]\n        UserClients[\"User MCP Clients<br/>(ClientSession usage)\"]\n        CLI[\"mcp CLI<br/>(dev, run, install commands)\"]\n    end\n    \n    subgraph \"High-Level Frameworks\"\n        FastMCP[\"FastMCP<br/>(mcp.server.fastmcp.FastMCP)\"]\n        ClientSession[\"ClientSession<br/>(mcp.ClientSession)\"]\n    end\n    \n    subgraph \"Core Protocol Layer\"\n        LowLevelServer[\"Server<br/>(mcp.server.lowlevel.Server)\"]\n        BaseSession[\"BaseSession<br/>(mcp.shared.session.BaseSession)\"]\n        Types[\"mcp.types<br/>(Protocol Message Definitions)\"]\n    end\n    \n    subgraph \"Transport Layer\"\n        StdioTransport[\"stdio<br/>(mcp.server.stdio, mcp.client.stdio)\"]\n        SSETransport[\"sse<br/>(mcp.server.sse, mcp.client.sse)\"] \n        StreamableHTTP[\"streamable-http<br/>(mcp.server.streamablehttp)\"]\n    end\n    \n    subgraph \"Authentication Layer\"\n        TokenVerifier[\"TokenVerifier<br/>(mcp.server.auth.provider)\"]\n        OAuthClient[\"OAuthClientProvider<br/>(mcp.client.auth.provider)\"]\n    end\n    \n    %% User layer connections\n    UserServers --> FastMCP\n    UserClients --> ClientSession\n    CLI --> FastMCP\n    \n    %% Framework connections\n    FastMCP --> LowLevelServer\n    ClientSession --> BaseSession\n    \n    %% Core connections\n    LowLevelServer --> Types\n    BaseSession --> Types\n    \n    %% Transport connections\n    LowLevelServer -.-> StdioTransport\n    LowLevelServer -.-> SSETransport\n    LowLevelServer -.-> StreamableHTTP\n    ClientSession -.-> StdioTransport\n    ClientSession -.-> SSETransport\n    ClientSession -.-> StreamableHTTP\n    \n    %% Auth connections\n    FastMCP --> TokenVerifier\n    ClientSession --> OAuthClient\n```\n**Sources:**\n[README.md:1-1770](.)\n,\n[src/mcp/server/lowlevel/server.py:1-727](.)\n,\n[src/mcp/types.py:1-1349](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 14,
+      "char_count": 2022,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761216"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:2",
+    "content": "The MCP SDK is built on JSON-RPC 2.0 messaging with well-defined protocol types. The\n```\nmcp.types\n```\nmodule contains all protocol message definitions, including requests, responses, and notifications that flow between clients and servers.\n```\ngraph LR\n    subgraph \"Protocol Types (mcp.types)\"\n        ClientRequest[\"ClientRequest<br/>(InitializeRequest, CallToolRequest, etc.)\"]\n        ServerResult[\"ServerResult<br/>(CallToolResult, ListToolsResult, etc.)\"]\n        Notifications[\"Notifications<br/>(ProgressNotification, LoggingMessageNotification)\"]\n    end\n    \n    subgraph \"Core Protocol Classes\"\n        JSONRPCRequest[\"JSONRPCRequest<br/>(id, method, params)\"]\n        JSONRPCResponse[\"JSONRPCResponse<br/>(id, result)\"]\n        JSONRPCError[\"JSONRPCError<br/>(id, error)\"]\n    end\n    \n    subgraph \"Session Management\"\n        BaseSession[\"BaseSession<br/>(mcp.shared.session)\"]\n        ServerSession[\"ServerSession<br/>(mcp.server.session)\"]\n        RequestResponder[\"RequestResponder<br/>(mcp.shared.session)\"]\n    end\n    \n    ClientRequest --> JSONRPCRequest\n    ServerResult --> JSONRPCResponse\n    JSONRPCError --> ServerResult\n    \n    BaseSession --> RequestResponder\n    ServerSession --> BaseSession\n```\n**Sources:**\n[src/mcp/types.py:124-192](.)\n,\n[src/mcp/types.py:1248-1349](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 14,
+      "char_count": 1304,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761223"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:3",
+    "content": "The SDK provides two primary approaches for building MCP servers:\n**FastMCP Framework**\n- A decorator-based high-level framework that automatically handles protocol compliance, schema generation, and transport integration. Users define tools, resources, and prompts using Python decorators.\n**Low-Level Server**\n- Direct protocol implementation providing full control over message handling, lifecycle management, and custom protocol extensions.\n```\ngraph TB\n    subgraph \"FastMCP Framework (mcp.server.fastmcp)\"\n        FastMCPClass[\"FastMCP\"]\n        ToolDecorator[\"@mcp.tool()\"]\n        ResourceDecorator[\"@mcp.resource()\"]\n        PromptDecorator[\"@mcp.prompt()\"]\n        Context[\"Context[ServerSession, LifespanContext]\"]\n    end\n    \n    subgraph \"Low-Level Server (mcp.server.lowlevel)\"\n        ServerClass[\"Server[LifespanResultT, RequestT]\"]\n        ListToolsHandler[\"@server.list_tools()\"]\n        CallToolHandler[\"@server.call_tool()\"]\n        RequestContext[\"request_ctx: ContextVar\"]\n    end\n    \n    subgraph \"Common Infrastructure\"\n        ServerSession[\"ServerSession\"]\n        ToolManager[\"ToolManager\"]\n        FuncMetadata[\"func_metadata\"]\n    end\n    \n    ToolDecorator --> ToolManager\n    ResourceDecorator --> ToolManager\n    PromptDecorator --> ToolManager\n    FastMCPClass --> ServerClass\n    \n    ListToolsHandler --> ServerClass\n    CallToolHandler --> ServerClass\n    \n    ServerClass --> ServerSession\n    ToolManager --> FuncMetadata\n    Context --> ServerSession\n    RequestContext --> ServerSession\n```\n**Sources:**\n[README.md:138-170](.)\n,\n[src/mcp/server/lowlevel/server.py:133-158](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 14,
+      "char_count": 1617,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761229"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:4",
+    "content": "The client framework centers around\n```\nClientSession\n```\nwhich provides high-level methods for discovering and interacting with MCP servers. It handles transport abstraction, authentication, and protocol message management.\n```\ngraph LR\n    subgraph \"Client API (mcp.client)\"\n        ClientSession[\"ClientSession\"]\n        StdioClient[\"stdio_client\"]\n        SSEClient[\"sse_client\"] \n        StreamableClient[\"streamablehttp_client\"]\n    end\n    \n    subgraph \"Client Operations\"\n        Initialize[\"session.initialize()\"]\n        ListTools[\"session.list_tools()\"]\n        CallTool[\"session.call_tool()\"]\n        ReadResource[\"session.read_resource()\"]\n    end\n    \n    subgraph \"Authentication (mcp.client.auth)\"\n        OAuthProvider[\"OAuthClientProvider\"]\n        TokenStorage[\"TokenStorage\"]\n    end\n    \n    ClientSession --> StdioClient\n    ClientSession --> SSEClient\n    ClientSession --> StreamableClient\n    \n    ClientSession --> Initialize\n    ClientSession --> ListTools\n    ClientSession --> CallTool\n    ClientSession --> ReadResource\n    \n    ClientSession --> OAuthProvider\n    OAuthProvider --> TokenStorage\n```\n**Sources:**\n[README.md:660-733](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 14,
+      "char_count": 1166,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761235"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:5",
+    "content": "The SDK supports three transport mechanisms for MCP communication, each suited for different deployment scenarios:\n```\nstdio\n```\n```\nmcp.server.stdio\n```\n,\n```\nmcp.client.stdio\n```\n```\nsse\n```\n```\nmcp.server.sse\n```\n,\n```\nmcp.client.sse\n```\n```\nstreamable-http\n```\n```\nmcp.server.streamablehttp\n```\n, Use Case = . , Implementation = \n**Sources:**\n[README.md:1104-1217](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 14,
+      "char_count": 371,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761241"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:6",
+    "content": "The SDK includes comprehensive development tools accessible through the\n```\nmcp\n```\nCLI:\n```\ngraph TB\n    subgraph \"Development Commands\"\n        McpDev[\"mcp dev server.py<br/>(MCP Inspector)\"]\n        McpRun[\"mcp run server.py<br/>(Direct execution)\"]\n        McpInstall[\"mcp install server.py<br/>(Claude Desktop integration)\"]\n    end\n    \n    subgraph \"Server Types\"\n        FastMCPServer[\"FastMCP Server<br/>(Decorator-based)\"]\n        LowLevelServer[\"Low-Level Server<br/>(Protocol handlers)\"]\n    end\n    \n    subgraph \"Target Environments\"\n        Inspector[\"MCP Inspector<br/>(Development)\"]\n        ClaudeDesktop[\"Claude Desktop<br/>(Production)\"]\n        DirectExecution[\"Direct Process<br/>(Custom deployment)\"]\n    end\n    \n    McpDev --> FastMCPServer\n    McpRun --> FastMCPServer\n    McpInstall --> FastMCPServer\n    \n    McpDev --> Inspector\n    McpInstall --> ClaudeDesktop\n    McpRun --> DirectExecution\n    \n    FastMCPServer -.-> LowLevelServer\n```\n**Sources:**\n[README.md:1027-1102](.)\nFor specific implementation details on each component, refer to the dedicated sections:\n[FastMCP Server Framework](#2)\nfor high-level server development,\n[Client Framework](#3)\nfor client implementation,\n[Transport Layer](#5)\nfor communication mechanisms, and\n[Development Tools & CLI](#8)\nfor development workflow.",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 14,
+      "char_count": 1322,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761247"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:7",
+    "content": "The Model Context Protocol (MCP) Python SDK is a comprehensive framework for building servers and clients that enable Large Language Models to access external tools, data, and services in a standardized way. This SDK implements the complete MCP specification, providing both high-level developer-friendly APIs and low-level protocol implementations.\nThe SDK enables developers to create MCP servers that expose resources (data), tools (functions), and prompts (templates) to LLM applications, as well as MCP clients that can discover and interact with these servers. For detailed implementation guidance on building servers, see\n[FastMCP Server Framework](#2)\n. For client development, see\n[Client Framework](#3)\n. For protocol-level details, see\n[Protocol & Message System](#4)\n.",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 14,
+      "char_count": 780,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761252"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:8",
+    "content": "The MCP Python SDK is organized into several distinct layers, each serving specific roles in the protocol implementation:\n```\ngraph TB\n    subgraph \"Application Layer\"\n        UserServers[\"User MCP Servers<br/>(@tool, @resource, @prompt decorators)\"]\n        UserClients[\"User MCP Clients<br/>(ClientSession usage)\"]\n        CLI[\"mcp CLI<br/>(dev, run, install commands)\"]\n    end\n    \n    subgraph \"High-Level Frameworks\"\n        FastMCP[\"FastMCP<br/>(mcp.server.fastmcp.FastMCP)\"]\n        ClientSession[\"ClientSession<br/>(mcp.ClientSession)\"]\n    end\n    \n    subgraph \"Core Protocol Layer\"\n        LowLevelServer[\"Server<br/>(mcp.server.lowlevel.Server)\"]\n        BaseSession[\"BaseSession<br/>(mcp.shared.session.BaseSession)\"]\n        Types[\"mcp.types<br/>(Protocol Message Definitions)\"]\n    end\n    \n    subgraph \"Transport Layer\"\n        StdioTransport[\"stdio<br/>(mcp.server.stdio, mcp.client.stdio)\"]\n        SSETransport[\"sse<br/>(mcp.server.sse, mcp.client.sse)\"] \n        StreamableHTTP[\"streamable-http<br/>(mcp.server.streamablehttp)\"]\n    end\n    \n    subgraph \"Authentication Layer\"\n        TokenVerifier[\"TokenVerifier<br/>(mcp.server.auth.provider)\"]\n        OAuthClient[\"OAuthClientProvider<br/>(mcp.client.auth.provider)\"]\n    end\n    \n    %% User layer connections\n    UserServers --> FastMCP\n    UserClients --> ClientSession\n    CLI --> FastMCP\n    \n    %% Framework connections\n    FastMCP --> LowLevelServer\n    ClientSession --> BaseSession\n    \n    %% Core connections\n    LowLevelServer --> Types\n    BaseSession --> Types\n    \n    %% Transport connections\n    LowLevelServer -.-> StdioTransport\n    LowLevelServer -.-> SSETransport\n    LowLevelServer -.-> StreamableHTTP\n    ClientSession -.-> StdioTransport\n    ClientSession -.-> SSETransport\n    ClientSession -.-> StreamableHTTP\n    \n    %% Auth connections\n    FastMCP --> TokenVerifier\n    ClientSession --> OAuthClient\n```\n**Sources:**\n[README.md:1-1770](.)\n,\n[src/mcp/server/lowlevel/server.py:1-727](.)\n,\n[src/mcp/types.py:1-1349](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 14,
+      "char_count": 2022,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761258"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:9",
+    "content": "The MCP SDK is built on JSON-RPC 2.0 messaging with well-defined protocol types. The\n```\nmcp.types\n```\nmodule contains all protocol message definitions, including requests, responses, and notifications that flow between clients and servers.\n```\ngraph LR\n    subgraph \"Protocol Types (mcp.types)\"\n        ClientRequest[\"ClientRequest<br/>(InitializeRequest, CallToolRequest, etc.)\"]\n        ServerResult[\"ServerResult<br/>(CallToolResult, ListToolsResult, etc.)\"]\n        Notifications[\"Notifications<br/>(ProgressNotification, LoggingMessageNotification)\"]\n    end\n    \n    subgraph \"Core Protocol Classes\"\n        JSONRPCRequest[\"JSONRPCRequest<br/>(id, method, params)\"]\n        JSONRPCResponse[\"JSONRPCResponse<br/>(id, result)\"]\n        JSONRPCError[\"JSONRPCError<br/>(id, error)\"]\n    end\n    \n    subgraph \"Session Management\"\n        BaseSession[\"BaseSession<br/>(mcp.shared.session)\"]\n        ServerSession[\"ServerSession<br/>(mcp.server.session)\"]\n        RequestResponder[\"RequestResponder<br/>(mcp.shared.session)\"]\n    end\n    \n    ClientRequest --> JSONRPCRequest\n    ServerResult --> JSONRPCResponse\n    JSONRPCError --> ServerResult\n    \n    BaseSession --> RequestResponder\n    ServerSession --> BaseSession\n```\n**Sources:**\n[src/mcp/types.py:124-192](.)\n,\n[src/mcp/types.py:1248-1349](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 14,
+      "char_count": 1304,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761264"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:10",
+    "content": "The SDK provides two primary approaches for building MCP servers:\n**FastMCP Framework**\n- A decorator-based high-level framework that automatically handles protocol compliance, schema generation, and transport integration. Users define tools, resources, and prompts using Python decorators.\n**Low-Level Server**\n- Direct protocol implementation providing full control over message handling, lifecycle management, and custom protocol extensions.\n```\ngraph TB\n    subgraph \"FastMCP Framework (mcp.server.fastmcp)\"\n        FastMCPClass[\"FastMCP\"]\n        ToolDecorator[\"@mcp.tool()\"]\n        ResourceDecorator[\"@mcp.resource()\"]\n        PromptDecorator[\"@mcp.prompt()\"]\n        Context[\"Context[ServerSession, LifespanContext]\"]\n    end\n    \n    subgraph \"Low-Level Server (mcp.server.lowlevel)\"\n        ServerClass[\"Server[LifespanResultT, RequestT]\"]\n        ListToolsHandler[\"@server.list_tools()\"]\n        CallToolHandler[\"@server.call_tool()\"]\n        RequestContext[\"request_ctx: ContextVar\"]\n    end\n    \n    subgraph \"Common Infrastructure\"\n        ServerSession[\"ServerSession\"]\n        ToolManager[\"ToolManager\"]\n        FuncMetadata[\"func_metadata\"]\n    end\n    \n    ToolDecorator --> ToolManager\n    ResourceDecorator --> ToolManager\n    PromptDecorator --> ToolManager\n    FastMCPClass --> ServerClass\n    \n    ListToolsHandler --> ServerClass\n    CallToolHandler --> ServerClass\n    \n    ServerClass --> ServerSession\n    ToolManager --> FuncMetadata\n    Context --> ServerSession\n    RequestContext --> ServerSession\n```\n**Sources:**\n[README.md:138-170](.)\n,\n[src/mcp/server/lowlevel/server.py:133-158](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 14,
+      "char_count": 1617,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761270"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:11",
+    "content": "The client framework centers around\n```\nClientSession\n```\nwhich provides high-level methods for discovering and interacting with MCP servers. It handles transport abstraction, authentication, and protocol message management.\n```\ngraph LR\n    subgraph \"Client API (mcp.client)\"\n        ClientSession[\"ClientSession\"]\n        StdioClient[\"stdio_client\"]\n        SSEClient[\"sse_client\"] \n        StreamableClient[\"streamablehttp_client\"]\n    end\n    \n    subgraph \"Client Operations\"\n        Initialize[\"session.initialize()\"]\n        ListTools[\"session.list_tools()\"]\n        CallTool[\"session.call_tool()\"]\n        ReadResource[\"session.read_resource()\"]\n    end\n    \n    subgraph \"Authentication (mcp.client.auth)\"\n        OAuthProvider[\"OAuthClientProvider\"]\n        TokenStorage[\"TokenStorage\"]\n    end\n    \n    ClientSession --> StdioClient\n    ClientSession --> SSEClient\n    ClientSession --> StreamableClient\n    \n    ClientSession --> Initialize\n    ClientSession --> ListTools\n    ClientSession --> CallTool\n    ClientSession --> ReadResource\n    \n    ClientSession --> OAuthProvider\n    OAuthProvider --> TokenStorage\n```\n**Sources:**\n[README.md:660-733](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 14,
+      "char_count": 1166,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761276"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:12",
+    "content": "The SDK supports three transport mechanisms for MCP communication, each suited for different deployment scenarios:\n```\nstdio\n```\n```\nmcp.server.stdio\n```\n,\n```\nmcp.client.stdio\n```\n```\nsse\n```\n```\nmcp.server.sse\n```\n,\n```\nmcp.client.sse\n```\n```\nstreamable-http\n```\n```\nmcp.server.streamablehttp\n```\n, Use Case = . , Implementation = \n**Sources:**\n[README.md:1104-1217](.)",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 14,
+      "char_count": 371,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761283"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Overview:chunk:13",
+    "content": "The SDK includes comprehensive development tools accessible through the\n```\nmcp\n```\nCLI:\n```\ngraph TB\n    subgraph \"Development Commands\"\n        McpDev[\"mcp dev server.py<br/>(MCP Inspector)\"]\n        McpRun[\"mcp run server.py<br/>(Direct execution)\"]\n        McpInstall[\"mcp install server.py<br/>(Claude Desktop integration)\"]\n    end\n    \n    subgraph \"Server Types\"\n        FastMCPServer[\"FastMCP Server<br/>(Decorator-based)\"]\n        LowLevelServer[\"Low-Level Server<br/>(Protocol handlers)\"]\n    end\n    \n    subgraph \"Target Environments\"\n        Inspector[\"MCP Inspector<br/>(Development)\"]\n        ClaudeDesktop[\"Claude Desktop<br/>(Production)\"]\n        DirectExecution[\"Direct Process<br/>(Custom deployment)\"]\n    end\n    \n    McpDev --> FastMCPServer\n    McpRun --> FastMCPServer\n    McpInstall --> FastMCPServer\n    \n    McpDev --> Inspector\n    McpInstall --> ClaudeDesktop\n    McpRun --> DirectExecution\n    \n    FastMCPServer -.-> LowLevelServer\n```\n**Sources:**\n[README.md:1027-1102](.)\nFor specific implementation details on each component, refer to the dedicated sections:\n[FastMCP Server Framework](#2)\nfor high-level server development,\n[Client Framework](#3)\nfor client implementation,\n[Transport Layer](#5)\nfor communication mechanisms, and\n[Development Tools & CLI](#8)\nfor development workflow.",
+    "metadata": {
+      "source": "python-sdk\\Overview.md",
+      "file_name": "Overview.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 13,
+      "total_chunks": 14,
+      "char_count": 1322,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:22.761289"
+    }
+  }
+]

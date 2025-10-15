@@ -1,0 +1,58 @@
+#### On this page
+
+- [Event payload format](\docs\features\events-triggers\event-format#event-payload-format)
+- [Required properties](\docs\features\events-triggers\event-format#required-properties)
+- [Optional properties](\docs\features\events-triggers\event-format#optional-properties)
+- [Tips for event naming](\docs\features\events-triggers\event-format#tips-for-event-naming)
+
+Features [Events &amp; Triggers](\docs\features\events-triggers)
+
+## [Event payload format](\docs\features\events-triggers\event-format#event-payload-format)
+
+The event payload is a JSON object that must contain a `name` and `data` property.
+
+### [Required properties](\docs\features\events-triggers\event-format#required-properties)
+
+- The `name` is the type or category of event. Event `name` s are used to [trigger functions](\docs\functions) . For example, `app/user.created` or `billing/invoice.paid` . See [tips for event naming](\docs\features\events-triggers\event-format#tips-for-event-naming) below.
+- `data` contains any data you want to associate with the event. This data will be serialized to JSON. For example, if you're sending an event for a paid invoice, you might include the invoice's `id` , the `amount` , and the `customerId` in the `data` property. The `data` property can contain any nested JSON object, including objects and arrays.
+
+### [Optional properties](\docs\features\events-triggers\event-format#optional-properties)
+
+- `id` is a unique identifier for the event used to prevent duplicate events. Learn more about [deduplication](\docs\features\events-triggers\event-format#deduplication) .
+- `ts` is the timestamp of the event in milliseconds since the Unix epoch. If not provided, the timestamp will be set to the time the event was received by Inngest.
+- `v` is the event payload version. This is useful to track changes in the event payload shape over time. For example, `"2024-01-14.1"`
+- `user` is object for ease of grouping user-identifying data or attributes associated with the event. This data is encrypted at rest.
+    - **NOTE** - We now recommend that developers use [encryption middleware](\docs\features\middleware\encryption-middleware) to store personally identifiable information (PII) within the `data` object. Encryption middleware also has added benefits as it supports full or partial encryption of data returned from steps as well as complete control over the encryption key.
+
+Basic JSON event example TypeScript Type representation Pydantic Type representation
+
+Copy Copied
+
+```
+{
+"name" : "billing/invoice.paid" ,
+"data" : {
+"customerId" : "cus_NffrFeUfNV2Hib" ,
+"invoiceId" : "in_1J5g2n2eZvKYlo2C0Z1Z2Z3Z" ,
+"amount" : 1000 ,
+"metadata" : {
+"accountId" : "acct_1J5g2n2eZvKYlo2C0Z1Z2Z3Z" ,
+"accountName" : "Acme.ai"
+}
+} ,
+"user" : {
+"email" : "taylor@example.com"
+}
+}
+```
+
+### [Tips for event naming](\docs\features\events-triggers\event-format#tips-for-event-naming)
+
+Event names are used to trigger functions. We recommend using a consistent naming convention for your events. This will make it easier to find and trigger functions in the future. Here are some tips for naming events:
+
+- **Object-Action** : Use an Object-Action pattern as represented by noun and a verb. This is great for grouping related events on a given object, `account.created` , `account.updated` , `account.deleted` .
+- **Past-tense** : Use a past-tense verb for the action. For example, `uploaded` , `paid` , `completed` , `sent` .
+- **Separators** : Use dot-notation and/or underscores to separate words. For example, `user.created` or `blog_post.published` .
+- **Prefixes** : Use prefixes to group related events. For example, `api/user.created` , `billing/invoice.paid` , `stripe/customer.created` . This is especially useful if you have multiple applications that send events to Inngest.
+
+There is no right or wrong way to name events. The most important thing is to be consistent and use a naming convention that makes sense for your application.

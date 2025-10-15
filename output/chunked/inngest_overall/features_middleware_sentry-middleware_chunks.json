@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_middleware_sentry-middleware.md",
+  "title": "Sentry Middleware",
+  "num_chunks": 3,
+  "total_chars": 1086,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Sentry Middleware](\\docs\\features\\middleware\\sentry-middleware#sentry-middleware)\n- [Installation](\\docs\\features\\middleware\\sentry-middleware#installation)\nFeatures\n[Middleware](\\docs\\features\\middleware)",
+      "char_count": 221,
+      "token_count": 55,
+      "metadata": {
+        "title": "Sentry Middleware",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_middleware_sentry-middleware.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_middleware_sentry-middleware.md",
+        "file_name": "features_middleware_sentry-middleware.md",
+        "file_size": 1188,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "61a68a4aa46c2cfb9376f7266a454eaf7b5acf80cfd05b3cd70c063a144c5cd7",
+        "author": null,
+        "created_at": "2025-10-12T23:59:03.086377",
+        "modified_at": "2025-10-12T23:59:03.086377",
+        "page_count": null,
+        "word_count": 122,
+        "extracted_at": "2025-10-13T20:03:27.256685",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 55,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Sentry Middleware\nUsing the Sentry middleware is useful to:\n- Capture exceptions for reporting\n- Add tracing to each function run\n- Include useful context for each exception and trace like function ID and event names",
+      "char_count": 216,
+      "token_count": 41,
+      "metadata": {
+        "title": "Sentry Middleware",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_middleware_sentry-middleware.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_middleware_sentry-middleware.md",
+        "file_name": "features_middleware_sentry-middleware.md",
+        "file_size": 1188,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "61a68a4aa46c2cfb9376f7266a454eaf7b5acf80cfd05b3cd70c063a144c5cd7",
+        "author": null,
+        "created_at": "2025-10-12T23:59:03.086377",
+        "modified_at": "2025-10-12T23:59:03.086377",
+        "page_count": null,
+        "word_count": 122,
+        "extracted_at": "2025-10-13T20:03:27.256685",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 41,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Sentry Middleware\nInstallation\nTypeScript (v3.0.0+) Python (v0.3.0+)\nInstall the\n[```\n@inngest/middleware-sentry\n```](https://www.npmjs.com/package/@inngest/middleware-sentry)\n[package](https://www.npmjs.com/package/@inngest/middleware-sentry)\nand configure it as follows:\nCopy Copied\n```\nimport * as Sentry from \"@sentry/node\" ;\nimport { Inngest } from \"inngest\" ;\nimport { sentryMiddleware } from \"@inngest/middleware-sentry\" ;\n\n// Initialize Sentry as usual wherever is appropriate\nSentry .init ( ... );\n\nconst inngest = new Inngest ({\nid : \"my-app\" ,\nmiddleware : [ sentryMiddleware ()] ,\n});\n```\nRequires inngest@>=3.0.0 and @sentry/*@>=8.0.0`.",
+      "char_count": 649,
+      "token_count": 201,
+      "metadata": {
+        "title": "Sentry Middleware",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_middleware_sentry-middleware.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\features_middleware_sentry-middleware.md",
+        "file_name": "features_middleware_sentry-middleware.md",
+        "file_size": 1188,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "61a68a4aa46c2cfb9376f7266a454eaf7b5acf80cfd05b3cd70c063a144c5cd7",
+        "author": null,
+        "created_at": "2025-10-12T23:59:03.086377",
+        "modified_at": "2025-10-12T23:59:03.086377",
+        "page_count": null,
+        "word_count": 122,
+        "extracted_at": "2025-10-13T20:03:27.256685",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 201,
+        "has_context": true
+      }
+    }
+  ]
+}

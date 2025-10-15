@@ -1,0 +1,226 @@
+[
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:0",
+    "content": "Jan 14, 2022 | Affiliate API, Blog, Features & Tools",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 0,
+      "total_chunks": 16,
+      "char_count": 52,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403255"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:1",
+    "content": "As a Viator affiliate, you earn commission from sales made by your users after being redirected to the Viator site. Viator uses cookies to track the activity of your users on our site and attribute sales to your account for 30 days. This tracking and attribution is enabled via URL parameters.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 1,
+      "total_chunks": 16,
+      "char_count": 293,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403301"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:2",
+    "content": "- How tracking works\n- Adding campaign tracking\n- Tracking multiple campaigns\n- Tracking across languages and geos\n- Troubleshooting broken parameters\na",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 2,
+      "total_chunks": 16,
+      "char_count": 152,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403328"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:3",
+    "content": "Viator uses URL parameters to track and attribute traffic to affiliates. Your tracking parameters must be appended to any active Viator.com URL. Any misuse of tracking and attribution parameters (e.g. removing or changing parameters) could result in inaccurate reporting in your account dashboard or could result in loss of booking commission.\nParameters will vary slightly depending on the tool(s) you use, but will all trigger the same 30 days of tracking and attribution. There are four tools available to you via your affiliate account:\n1. Links - Direct URL links to Viator\n2. Widgets - Customizable widgets displaying 1-30 product previews\n3. Banners - Banner ads, available in standard size formats\n4. Affiliate API - API solution to more deeply integrate and customize Viator content\nYour tracking and attribution parameters consist of four elements:\n1. PID: Your nine digit account ID\n2. MCID: An internal tracking ID used by Viator\n3. Medium: The medium used to retrieve a link. Media can be link, widget, banner, and API\n4. Campaign: An optional user-defined code which partners can use to track campaigns and touchpoints",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 3,
+      "total_chunks": 16,
+      "char_count": 1132,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403352"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:4",
+    "content": "The specifics of how you should redirect your users to Viator will depend on which of our partner tools you are using. For each of the solutions, it is important to only include alphanumeric characters (abc…, 123…) and dashes (-). Special characters may prevent campaigns from being tracked, or break tracking and attribution entirely",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 4,
+      "total_chunks": 16,
+      "char_count": 334,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403376"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:5",
+    "content": "Using the tool within your account admin, generate your desired links, and add them to the desired locations on your platform.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 5,
+      "total_chunks": 16,
+      "char_count": 126,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403400"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:6",
+    "content": "Using the tool within your account, generate your desired HTML code, and copypaste it into the HTML of your website where the banner should appear.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 6,
+      "total_chunks": 16,
+      "char_count": 147,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403421"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:7",
+    "content": "- If you would like to add a campaign parameter to a product URL, please use the optional 'campaign-value' parameter in your API request to the /products/search, /products/bulk, /products/modified-since, or /products/{product-code} endpoints.\n- To add campaign tracking to non-product links (for example attractions), you will need to manually insert the parameter. This can be done by appending '&campaign={your-campaign}' to the links returned by the API.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 7,
+      "total_chunks": 16,
+      "char_count": 457,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403443"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:8",
+    "content": "You may want to track multiple factors related to re-direction. For example, you may want to track the touchpoint (i.e a given destination page), as well as attribute clicks to a user account.\nAlthough the campaign parameter is designed to track a single campaign or touchpoint, you can include multiple internal codes in the campaign parameter. As long as no breaking characters are included, this will give you the information needed to track these factors on your end. Partners may choose to separate different elements with dashes, as shown below:",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 8,
+      "total_chunks": 16,
+      "char_count": 551,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403465"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:9",
+    "content": "Viator affiliates have access to all languages offered by Viator. To determine which language is displayed, you will need to update the subdomain with one of the below.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 9,
+      "total_chunks": 16,
+      "char_count": 168,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403487"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:10",
+    "content": "Before copy-pasting your desired URL into the links tool, select your desired language in the top right of the Viator site.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 10,
+      "total_chunks": 16,
+      "char_count": 123,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403508"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:11",
+    "content": "Select language using the dropdown menu in the widget and banner builder. Below is an example of how to do so in the widget builder.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 11,
+      "total_chunks": 16,
+      "char_count": 132,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403531"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:12",
+    "content": "Set the Accept-Language header parameter for your request to the desired language code. All available languages are listed in the chart.\nDanish, en, en-US = da, da-DK. Dutch, en, en-US = nl, nl-NL. Norwegian, en, en-US = no, no-NO. Spanish, en, en-US = es, es-ES. Swedish, en, en-US = sv, sv-SE. French, en, en-US = fr, fr-FR. Italian, en, en-US = it, it-IT. German, en, en-US = de, de-DE. Portuguese, en, en-US = pt, pt-PT. Japanese, en, en-US = ja, ja-JP. Chinese (traditional), en, en-US = zh-TW. Chinese (simplified), en, en-US = zh-CN. Korean, en, en-US = ko, ko-KR",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 12,
+      "total_chunks": 16,
+      "char_count": 570,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403553"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:13",
+    "content": "Because almost all errors related to attribution come from removing or modifying URL parameters, it is best to rely on our built-in tools to manage tracking and attribution parameters.\nIf you believe your traffic or bookings are not being correctly tracked, please refer to the troubleshooting guide below before reaching out to us at affiliateapi@tripadvisor.com.\n1. Ensure that campaign field uses only appropriate characters.\n- Correct '?pid=P00049694&mcid=12345&medium=link&campaign=example'\n- Incorrect: '? pid=P00049694&mcid=12345&medium=link&campaign=examp #$\n4. le'\n2. Ensure that a '?' is included before only the first parameter, and that a '&' is included between all following parameters.\n6. -For example: https://www.viator.com? pid=P00049694 & mcid=42383 & medium=link & campaign=example",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 13,
+      "total_chunks": 16,
+      "char_count": 801,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403574"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:14",
+    "content": "You can direct your users to any active Viator URL, including destination/attraction pages, language/PoS subdomains, and microsites. Many partners choose to connect to destination, attraction, and/or product pages.\nHow should I redirect users to Viator?\nI've noticed that when I navigate to a new Viator page after redirecting, my parameter no longer appears in the URL. Will this disrupt my attribution?\nThe parameters are only needed for redirection - once the user has reached the Viator site using an appropriate link, tracking and attribution will remain active. Because attribution relies on cookies, if the user manually clears their browser's cache, tracking and attribution will be removed.\nWhen I try to redirect to a product page, I've noticed that the landing page is different from the standard product page.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 14,
+      "total_chunks": 16,
+      "char_count": 821,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403596"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Affiliate Attribution_ How It Works - Viator Partner Resource Center:chunk:15",
+    "content": "social media, 1 = tutorial. social media, 2 = Viator Shop. social media, 3 = video\nHelp center\nPrivacy & Cookies Statement\nAbout Viator\nTerms & Conditions\n© 1997-2025 Viator, Inc.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "file_name": "Affiliate Attribution_ How It Works - Viator Partner Resource Center.md",
+      "chunk_index": 15,
+      "total_chunks": 16,
+      "char_count": 179,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T05:58:29.403617"
+    }
+  }
+]

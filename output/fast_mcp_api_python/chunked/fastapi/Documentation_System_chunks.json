@@ -1,0 +1,587 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:0",
+    "content": "The Documentation System encompasses the comprehensive infrastructure for building, maintaining, and deploying FastAPI's multi-language documentation website. This system manages the conversion of Markdown source files into a fully-featured documentation site with interactive API references, community pages, and automated translation workflows.\nFor information about CI/CD automation that builds and deploys this documentation, see\n[CI/CD Pipeline](#6.2)\n. For details about translation management and community coordination, see\n[Translation Management](#7.2)\n.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 39,
+      "char_count": 564,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997661"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:1",
+    "content": "The documentation system is built on MkDocs Material with a sophisticated multi-language inheritance model, automated content generation, and community data integration.\n```\ngraph TD\n    subgraph \"Source Content\"\n        EN[\"English Source<br/>(docs/en/)\"]\n        DOCS_SRC[\"Code Examples<br/>(docs_src/)\"]\n        DATA[\"Community Data<br/>(docs/en/data/)\"]\n    end\n    \n    subgraph \"Language Variants\"\n        ES[\"Spanish<br/>(docs/es/)\"]\n        FR[\"French<br/>(docs/fr/)\"]\n        ZH[\"Chinese<br/>(docs/zh/)\"]\n        OTHER[\"Other Languages<br/>(docs/{lang}/)\"]\n    end\n    \n    subgraph \"Build System\"\n        SCRIPTS[\"scripts/docs.py\"]\n        MKDOCS[\"MkDocs Engine\"]\n        PLUGINS[\"Plugin Ecosystem\"]\n    end\n    \n    subgraph \"Generated Output\"\n        SITE_EN[\"English Site<br/>(site/)\"]\n        SITE_LANG[\"Language Sites<br/>(site/{lang}/)\"]\n        COMBINED[\"Combined Site<br/>(site/)\"]\n    end\n    \n    EN --> SCRIPTS\n    DOCS_SRC --> SCRIPTS\n    DATA --> SCRIPTS\n    \n    EN -.->|\"INHERIT\"| ES\n    EN -.->|\"INHERIT\"| FR\n    EN -.->|\"INHERIT\"| ZH\n    EN -.->|\"INHERIT\"| OTHER\n    \n    SCRIPTS --> MKDOCS\n    MKDOCS --> PLUGINS\n    \n    ES --> SITE_LANG\n    FR --> SITE_LANG\n    ZH --> SITE_LANG\n    OTHER --> SITE_LANG\n    EN --> SITE_EN\n    \n    SITE_EN --> COMBINED\n    SITE_LANG --> COMBINED\n```\n**Sources:**\n[docs/en/mkdocs.yml:1-362](.)\n,\n[scripts/docs.py:1-425](.)\n,\n[docs/zh/mkdocs.yml:1-2](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 39,
+      "char_count": 1414,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997678"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:2",
+    "content": "The documentation system uses a hierarchical configuration approach where the English configuration serves as the master template.\n```\ngraph LR\n    subgraph \"Configuration Hierarchy\"\n        BASE[\"mkdocs.maybe-insiders.yml\"]\n        EN[\"docs/en/mkdocs.yml\"]\n        LANG[\"docs/{lang}/mkdocs.yml\"]\n    end\n    \n    subgraph \"Key Components\"\n        THEME[\"Material Theme Config\"]\n        PLUGINS[\"Plugin Configuration\"]\n        NAV[\"Navigation Structure\"]\n        EXTENSIONS[\"Markdown Extensions\"]\n    end\n    \n    BASE -->|\"INHERIT\"| EN\n    EN -->|\"INHERIT\"| LANG\n    \n    EN --> THEME\n    EN --> PLUGINS\n    EN --> NAV\n    EN --> EXTENSIONS\n```\nThe base English configuration at\n[docs/en/mkdocs.yml:1-5](.)\ninherits from\n```\nmkdocs.maybe-insiders.yml\n```\n, which conditionally loads insiders features based on environment variables\n[docs/en/mkdocs.maybe-insiders.yml:3](.)\n.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 39,
+      "char_count": 875,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997684"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:3",
+    "content": "The Material theme is configured with comprehensive feature flags and styling:\n```\nnavigation.tabs\n```\n,\n```\nnavigation.instant\n```\n```\ncontent.code.copy\n```\n,\n```\ncontent.tabs.link\n```\n```\nsearch.highlight\n```\n,\n```\nsearch.suggest\n```\nNavigation, Configuration = . Navigation, Purpose = \n**Sources:**\n[docs/en/mkdocs.yml:27-46](.)\n,\n[docs/en/mkdocs.yml:8-26](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 39,
+      "char_count": 362,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997691"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:4",
+    "content": "The documentation system integrates multiple specialized plugins:\n```\ngraph TB\n    subgraph \"Core Plugins\"\n        SEARCH[\"search\"]\n        MACROS[\"macros\"]\n        REDIRECTS[\"redirects\"]\n        MKDOCSTRINGS[\"mkdocstrings\"]\n    end\n    \n    subgraph \"Data Sources\"\n        SPONSORS[\"github_sponsors.yml\"]\n        PEOPLE[\"people.yml\"]\n        CONTRIBUTORS[\"contributors.yml\"]\n        EXTERNAL[\"external_links.yml\"]\n    end\n    \n    subgraph \"Capabilities\"\n        API_REF[\"API Reference Generation\"]\n        COMMUNITY[\"Community Pages\"]\n        LINK_MGMT[\"Link Management\"]\n        CONTENT_GEN[\"Dynamic Content\"]\n    end\n    \n    MACROS --> SPONSORS\n    MACROS --> PEOPLE\n    MACROS --> CONTRIBUTORS\n    MACROS --> EXTERNAL\n    \n    MKDOCSTRINGS --> API_REF\n    MACROS --> COMMUNITY\n    REDIRECTS --> LINK_MGMT\n    SEARCH --> CONTENT_GEN\n```\nThe\n```\nmacros\n```\nplugin enables dynamic content generation by including YAML data files\n[docs/en/mkdocs.yml:57-68](.)\n, while\n```\nmkdocstrings\n```\ngenerates API documentation from Python docstrings\n[docs/en/mkdocs.yml:77-98](.)\n.\n**Sources:**\n[docs/en/mkdocs.yml:54-98](.)\n,\n[requirements-docs.txt:18](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 39,
+      "char_count": 1148,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997696"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:5",
+    "content": "Each language variant uses a minimal configuration that inherits from the English base:\n```\ngraph TD\n    subgraph \"Inheritance Chain\"\n        EN_BASE[\"docs/en/mkdocs.yml<br/>Complete Configuration\"]\n        LANG_CONFIG[\"docs/{lang}/mkdocs.yml<br/>INHERIT: ../en/mkdocs.yml\"]\n        LANG_CONTENT[\"docs/{lang}/docs/<br/>Translated Content\"]\n    end\n    \n    subgraph \"Language Processing\"\n        BUILD_LANG[\"build_lang()\"]\n        LANG_PATHS[\"get_lang_paths()\"]\n        UPDATE_LANGUAGES[\"update_languages()\"]\n    end\n    \n    EN_BASE -.->|\"Inherits\"| LANG_CONFIG\n    LANG_CONFIG --> BUILD_LANG\n    LANG_CONTENT --> BUILD_LANG\n    \n    LANG_PATHS --> UPDATE_LANGUAGES\n    UPDATE_LANGUAGES --> EN_BASE\n```\nLanguage directories follow a consistent structure where\n[docs/zh/mkdocs.yml:1](.)\ncontains only\n```\nINHERIT: ../en/mkdocs.yml\n```\n, inheriting all configuration from the English version.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 39,
+      "char_count": 891,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997703"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:6",
+    "content": "The documentation build system provides language management through\n```\nscripts/docs.py\n```\n:\n```\nnew_lang()\n```\n```\nbuild_lang()\n```\n```\nbuild_all()\n```\n```\nupdate_languages()\n```\n, Purpose = . , Key Operations = \n**Sources:**\n[scripts/docs.py:85-104](.)\n,\n[scripts/docs.py:108-143](.)\n,\n[scripts/docs.py:216-229](.)\n,\n[scripts/docs.py:232-237](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 39,
+      "char_count": 348,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997708"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:7",
+    "content": "Language names are managed through a centralized configuration:\n```\ngraph LR\n    subgraph \"Language Configuration\"\n        LANG_NAMES[\"docs/language_names.yml\"]\n        ISO_CODES[\"ISO 639-1 Codes\"]\n        ALTERNATE[\"extra.alternate config\"]\n    end\n    \n    subgraph \"Update Process\"\n        GET_PATHS[\"get_lang_paths()\"]\n        UPDATE_CONFIG[\"get_updated_config_content()\"]\n        WRITE_CONFIG[\"update_config()\"]\n    end\n    \n    LANG_NAMES --> UPDATE_CONFIG\n    ISO_CODES --> UPDATE_CONFIG\n    GET_PATHS --> UPDATE_CONFIG\n    UPDATE_CONFIG --> ALTERNATE\n    UPDATE_CONFIG --> WRITE_CONFIG\n```\nThe system maintains language names in\n[docs/language_names.yml:1-184](.)\nand automatically generates the alternate language switcher configuration\n[docs/en/mkdocs.yml:303-354](.)\n.\n**Sources:**\n[scripts/docs.py:296-318](.)\n,\n[docs/language_names.yml:1-184](.)\n,\n[scripts/docs.py:321-327](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 39,
+      "char_count": 889,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997714"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:8",
+    "content": "The\n```\nscripts/docs.py\n```\nmodule provides comprehensive documentation management:\n```\ngraph TD\n    subgraph \"Development Commands\"\n        LIVE[\"live()\"]\n        SERVE[\"serve()\"]\n        NEW_LANG[\"new_lang()\"]\n    end\n    \n    subgraph \"Build Commands\"\n        BUILD_LANG[\"build_lang()\"]\n        BUILD_ALL[\"build_all()\"]\n        UPDATE_LANG[\"update_languages()\"]\n    end\n    \n    subgraph \"Verification Commands\"\n        VERIFY_README[\"verify_readme()\"]\n        VERIFY_CONFIG[\"verify_config()\"]\n        VERIFY_DOCS[\"verify_docs()\"]\n    end\n    \n    subgraph \"Content Generation\"\n        GEN_README[\"generate_readme()\"]\n        LANGS_JSON[\"langs_json()\"]\n    end\n    \n    LIVE -->|\"mkdocs serve\"| BUILD_LANG\n    BUILD_ALL -->|\"Process Pool\"| BUILD_LANG\n    UPDATE_LANG --> VERIFY_CONFIG\n    GEN_README --> VERIFY_README\n```",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 39,
+      "char_count": 824,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997719"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:9",
+    "content": "The build system supports both development and production workflows:\n```\nlive\n```\n```\nserve\n```\n```\nbuild_all\n```\n```\n./site/\n```\nDevelopment, Command = . Development, Purpose = . Development, Output = \n**Sources:**\n[scripts/docs.py:262-288](.)\n,\n[scripts/docs.py:240-258](.)\n,\n[scripts/docs.py:216-229](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 39,
+      "char_count": 306,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997725"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:10",
+    "content": "```\ngraph LR\n    subgraph \"Source Processing\"\n        MD_FILES[\"Markdown Files\"]\n        DOCS_SRC[\"docs_src/ Examples\"]\n        YAML_DATA[\"YAML Data Files\"]\n    end\n    \n    subgraph \"Processing Steps\"\n        MKDOCS_BUILD[\"MkDocs Build\"]\n        PLUGIN_PROCESS[\"Plugin Processing\"]\n        ASSET_COPY[\"Asset Copying\"]\n    end\n    \n    subgraph \"Output Generation\"\n        BUILD_SITE[\"build_site_path\"]\n        FINAL_SITE[\"site/ directory\"]\n        LANG_SITES[\"site/{lang}/ variants\"]\n    end\n    \n    MD_FILES --> MKDOCS_BUILD\n    DOCS_SRC --> PLUGIN_PROCESS\n    YAML_DATA --> PLUGIN_PROCESS\n    \n    MKDOCS_BUILD --> BUILD_SITE\n    PLUGIN_PROCESS --> BUILD_SITE\n    ASSET_COPY --> BUILD_SITE\n    \n    BUILD_SITE --> FINAL_SITE\n    BUILD_SITE --> LANG_SITES\n```\nThe build process creates temporary build directories\n[scripts/docs.py:125](.)\nbefore copying to the final site location\n[scripts/docs.py:140](.)\n.\n**Sources:**\n[scripts/docs.py:136-142](.)\n,\n[scripts/docs.py:44-45](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 39,
+      "char_count": 981,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997730"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:11",
+    "content": "The navigation is hierarchically organized in the main configuration:\n```\ngraph TD\n    subgraph \"Main Sections\"\n        FASTAPI[\"FastAPI Overview\"]\n        LEARN[\"Learn Section\"]\n        REFERENCE[\"Reference API\"]\n        RESOURCES[\"Resources\"]\n        ABOUT[\"About\"]\n    end\n    \n    subgraph \"Learn Subsections\"\n        TUTORIAL[\"Tutorial - User Guide\"]\n        ADVANCED[\"Advanced User Guide\"]\n        DEPLOYMENT[\"Deployment\"]\n        HOW_TO[\"How To - Recipes\"]\n        CLI[\"fastapi-cli\"]\n    end\n    \n    subgraph \"Reference Subsections\"\n        CORE_REF[\"Core API Reference\"]\n        OPENAPI_REF[\"OpenAPI Reference\"]\n        SECURITY_REF[\"Security Reference\"]\n    end\n    \n    LEARN --> TUTORIAL\n    LEARN --> ADVANCED\n    LEARN --> DEPLOYMENT\n    LEARN --> HOW_TO\n    LEARN --> CLI\n    \n    REFERENCE --> CORE_REF\n    REFERENCE --> OPENAPI_REF\n    REFERENCE --> SECURITY_REF\n```",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 39,
+      "char_count": 883,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997736"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:12",
+    "content": "The system maintains a list of sections that should not be translated:\n```\nreference/\n```\n```\nrelease-notes.md\n```\n```\ncontributing.md\n```\n```\nexternal-links.md\n```\n, Reason = . , Management = \n**Sources:**\n[scripts/docs.py:30-39](.)\n,\n[scripts/docs.py:349-368](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 39,
+      "char_count": 264,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997741"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:13",
+    "content": "The documentation system includes comprehensive validation:\n```\ngraph LR\n    subgraph \"Validation Functions\"\n        VERIFY_README[\"verify_readme()\"]\n        VERIFY_CONFIG[\"verify_config()\"]\n        VERIFY_NON_TRANS[\"verify_non_translated()\"]\n    end\n    \n    subgraph \"Validation Targets\"\n        README_SYNC[\"README.md sync with index.md\"]\n        LANG_CONFIG[\"Language configuration consistency\"]\n        NO_INVALID_TRANS[\"No translations in non-translatable sections\"]\n    end\n    \n    subgraph \"Automation\"\n        VERIFY_DOCS[\"verify_docs()\"]\n        CI_INTEGRATION[\"CI/CD Integration\"]\n    end\n    \n    VERIFY_README --> README_SYNC\n    VERIFY_CONFIG --> LANG_CONFIG\n    VERIFY_NON_TRANS --> NO_INVALID_TRANS\n    \n    VERIFY_DOCS --> VERIFY_README\n    VERIFY_DOCS --> VERIFY_CONFIG\n    VERIFY_DOCS --> VERIFY_NON_TRANS\n    \n    VERIFY_DOCS --> CI_INTEGRATION\n```\n**Sources:**\n[scripts/docs.py:372-376](.)\n,\n[scripts/docs.py:198-212](.)\n,\n[scripts/docs.py:329-345](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 39,
+      "char_count": 973,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997747"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:14",
+    "content": "The documentation system uses extensive Markdown extensions for enhanced functionality:\n```\ntables\n```\n,\n```\ntoc\n```\n,\n```\nattr_list\n```\n```\npymdownx.highlight\n```\n,\n```\npymdownx.superfences\n```\n```\npymdownx.blocks.tab\n```\n,\n```\npymdownx.blocks.details\n```\n```\npymdownx.superfences\n```\nContent Structure, Extensions = . Content Structure, Purpose = ",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 39,
+      "char_count": 349,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997752"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:15",
+    "content": "The system supports sophisticated content blocks through PyMdown extensions\n[docs/en/mkdocs.yml:274-289](.)\n:\n```\ngraph LR\n    subgraph \"Block Types\"\n        ADMONITION[\"Admonition Blocks\"]\n        DETAILS[\"Details/Summary\"]\n        TABS[\"Tabbed Content\"]\n        CODE[\"Code Fences\"]\n    end\n    \n    subgraph \"Admonition Variants\"\n        NOTE[\"note\"]\n        WARNING[\"warning\"]\n        TIP[\"tip\"]\n        INFO[\"info\"]\n        DANGER[\"danger\"]\n    end\n    \n    subgraph \"Code Features\"\n        SYNTAX[\"Syntax Highlighting\"]\n        LINE_NUMS[\"Line Numbers\"]\n        COPY[\"Copy Button\"]\n        MERMAID[\"Mermaid Diagrams\"]\n    end\n    \n    ADMONITION --> NOTE\n    ADMONITION --> WARNING\n    ADMONITION --> TIP\n    ADMONITION --> INFO\n    ADMONITION --> DANGER\n    \n    CODE --> SYNTAX\n    CODE --> LINE_NUMS\n    CODE --> COPY\n    CODE --> MERMAID\n```\n**Sources:**\n[docs/en/mkdocs.yml:253-290](.)\n,\n[docs/en/mkdocs.yml:268-272](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 39,
+      "char_count": 929,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997757"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:16",
+    "content": "The documentation system integrates multiple community data sources:\n```\ngraph TD\n    subgraph \"Community Data Files\"\n        SPONSORS[\"github_sponsors.yml\"]\n        PEOPLE[\"people.yml\"]\n        CONTRIBUTORS[\"contributors.yml\"]\n        TRANSLATORS[\"translators.yml\"]\n        EXTERNAL[\"external_links.yml\"]\n    end\n    \n    subgraph \"Integration Points\"\n        MACROS_PLUGIN[\"mkdocs-macros-plugin\"]\n        TEMPLATE_RENDER[\"Jinja2 Template Rendering\"]\n        PAGE_GEN[\"Dynamic Page Generation\"]\n    end\n    \n    subgraph \"Generated Content\"\n        SPONSOR_PAGES[\"Sponsor Recognition\"]\n        PEOPLE_PAGES[\"FastAPI People\"]\n        CONTRIB_PAGES[\"Contributor Listings\"]\n        COMMUNITY_LINKS[\"External Resources\"]\n    end\n    \n    SPONSORS --> MACROS_PLUGIN\n    PEOPLE --> MACROS_PLUGIN\n    CONTRIBUTORS --> MACROS_PLUGIN\n    TRANSLATORS --> MACROS_PLUGIN\n    EXTERNAL --> MACROS_PLUGIN\n    \n    MACROS_PLUGIN --> TEMPLATE_RENDER\n    TEMPLATE_RENDER --> PAGE_GEN\n    \n    PAGE_GEN --> SPONSOR_PAGES\n    PAGE_GEN --> PEOPLE_PAGES\n    PAGE_GEN --> CONTRIB_PAGES\n    PAGE_GEN --> COMMUNITY_LINKS\n```",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 16,
+      "total_chunks": 39,
+      "char_count": 1100,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997763"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:17",
+    "content": "The system includes sophisticated template processing for dynamic content generation, particularly for sponsor acknowledgments\n[scripts/docs.py:145-154](.)\nusing Jinja2 templates\n[scripts/docs.py:172](.)\n.\n**Sources:**\n[docs/en/mkdocs.yml:56-68](.)\n,\n[scripts/docs.py:157-184](.)\n,\n[requirements-docs.txt:18](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 17,
+      "total_chunks": 39,
+      "char_count": 311,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997769"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:18",
+    "content": "The documentation system provides streamlined development commands:\n```\ngraph LR\n    subgraph \"Development Commands\"\n        LIVE_EN[\"live (default: en)\"]\n        LIVE_LANG[\"live {lang}\"]\n        DIRTY[\"live --dirty\"]\n    end\n    \n    subgraph \"Development Features\"\n        LIVERELOAD[\"Auto-reload on changes\"]\n        LINE_NUMBERS[\"Line numbers enabled\"]\n        FAST_BUILD[\"Dirty builds for speed\"]\n    end\n    \n    subgraph \"Development Environment\"\n        DEV_ADDR[\"127.0.0.1:8008\"]\n        ENV_VARS[\"LINENUMS=true\"]\n        WORKING_DIR[\"docs/{lang}/ directory\"]\n    end\n    \n    LIVE_EN --> LIVERELOAD\n    LIVE_LANG --> LIVERELOAD\n    DIRTY --> FAST_BUILD\n    \n    LIVERELOAD --> DEV_ADDR\n    LIVERELOAD --> ENV_VARS\n    LIVERELOAD --> WORKING_DIR\n```\nThe development server automatically enables line numbers\n[scripts/docs.py:286](.)\nto facilitate content editing and review.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 18,
+      "total_chunks": 39,
+      "char_count": 883,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997775"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:19",
+    "content": "For production deployment, the system uses parallel processing for efficiency\n[scripts/docs.py:224-228](.)\n:\n```\ngraph TB\n    subgraph \"Build Coordination\"\n        CPU_COUNT[\"os.cpu_count()\"]\n        POOL_SIZE[\"process_pool_size = cpu_count * 4\"]\n        LANG_LIST[\"Available Languages\"]\n    end\n    \n    subgraph \"Parallel Processing\"\n        PROCESS_POOL[\"multiprocessing.Pool\"]\n        BUILD_WORKERS[\"build_lang workers\"]\n        LANG_BUILDS[\"Individual language builds\"]\n    end\n    \n    subgraph \"Output Management\"\n        SITE_CLEANUP[\"shutil.rmtree(site_path)\"]\n        COMBINED_SITE[\"Combined site assembly\"]\n        FINAL_OUTPUT[\"./site/ directory\"]\n    end\n    \n    CPU_COUNT --> POOL_SIZE\n    LANG_LIST --> PROCESS_POOL\n    POOL_SIZE --> PROCESS_POOL\n    \n    PROCESS_POOL --> BUILD_WORKERS\n    BUILD_WORKERS --> LANG_BUILDS\n    \n    SITE_CLEANUP --> COMBINED_SITE\n    LANG_BUILDS --> COMBINED_SITE\n    COMBINED_SITE --> FINAL_OUTPUT\n```\n**Sources:**\n[scripts/docs.py:262-288](.)\n,\n[scripts/docs.py:216-229](.)\n,\n[scripts/docs.py:224-228](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 19,
+      "total_chunks": 39,
+      "char_count": 1053,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997780"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:20",
+    "content": "This document covers the comprehensive Continuous Integration/Continuous Deployment (CI/CD) infrastructure for the FastAPI repository, including automated testing, documentation building, package publishing, and community management workflows.\nThe CI/CD system is implemented entirely using GitHub Actions and consists of multiple interconnected workflows that handle code quality assurance, documentation generation, release automation, and community engagement. For information about the development workflow and local tooling, see\n[Development Workflow](#6.3)\n. For details about the documentation build system itself, see\n[Documentation System](#6.1)\n.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 20,
+      "total_chunks": 39,
+      "char_count": 656,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997786"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:21",
+    "content": "The FastAPI CI/CD pipeline consists of four main categories of automation: core development workflows, documentation pipelines, release management, and community automation.\n```\ngraph TB\n    subgraph \"Trigger Events\"\n        PUSH[\"push: branches: master\"]\n        PR[\"pull_request: opened, synchronize\"]\n        RELEASE[\"release: created\"]\n        SCHEDULE[\"schedule: cron expressions\"]\n        MANUAL[\"workflow_dispatch\"]\n    end\n    \n    subgraph \"Core CI/CD Workflows\"\n        TEST_YML[\".github/workflows/test.yml\"]\n        LINT_JOB[\"job: lint\"]\n        TEST_JOB[\"job: test\"]\n        COVERAGE_JOB[\"job: coverage-combine\"]\n        SMOKESHOW_YML[\".github/workflows/smokeshow.yml\"]\n        TEST_REDIST_YML[\".github/workflows/test-redistribute.yml\"]\n    end\n    \n    subgraph \"Documentation Pipeline\"\n        BUILD_DOCS_YML[\".github/workflows/build-docs.yml\"]\n        DEPLOY_DOCS_YML[\".github/workflows/deploy-docs.yml\"]\n        CHANGES_JOB[\"job: changes\"]\n        LANGS_JOB[\"job: langs\"]\n        BUILD_DOCS_JOB[\"job: build-docs\"]\n        DEPLOY_JOB[\"job: deploy-docs\"]\n    end\n    \n    subgraph \"Release Pipeline\"\n        PUBLISH_YML[\".github/workflows/publish.yml\"]\n        PUBLISH_JOB[\"job: publish\"]\n        LATEST_CHANGES_YML[\".github/workflows/latest-changes.yml\"]\n    end\n    \n    subgraph \"Community Automation\"\n        PEOPLE_YML[\".github/workflows/people.yml\"]\n        SPONSORS_YML[\".github/workflows/sponsors.yml\"]\n        CONTRIBUTORS_YML[\".github/workflows/contributors.yml\"]\n        TOPIC_REPOS_YML[\".github/workflows/topic-repos.yml\"]\n        ISSUE_MANAGER_YML[\".github/workflows/issue-manager.yml\"]\n        LABEL_APPROVED_YML[\".github/workflows/label-approved.yml\"]\n        NOTIFY_TRANS_YML[\".github/workflows/notify-translations.yml\"]\n    end\n    \n    PUSH --> TEST_YML\n    PR --> TEST_YML\n    PUSH --> BUILD_DOCS_YML\n    PR --> BUILD_DOCS_YML\n    RELEASE --> PUBLISH_YML\n    \n    TEST_YML --> LINT_JOB\n    TEST_YML --> TEST_JOB\n    TEST_JOB --> COVERAGE_JOB\n    COVERAGE_JOB --> SMOKESHOW_YML\n    \n    BUILD_DOCS_YML --> CHANGES_JOB\n    BUILD_DOCS_YML --> LANGS_JOB\n    BUILD_DOCS_YML --> BUILD_DOCS_JOB\n    BUILD_DOCS_YML --> DEPLOY_DOCS_YML\n    DEPLOY_DOCS_YML --> DEPLOY_JOB\n    \n    PUBLISH_YML --> PUBLISH_JOB\n    \n    SCHEDULE --> PEOPLE_YML\n    SCHEDULE --> SPONSORS_YML\n    SCHEDULE --> CONTRIBUTORS_YML\n    SCHEDULE --> TOPIC_REPOS_YML\n    SCHEDULE --> ISSUE_MANAGER_YML\n    SCHEDULE --> LABEL_APPROVED_YML\n```\nSources:\n[.github/workflows/test.yml:1-156](.)\n,\n[.github/workflows/build-docs.yml:1-138](.)\n,\n[.github/workflows/deploy-docs.yml:1-78](.)\n,\n[.github/workflows/publish.yml:1-43](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 21,
+      "total_chunks": 39,
+      "char_count": 2617,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997791"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:22",
+    "content": "The testing pipeline ensures code quality through comprehensive linting, multi-version testing, and coverage reporting.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 22,
+      "total_chunks": 39,
+      "char_count": 119,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997797"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:23",
+    "content": "The\n```\ntest.yml\n```\nworkflow implements a multi-dimensional test matrix covering Python versions 3.8-3.13 and both Pydantic v1 and v2 compatibility.\n```\ngraph LR\n    subgraph \".github/workflows/test.yml\"\n        LINT_JOB[\"jobs.lint\"]\n        TEST_JOB[\"jobs.test\"]\n        COVERAGE_JOB[\"jobs.coverage-combine\"]\n        CHECK_JOB[\"jobs.check\"]\n    end\n    \n    subgraph \"strategy.matrix\"\n        PY38[\"python-version: 3.8\"]\n        PY39[\"python-version: 3.9\"] \n        PY310[\"python-version: 3.10\"]\n        PY311[\"python-version: 3.11\"]\n        PY312[\"python-version: 3.12\"]\n        PY313[\"python-version: 3.13\"]\n        PYDANTIC_V1[\"pydantic-version: pydantic-v1\"]\n        PYDANTIC_V2[\"pydantic-version: pydantic-v2\"]\n    end\n    \n    subgraph \"Scripts and Dependencies\"\n        UV_SETUP[\"uses: astral-sh/setup-uv@v6\"]\n        REQUIREMENTS_TESTS[\"requirements-tests.txt\"]\n        SCRIPTS_LINT[\"bash scripts/lint.sh\"]\n        SCRIPTS_TEST[\"bash scripts/test.sh\"]\n        COVERAGE_FILE[\"env.COVERAGE_FILE\"]\n    end\n    \n    LINT_JOB --> UV_SETUP\n    LINT_JOB --> REQUIREMENTS_TESTS\n    LINT_JOB --> SCRIPTS_LINT\n    \n    TEST_JOB --> PY38\n    TEST_JOB --> PY39\n    TEST_JOB --> PY310\n    TEST_JOB --> PY311\n    TEST_JOB --> PY312\n    TEST_JOB --> PY313\n    TEST_JOB --> PYDANTIC_V1\n    TEST_JOB --> PYDANTIC_V2\n    TEST_JOB --> SCRIPTS_TEST\n    TEST_JOB --> COVERAGE_FILE\n    \n    TEST_JOB --> COVERAGE_JOB\n    COVERAGE_JOB --> CHECK_JOB\n```\nThe test workflow uses specific environment variables and configurations:\n- `UV_SYSTEM_PYTHON: 1` for system Python usage\n- `COVERAGE_FILE` with unique naming per test matrix combination\n- Conditional Pydantic version installation based on matrix parameters\nSources:\n[.github/workflows/test.yml:46-101](.)\n,\n[.github/workflows/test.yml:102-140](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 23,
+      "total_chunks": 39,
+      "char_count": 1787,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997803"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:24",
+    "content": "The coverage system integrates with Smokeshow for visual coverage reporting:\n```\ngraph TB\n    subgraph \"Coverage Flow\"\n        TEST_RUNS[\"Test Matrix Runs\"]\n        COVERAGE_ARTIFACTS[\"coverage-* artifacts\"]\n        COMBINE[\"coverage combine\"]\n        HTML_REPORT[\"coverage html\"]\n        SMOKESHOW_UPLOAD[\"smokeshow upload\"]\n    end\n    \n    subgraph \"smokeshow.yml\"\n        WORKFLOW_RUN_TRIGGER[\"workflow_run: Test completed\"]\n        DOWNLOAD_ARTIFACT[\"actions/download-artifact@v5\"]\n        SMOKESHOW_CONFIG[\"Environment Variables\"]\n    end\n    \n    TEST_RUNS --> COVERAGE_ARTIFACTS\n    COVERAGE_ARTIFACTS --> COMBINE\n    COMBINE --> HTML_REPORT\n    \n    WORKFLOW_RUN_TRIGGER --> DOWNLOAD_ARTIFACT\n    DOWNLOAD_ARTIFACT --> HTML_REPORT\n    HTML_REPORT --> SMOKESHOW_UPLOAD\n    \n    SMOKESHOW_CONFIG --> SMOKESHOW_UPLOAD\n```\nSources:\n[.github/workflows/test.yml:89-139](.)\n,\n[.github/workflows/smokeshow.yml:14-61](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 24,
+      "total_chunks": 39,
+      "char_count": 920,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997808"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:25",
+    "content": "The documentation system implements a sophisticated multi-language build and deployment process.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 25,
+      "total_chunks": 39,
+      "char_count": 96,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997814"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:26",
+    "content": "The\n```\nbuild-docs.yml\n```\nworkflow handles path-based change detection and multi-language documentation building:\n```\ngraph TB\n    subgraph \".github/workflows/build-docs.yml\"\n        CHANGES_JOB[\"jobs.changes\"]\n        LANGS_JOB[\"jobs.langs\"]\n        BUILD_JOB[\"jobs.build-docs\"]\n        ALL_GREEN_JOB[\"jobs.docs-all-green\"]\n    end\n    \n    subgraph \"Path Detection Steps\"\n        PATHS_FILTER[\"uses: dorny/paths-filter@v3\"]\n        FILTER_CONFIG[\"filters: docs/**, README.md, requirements-docs.txt, mkdocs.yml\"]\n        FILTER_OUTPUT[\"outputs.docs\"]\n    end\n    \n    subgraph \"scripts/docs.py Commands\"\n        SCRIPTS_DOCS_PY[\"python ./scripts/docs.py\"]\n        VERIFY_DOCS_CMD[\"verify-docs\"]\n        LANGS_JSON_CMD[\"langs-json\"]\n        UPDATE_LANGS_CMD[\"update-languages\"]\n        BUILD_LANG_CMD[\"build-lang ${{ matrix.lang }}\"]\n    end\n    \n    subgraph \"Build Matrix and Caching\"\n        LANG_MATRIX[\"strategy.matrix.lang\"]\n        MKDOCS_CACHE[\"actions/cache@v4 mkdocs-cards\"]\n        DOCS_ARTIFACTS[\"actions/upload-artifact@v4 docs-site-*\"]\n    end\n    \n    CHANGES_JOB --> PATHS_FILTER\n    PATHS_FILTER --> FILTER_CONFIG\n    FILTER_CONFIG --> FILTER_OUTPUT\n    \n    LANGS_JOB --> SCRIPTS_DOCS_PY\n    SCRIPTS_DOCS_PY --> VERIFY_DOCS_CMD\n    SCRIPTS_DOCS_PY --> LANGS_JSON_CMD\n    \n    BUILD_JOB --> UPDATE_LANGS_CMD\n    BUILD_JOB --> BUILD_LANG_CMD\n    BUILD_JOB --> LANG_MATRIX\n    BUILD_JOB --> MKDOCS_CACHE\n    BUILD_JOB --> DOCS_ARTIFACTS\n    \n    CHANGES_JOB --> BUILD_JOB\n    LANGS_JOB --> BUILD_JOB\n    BUILD_JOB --> ALL_GREEN_JOB\n```\nThe workflow uses conditional MkDocs Material Insiders installation based on secret availability and supports caching for performance optimization.\nSources:\n[.github/workflows/build-docs.yml:14-138](.)\n,\n[.github/workflows/build-docs.yml:71-76](.)\n,\n[.github/workflows/build-docs.yml:112-124](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 26,
+      "total_chunks": 39,
+      "char_count": 1847,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997820"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:27",
+    "content": "The\n```\ndeploy-docs.yml\n```\nworkflow handles automatic deployment to Cloudflare Pages:\n```\ngraph LR\n    subgraph \"deploy-docs.yml\"\n        WORKFLOW_RUN[\"workflow_run: Build Docs completed\"]\n        STATUS_PENDING[\"Deploy Status Pending\"]\n        DOWNLOAD[\"Download Artifacts\"]\n        CLOUDFLARE_DEPLOY[\"Cloudflare Pages Deploy\"]\n        STATUS_COMPLETE[\"Deploy Status Complete\"]\n    end\n    \n    subgraph \"Scripts\"\n        DEPLOY_STATUS_SCRIPT[\"scripts/deploy_docs_status.py\"]\n        STATUS_ENV_VARS[\"GITHUB_TOKEN, COMMIT_SHA, RUN_ID\"]\n    end\n    \n    subgraph \"Cloudflare Configuration\"\n        PROJECT_NAME[\"fastapitiangolo\"]\n        BRANCH_LOGIC[\"master -> main, else -> commit SHA\"]\n        WRANGLER_ACTION[\"cloudflare/wrangler-action@v3\"]\n    end\n    \n    WORKFLOW_RUN --> STATUS_PENDING\n    STATUS_PENDING --> DEPLOY_STATUS_SCRIPT\n    STATUS_PENDING --> DOWNLOAD\n    DOWNLOAD --> CLOUDFLARE_DEPLOY\n    CLOUDFLARE_DEPLOY --> PROJECT_NAME\n    CLOUDFLARE_DEPLOY --> BRANCH_LOGIC\n    CLOUDFLARE_DEPLOY --> WRANGLER_ACTION\n    CLOUDFLARE_DEPLOY --> STATUS_COMPLETE\n    STATUS_COMPLETE --> DEPLOY_STATUS_SCRIPT\n```\nSources:\n[.github/workflows/deploy-docs.yml:19-78](.)\n,\n[.github/workflows/deploy-docs.yml:58-69](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 27,
+      "total_chunks": 39,
+      "char_count": 1218,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997825"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:28",
+    "content": "The publishing system handles automated package distribution to PyPI for both\n```\nfastapi\n```\nand\n```\nfastapi-slim\n```\nvariants.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 28,
+      "total_chunks": 39,
+      "char_count": 128,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997831"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:29",
+    "content": "```\ngraph TB\n    subgraph \"publish.yml Trigger\"\n        RELEASE_CREATED[\"release: created\"]\n        PACKAGE_MATRIX[\"fastapi, fastapi-slim\"]\n    end\n    \n    subgraph \"Build Process\"\n        CHECKOUT[\"actions/checkout@v5\"]\n        PYTHON_SETUP[\"Python 3.10 setup\"]\n        BUILD_DEPS[\"pip install build\"]\n        BUILD_DIST[\"python -m build\"]\n        BUILD_ENV[\"TIANGOLO_BUILD_PACKAGE\"]\n    end\n    \n    subgraph \"Publishing\"\n        PYPI_PUBLISH[\"pypa/gh-action-pypi-publish@v1.12.4\"]\n        OIDC_TOKEN[\"id-token: write permission\"]\n    end\n    \n    RELEASE_CREATED --> PACKAGE_MATRIX\n    PACKAGE_MATRIX --> CHECKOUT\n    CHECKOUT --> PYTHON_SETUP\n    PYTHON_SETUP --> BUILD_DEPS\n    BUILD_DEPS --> BUILD_DIST\n    BUILD_DIST --> BUILD_ENV\n    BUILD_ENV --> PYPI_PUBLISH\n    PYPI_PUBLISH --> OIDC_TOKEN\n```\nThe publishing workflow uses trusted publishing with OpenID Connect tokens and supports building multiple package variants through the\n```\nTIANGOLO_BUILD_PACKAGE\n```\nenvironment variable.\nSources:\n[.github/workflows/publish.yml:8-43](.)\n,\n[.github/workflows/publish.yml:34-38](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 29,
+      "total_chunks": 39,
+      "char_count": 1085,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997836"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:30",
+    "content": "The\n```\ntest-redistribute.yml\n```\nworkflow validates package distributions:\n```\npython -m build --sdist\n```\n```\nbash scripts/test.sh\n```\n```\npip wheel --no-deps fastapi*.tar.gz\n```\nSource Distribution Build, Description = Build sdist package. Source Distribution Build, Commands = \nSources:\n[.github/workflows/test-redistribute.yml:13-58](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 30,
+      "total_chunks": 39,
+      "char_count": 341,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997842"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:31",
+    "content": "The FastAPI repository includes extensive automation for community management, contributor recognition, and content updates.",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 31,
+      "total_chunks": 39,
+      "char_count": 124,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997848"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:32",
+    "content": "```\ngraph TB\n    subgraph \"Community Data Workflows\"\n        PEOPLE_WF[\"people.yml\"]\n        CONTRIBUTORS_WF[\"contributors.yml\"] \n        SPONSORS_WF[\"sponsors.yml\"]\n        TOPIC_REPOS_WF[\"topic-repos.yml\"]\n    end\n    \n    subgraph \"Scripts and Data\"\n        PEOPLE_SCRIPT[\"scripts/people.py\"]\n        CONTRIBUTORS_SCRIPT[\"scripts/contributors.py\"]\n        SPONSORS_SCRIPT[\"scripts/sponsors.py\"]\n        TOPIC_REPOS_SCRIPT[\"scripts/topic_repos.py\"]\n        DATA_FILES[\"docs/en/data/*.yml\"]\n    end\n    \n    subgraph \"Scheduling\"\n        MONTHLY_PEOPLE[\"0 14 1 * * - Monthly\"]\n        MONTHLY_CONTRIBUTORS[\"0 3 1 * * - Monthly\"]\n        MONTHLY_SPONSORS[\"0 6 1 * * - Monthly\"]\n        MONTHLY_TOPICS[\"0 12 1 * * - Monthly\"]\n    end\n    \n    subgraph \"GitHub Integration\"\n        GITHUB_TOKENS[\"FASTAPI_PEOPLE, FASTAPI_PR_TOKEN\"]\n        PR_CREATION[\"Automated PR Creation\"]\n        BRANCH_STRATEGY[\"fastapi-people-* branches\"]\n    end\n    \n    MONTHLY_PEOPLE --> PEOPLE_WF\n    MONTHLY_CONTRIBUTORS --> CONTRIBUTORS_WF\n    MONTHLY_SPONSORS --> SPONSORS_WF\n    MONTHLY_TOPICS --> TOPIC_REPOS_WF\n    \n    PEOPLE_WF --> PEOPLE_SCRIPT\n    CONTRIBUTORS_WF --> CONTRIBUTORS_SCRIPT\n    SPONSORS_WF --> SPONSORS_SCRIPT\n    TOPIC_REPOS_WF --> TOPIC_REPOS_SCRIPT\n    \n    SPONSORS_SCRIPT --> DATA_FILES\n    PEOPLE_SCRIPT --> DATA_FILES\n    \n    SPONSORS_WF --> GITHUB_TOKENS\n    SPONSORS_WF --> PR_CREATION\n    SPONSORS_WF --> BRANCH_STRATEGY\n```\nSources:\n[.github/workflows/people.yml:3-55](.)\n,\n[.github/workflows/contributors.yml:3-54](.)\n,\n[.github/workflows/sponsors.yml:3-53](.)\n,\n[.github/workflows/topic-repos.yml:3-41](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 32,
+      "total_chunks": 39,
+      "char_count": 1620,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997854"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:33",
+    "content": "The\n```\nsponsors.py\n```\nscript demonstrates the sophisticated data processing pipeline:\n```\ngraph LR\n    subgraph \"scripts/sponsors.py Functions\"\n        GET_GRAPHQL_RESPONSE[\"get_graphql_response()\"]\n        GET_INDIVIDUAL_SPONSORS[\"get_individual_sponsors()\"]\n        GET_GRAPHQL_SPONSOR_EDGES[\"get_graphql_sponsor_edges()\"]\n        UPDATE_CONTENT[\"update_content()\"]\n        MAIN_FUNC[\"main()\"]\n    end\n    \n    subgraph \"Pydantic Models\"\n        SPONSOR_ENTITY[\"class SponsorEntity\"]\n        TIER_MODEL[\"class Tier\"]\n        SPONSORSHIP_NODE[\"class SponsorshipAsMaintainerNode\"]\n        SPONSORS_RESPONSE[\"class SponsorsResponse\"]\n        SETTINGS_MODEL[\"class Settings\"]\n    end\n    \n    subgraph \"Data Processing\"\n        SPONSORS_QUERY[\"sponsors_query GraphQL\"]\n        GITHUB_GRAPHQL_URL[\"github_graphql_url\"]\n        TIERS_DEFAULTDICT[\"defaultdict[float, dict[str, SponsorEntity]]\"]\n        GITHUB_SPONSORS_YML[\"docs/en/data/github_sponsors.yml\"]\n    end\n    \n    subgraph \"Git and PR Automation\"\n        SUBPROCESS_GIT[\"subprocess.run git commands\"]\n        REPO_CREATE_PULL[\"repo.create_pull()\"]\n        BRANCH_NAME[\"fastapi-people-sponsors-{secrets.token_hex(4)}\"]\n    end\n    \n    MAIN_FUNC --> SETTINGS_MODEL\n    MAIN_FUNC --> GET_INDIVIDUAL_SPONSORS\n    GET_INDIVIDUAL_SPONSORS --> GET_GRAPHQL_SPONSOR_EDGES\n    GET_GRAPHQL_SPONSOR_EDGES --> GET_GRAPHQL_RESPONSE\n    GET_GRAPHQL_RESPONSE --> SPONSORS_QUERY\n    GET_GRAPHQL_RESPONSE --> GITHUB_GRAPHQL_URL\n    GET_GRAPHQL_RESPONSE --> SPONSORS_RESPONSE\n    \n    GET_INDIVIDUAL_SPONSORS --> TIERS_DEFAULTDICT\n    TIERS_DEFAULTDICT --> SPONSOR_ENTITY\n    TIERS_DEFAULTDICT --> TIER_MODEL\n    \n    MAIN_FUNC --> UPDATE_CONTENT\n    UPDATE_CONTENT --> GITHUB_SPONSORS_YML\n    MAIN_FUNC --> SUBPROCESS_GIT\n    MAIN_FUNC --> REPO_CREATE_PULL\n    SUBPROCESS_GIT --> BRANCH_NAME\n```\nSources:\n[scripts/sponsors.py:17-45](.)\n,\n[scripts/sponsors.py:119-144](.)\n,\n[scripts/sponsors.py:192-217](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 33,
+      "total_chunks": 39,
+      "char_count": 1947,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997860"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:34",
+    "content": "The repository includes automated issue and PR management workflows:\n```\nissue-manager.yml\n```\n```\nlabel-approved.yml\n```\n```\nlatest-changes.yml\n```\n```\nnotify-translations.yml\n```\n, Purpose = . , Trigger = . , Key Features = \nSources:\n[.github/workflows/issue-manager.yml:22-48](.)\n,\n[.github/workflows/label-approved.yml:14-50](.)\n,\n[.github/workflows/latest-changes.yml:19-45](.)\n,\n[.github/workflows/notify-translations.yml:21-60](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 34,
+      "total_chunks": 39,
+      "char_count": 437,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997866"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:35",
+    "content": "The CI/CD system relies on standardized tooling and configuration across all workflows:",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 35,
+      "total_chunks": 39,
+      "char_count": 87,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997874"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:36",
+    "content": "```\nuv\n```\n```\nastral-sh/setup-uv@v6\n```\n```\nactions/setup-python@v5\n```\n, Version = . , Purpose = . , Configuration = ",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 36,
+      "total_chunks": 39,
+      "char_count": 119,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997879"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:37",
+    "content": "```\ngraph TB\n    subgraph \"Global Environment Variables\"\n        UV_SYSTEM_PYTHON[\"env.UV_SYSTEM_PYTHON: 1\"]\n    end\n    \n    subgraph \"Workflow-Specific Environment\"\n        COVERAGE_FILE_VAR[\"env.COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}\"]\n        GITHUB_CONTEXT_VAR[\"env.GITHUB_CONTEXT: ${{ toJson(github) }}\"]\n        TIANGOLO_BUILD_VAR[\"env.TIANGOLO_BUILD_PACKAGE: ${{ matrix.package }}\"]\n        TOKEN_VAR[\"env.TOKEN: ${{ secrets.FASTAPI_MKDOCS_MATERIAL_INSIDERS }}\"]\n        CONTEXT_VAR[\"env.CONTEXT: ${{ runner.os }}-py${{ matrix.python-version }}\"]\n    end\n    \n    subgraph \"GitHub Secrets\"\n        GITHUB_TOKEN[\"secrets.GITHUB_TOKEN\"]\n        FASTAPI_LATEST_CHANGES[\"secrets.FASTAPI_LATEST_CHANGES\"]\n        FASTAPI_PEOPLE[\"secrets.FASTAPI_PEOPLE\"]\n        FASTAPI_PR_TOKEN[\"secrets.FASTAPI_PR_TOKEN\"]\n        FASTAPI_MKDOCS_MATERIAL_INSIDERS[\"secrets.FASTAPI_MKDOCS_MATERIAL_INSIDERS\"]\n        CLOUDFLARE_API_TOKEN[\"secrets.CLOUDFLARE_API_TOKEN\"]\n        CLOUDFLARE_ACCOUNT_ID[\"secrets.CLOUDFLARE_ACCOUNT_ID\"]\n        SMOKESHOW_AUTH_KEY[\"secrets.SMOKESHOW_AUTH_KEY\"]\n        SPONSORS_TOKEN[\"secrets.SPONSORS_TOKEN\"]\n    end\n    \n    subgraph \"Permissions\"\n        ID_TOKEN_WRITE[\"permissions.id-token: write\"]\n        CONTENTS_WRITE[\"permissions.contents: write\"]\n        DEPLOYMENTS_WRITE[\"permissions.deployments: write\"]\n        ISSUES_WRITE[\"permissions.issues: write\"]\n        PULL_REQUESTS_WRITE[\"permissions.pull-requests: write\"]\n        STATUSES_WRITE[\"permissions.statuses: write\"]\n        DISCUSSIONS_WRITE[\"permissions.discussions: write\"]\n    end\n    \n    UV_SYSTEM_PYTHON --> COVERAGE_FILE_VAR\n    UV_SYSTEM_PYTHON --> GITHUB_CONTEXT_VAR\n    UV_SYSTEM_PYTHON --> TIANGOLO_BUILD_VAR\n    \n    GITHUB_TOKEN --> FASTAPI_LATEST_CHANGES\n    FASTAPI_LATEST_CHANGES --> FASTAPI_PEOPLE\n    FASTAPI_PEOPLE --> FASTAPI_PR_TOKEN\n    FASTAPI_PR_TOKEN --> CLOUDFLARE_API_TOKEN\n    CLOUDFLARE_API_TOKEN --> SMOKESHOW_AUTH_KEY\n```\nSources:\n[.github/workflows/test.yml:15-16](.)\n,\n[.github/workflows/build-docs.yml:11-12](.)\n,\n[.github/workflows/publish.yml:34-35](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 37,
+      "total_chunks": 39,
+      "char_count": 2116,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997884"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Documentation_System:chunk:38",
+    "content": "The pipeline implements comprehensive status checking through \"all-green\" jobs that aggregate multiple workflow results:\n- `docs-all-green` in `build-docs.yml` - Aggregates documentation build status\n- `check` in `test.yml` - Aggregates test and coverage results\n- `test-redistribute-alls-green` in `test-redistribute.yml` - Aggregates distribution test results\nThese jobs use the\n```\nre-actors/alls-green@release/v1\n```\naction to provide unified status reporting for branch protection rules.\nSources:\n[.github/workflows/build-docs.yml:127-137](.)\n,\n[.github/workflows/test.yml:142-155](.)\n,\n[.github/workflows/test-redistribute.yml:60-69](.)",
+    "metadata": {
+      "source": "fastapi\\Documentation_System.md",
+      "file_name": "Documentation_System.md",
+      "subfolder": "fastapi",
+      "chunk_index": 38,
+      "total_chunks": 39,
+      "char_count": 642,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:42.997890"
+    }
+  }
+]

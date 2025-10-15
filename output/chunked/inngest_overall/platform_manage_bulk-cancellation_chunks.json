@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_manage_bulk-cancellation.md",
+  "title": "Function runs Bulk Cancellation",
+  "num_chunks": 3,
+  "total_chars": 2295,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Function runs Bulk Cancellation](\\docs\\platform\\manage\\bulk-cancellation#function-runs-bulk-cancellation)\n- [Cancelling Function runs](\\docs\\platform\\manage\\bulk-cancellation#cancelling-function-runs)\nPlatform\n[Manage](\\docs\\platform\\environments)",
+      "char_count": 263,
+      "token_count": 68,
+      "metadata": {
+        "title": "Function runs Bulk Cancellation",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_manage_bulk-cancellation.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_manage_bulk-cancellation.md",
+        "file_name": "platform_manage_bulk-cancellation.md",
+        "file_size": 2468,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "1946d4f86e30120c655b7ee3d73bdd15854adb31660f97929d295cea9601a463",
+        "author": null,
+        "created_at": "2025-10-13T00:00:13.038950",
+        "modified_at": "2025-10-13T00:00:13.039510",
+        "page_count": null,
+        "word_count": 325,
+        "extracted_at": "2025-10-13T20:04:16.684253",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 68,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Function runs Bulk Cancellation\nIn addition to providing\n[SDK Cancellation features](\\docs\\features\\inngest-functions\\cancellation\\cancel-on-events)\nand a\n[dedicated REST API endpoint](\\docs\\guides\\cancel-running-functions)\n, the Inngest Platform also features a Bulk Cancellation UI.\nThis feature comes in handy to quickly stop unwanted runs directly from your browser.",
+      "char_count": 370,
+      "token_count": 83,
+      "metadata": {
+        "title": "Function runs Bulk Cancellation",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_manage_bulk-cancellation.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_manage_bulk-cancellation.md",
+        "file_name": "platform_manage_bulk-cancellation.md",
+        "file_size": 2468,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "1946d4f86e30120c655b7ee3d73bdd15854adb31660f97929d295cea9601a463",
+        "author": null,
+        "created_at": "2025-10-13T00:00:13.038950",
+        "modified_at": "2025-10-13T00:00:13.039510",
+        "page_count": null,
+        "word_count": 325,
+        "extracted_at": "2025-10-13T20:04:16.684253",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 83,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Function runs Bulk Cancellation\nCancelling Function runs\nTo cancel multiple Function runs, navigate to the Function's page on the Inngest Platform and open the \"All actions\" top right menu:\nThe bulk cancellation button can be found from a Function page, in the top right menu.\nClicking the \"Bulk cancel\" menu will open the following modal, asking you to select the date range that will be used to select and cancel Function runs:\nThe Bulk cancel modal is composed, from top to bottom, of an input to name the cancellation process and a date range selector. Once those information filled, a estimation of the impacted Function Runs. The cancellation cannot be started if no Function runs match the criteria.\nThe Bulk Cancellation will start cancelling the matching Function runs immediately; the Function runs list will update progressively, showing runs as cancelled:\nOnce the Bulk Cancellation completed, the impacted Function Runs will appear as \"cancelled\" in the Function Runs list.\nYou can access the history of running or completed Bulk Cancellation processes via the \"Cancellation history\" tab:\nThe \"Cancellation history\" tab lists all the Bulk Cancellations.\n**Considerations**\nCancellation is useful to stop running Functions or cancel scheduled ones; however, keep in mind that:\n- Steps currently running on your Cloud Provider won't be forced to stop; the Function will cancel upon the current step's completion.\n- Cancelling a Function run does not prevent new runs from being enqueued. If you are looking to mitigate an unwanted loop or to cope with an abnormal number of executions, consider using [Function Pausing](\\docs\\guides\\pause-functions) .",
+      "char_count": 1662,
+      "token_count": 328,
+      "metadata": {
+        "title": "Function runs Bulk Cancellation",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_manage_bulk-cancellation.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\platform_manage_bulk-cancellation.md",
+        "file_name": "platform_manage_bulk-cancellation.md",
+        "file_size": 2468,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "1946d4f86e30120c655b7ee3d73bdd15854adb31660f97929d295cea9601a463",
+        "author": null,
+        "created_at": "2025-10-13T00:00:13.038950",
+        "modified_at": "2025-10-13T00:00:13.039510",
+        "page_count": null,
+        "word_count": 325,
+        "extracted_at": "2025-10-13T20:04:16.684253",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 328,
+        "has_context": true
+      }
+    }
+  ]
+}

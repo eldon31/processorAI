@@ -1,0 +1,257 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:0",
+    "content": "This document covers the local development workflow, tooling, and scripts used for contributing to the FastAPI codebase. It explains how developers use the project's build system, development scripts, and quality tools during the development process.\nFor information about automated CI/CD pipelines, see\n[CI/CD Pipeline](#6.2)\n. For details about code quality tools configuration, see\n[Code Quality and Pre-commit](#5.2)\n. For testing patterns and frameworks, see\n[Test Framework and Tools](#5.1)\n.",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 17,
+      "char_count": 498,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353322"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:1",
+    "content": "FastAPI uses PDM (Python Dependency Management) as its build system, configured through\n```\npyproject.toml\n```\n. The project follows modern Python packaging standards with comprehensive tooling configuration.",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 17,
+      "char_count": 208,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353339"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:2",
+    "content": "The build system is configured using PDM backend with dynamic versioning:\n```\ngraph TD\n    A[\"pyproject.toml\"] --> B[\"PDM Build Backend\"]\n    B --> C[\"Version from fastapi/__init__.py\"]\n    B --> D[\"Package Distribution\"]\n    A --> E[\"Development Dependencies\"]\n    A --> F[\"Tool Configuration\"]\n    \n    E --> G[\"Testing Tools\"]\n    E --> H[\"Linting Tools\"]\n    E --> I[\"Documentation Tools\"]\n    \n    F --> J[\"MyPy Config\"]\n    F --> K[\"Pytest Config\"]\n    F --> L[\"Coverage Config\"]\n    F --> M[\"Ruff Config\"]\n```\n**PDM Build System Configuration**\nThe build system specifies PDM as the backend and includes development sources in the distribution package.\nSources:\n[pyproject.toml:1-3](.)\n,\n[pyproject.toml:127-140](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 17,
+      "char_count": 722,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353345"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:3",
+    "content": "FastAPI defines multiple dependency groups for different use cases:\n```\nstarlette\n```\n,\n```\npydantic\n```\n,\n```\ntyping-extensions\n```\n```\nstandard\n```\n```\nfastapi-cli\n```\n,\n```\nhttpx\n```\n,\n```\njinja2\n```\n,\n```\nuvicorn\n```\n```\nall\n```\n```\norjson\n```\n,\n```\nujson\n```\n,\n```\npydantic-settings\n```\n```\npre-commit\n```\n,\n```\nplaywright\n```\nCore Dependencies, Purpose = Essential runtime requirements. Core Dependencies, Key Packages = \nSources:\n[pyproject.toml:45-48](.)\n,\n[pyproject.toml:60-77](.)\n,\n[pyproject.toml:98-122](.)\n,\n[requirements.txt:1-7](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 17,
+      "char_count": 547,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353351"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:4",
+    "content": "The project provides shell scripts in the\n```\nscripts/\n```\ndirectory to standardize common development tasks:\n```\ngraph LR\n    A[\"scripts/\"] --> B[\"test.sh\"]\n    A --> C[\"lint.sh\"]\n    A --> D[\"format.sh\"]\n    A --> E[\"test-cov-html.sh\"]\n    \n    B --> F[\"pytest with coverage\"]\n    C --> G[\"mypy + ruff check\"]\n    D --> H[\"ruff fix + format\"]\n    E --> I[\"coverage HTML report\"]\n    \n    F --> J[\"Test Results\"]\n    G --> K[\"Lint Results\"]\n    H --> L[\"Formatted Code\"]\n    I --> M[\"Coverage Report\"]\n```\n**Development Script Ecosystem**\nEach script serves a specific purpose in the development workflow, with clear separation of concerns.\nSources:\n[scripts/test.sh:1-8](.)\n,\n[scripts/lint.sh:1-9](.)\n,\n[scripts/format.sh:1-6](.)\n,\n[scripts/test-cov-html.sh:1-10](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 17,
+      "char_count": 768,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353357"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:5",
+    "content": "The typical development workflow follows this sequence:\n```\nflowchart TD\n    A[\"Clone Repository\"] --> B[\"Install Dependencies\"]\n    B --> C[\"Make Code Changes\"]\n    C --> D[\"Run Format Script\"]\n    D --> E[\"Run Lint Script\"]\n    E --> F[\"Run Test Script\"]\n    F --> G[\"Check Coverage\"]\n    G --> H[\"Pre-commit Validation\"]\n    H --> I[\"Commit Changes\"]\n    \n    D --> D1[\"scripts/format.sh\"]\n    E --> E1[\"scripts/lint.sh\"]\n    F --> F1[\"scripts/test.sh\"]\n    G --> G1[\"scripts/test-cov-html.sh\"]\n    \n    I --> J[\"Push to GitHub\"]\n    J --> K[\"CI/CD Pipeline\"]\n```\n**Local Development Process Flow**\nThe workflow ensures code quality through multiple validation stages before committing changes.\nSources:\n[scripts/format.sh:1-6](.)\n,\n[scripts/lint.sh:1-9](.)\n,\n[scripts/test.sh:1-8](.)\n,\n[requirements.txt:4-4](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 17,
+      "char_count": 815,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353365"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:6",
+    "content": "1. **Dependency Installation** : Install using the development requirements which include all optional dependencies and development tools\n2. **Pre-commit Setup** : Install pre-commit hooks to enforce quality checks before commits\n3. **Script Permissions** : Ensure shell scripts have execute permissions\nSources:\n[requirements.txt:1-7](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 17,
+      "char_count": 338,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353371"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:7",
+    "content": "The code quality workflow uses multiple tools orchestrated through shell scripts:",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 7,
+      "total_chunks": 17,
+      "char_count": 81,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353377"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:8",
+    "content": "The\n```\nscripts/format.sh\n```\nscript performs automatic code formatting:\n```\nruff check fastapi tests docs_src scripts --fix\nruff format fastapi tests docs_src scripts\n```\nThis two-step process first applies automatic fixes for linting violations, then formats the code according to style guidelines.\nSources:\n[scripts/format.sh:4-5](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 8,
+      "total_chunks": 17,
+      "char_count": 336,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353383"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:9",
+    "content": "The\n```\nscripts/lint.sh\n```\nscript runs comprehensive code quality checks:\n```\nmypy fastapi\nruff check fastapi tests docs_src scripts\nruff format fastapi tests --check\n```\nThis validates type annotations with MyPy, checks code quality with Ruff, and verifies formatting compliance.\nSources:\n[scripts/lint.sh:6-8](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 9,
+      "total_chunks": 17,
+      "char_count": 315,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353389"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:10",
+    "content": "```\ngraph TD\n    A[\"pyproject.toml\"] --> B[\"MyPy Configuration\"]\n    A --> C[\"Ruff Configuration\"]  \n    A --> D[\"Pytest Configuration\"]\n    A --> E[\"Coverage Configuration\"]\n    \n    B --> F[\"Strict Type Checking\"]\n    B --> G[\"Module Overrides\"]\n    \n    C --> H[\"Linting Rules\"]\n    C --> I[\"Import Sorting\"]\n    C --> J[\"Per-file Ignores\"]\n    \n    D --> K[\"Test Discovery\"]\n    D --> L[\"Warning Filters\"]\n    \n    E --> M[\"Coverage Tracking\"]\n    E --> N[\"Report Generation\"]\n```\n**Tool Configuration Architecture**\nAll development tools are configured centrally in\n```\npyproject.toml\n```\nwith tool-specific sections.\nSources:\n[pyproject.toml:144-270](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 10,
+      "total_chunks": 17,
+      "char_count": 659,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353394"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:11",
+    "content": "The testing workflow uses pytest with coverage tracking and custom configuration:",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 11,
+      "total_chunks": 17,
+      "char_count": 81,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353400"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:12",
+    "content": "The\n```\nscripts/test.sh\n```\nscript sets up the testing environment:\n```\nexport PYTHONPATH=./docs_src\ncoverage run -m pytest tests ${@}\n```\nThis configures the Python path to include documentation source code and runs tests with coverage tracking.\nSources:\n[scripts/test.sh:6-7](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 12,
+      "total_chunks": 17,
+      "char_count": 280,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353405"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:13",
+    "content": "Key pytest configuration elements:\n```\n--strict-config\n```\n```\n--strict-markers\n```\n```\n--ignore=docs_src\n```\n```\nxfail_strict = true\n```\n```\nfilterwarnings\n```\n, Purpose = \nSources:\n[pyproject.toml:163-187](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 13,
+      "total_chunks": 17,
+      "char_count": 210,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353411"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:14",
+    "content": "The coverage system tracks code coverage across multiple contexts:\n```\ngraph LR\n    A[\"scripts/test.sh\"] --> B[\"coverage run\"]\n    B --> C[\"coverage/.coverage\"]\n    \n    D[\"scripts/test-cov-html.sh\"] --> E[\"coverage combine\"]\n    E --> F[\"coverage report\"]\n    F --> G[\"coverage html\"]\n    \n    C --> E\n    G --> H[\"HTML Report\"]\n    F --> I[\"Terminal Report\"]\n```\n**Coverage Reporting Pipeline**\nCoverage data is collected during test runs and can be combined and reported in multiple formats.",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 14,
+      "total_chunks": 17,
+      "char_count": 494,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353416"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:15",
+    "content": "The coverage system is configured for parallel execution and comprehensive source tracking:\n- **Data Collection** : Tracks `docs_src` , `tests` , and `fastapi` directories\n- **Context Tracking** : Uses dynamic context based on test functions\n- **Parallel Support** : Enables parallel test execution with data aggregation\n- **HTML Reports** : Generates detailed HTML reports with context information\nSources:\n[pyproject.toml:189-210](.)\n,\n[scripts/test-cov-html.sh:6-9](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 15,
+      "total_chunks": 17,
+      "char_count": 471,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353422"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Development_Workflow:chunk:16",
+    "content": "The\n```\nscripts/test-cov-html.sh\n```\nscript generates comprehensive coverage reports:\n1. **Combine** : Merges parallel coverage data files\n2. **Report** : Displays terminal coverage summary with missing lines\n3. **HTML** : Creates interactive HTML coverage report\nSources:\n[scripts/test-cov-html.sh:7-9](.)",
+    "metadata": {
+      "source": "fastapi\\Development_Workflow.md",
+      "file_name": "Development_Workflow.md",
+      "subfolder": "fastapi",
+      "chunk_index": 16,
+      "total_chunks": 17,
+      "char_count": 306,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:41.353427"
+    }
+  }
+]

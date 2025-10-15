@@ -1,0 +1,107 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Parameter_Validation_and_Handling:chunk:0",
+    "content": "This document covers FastAPI's comprehensive parameter validation and handling system, which automatically validates, converts, and documents request parameters including query parameters, path parameters, request bodies, form data, files, headers, and cookies. For information about dependency injection and parameter sharing, see\n[Dependency Injection](#2.2)\n. For details about response handling and serialization, see\n[Response Handling](#2.4)\n.",
+    "metadata": {
+      "source": "fastapi\\Parameter_Validation_and_Handling.md",
+      "file_name": "Parameter_Validation_and_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 0,
+      "total_chunks": 7,
+      "char_count": 449,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.734618"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Parameter_Validation_and_Handling:chunk:1",
+    "content": "FastAPI provides specialized functions for declaring and validating different types of request parameters. Each parameter type has its own dedicated function that handles validation, type conversion, and OpenAPI documentation generation.",
+    "metadata": {
+      "source": "fastapi\\Parameter_Validation_and_Handling.md",
+      "file_name": "Parameter_Validation_and_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 1,
+      "total_chunks": 7,
+      "char_count": 237,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.734633"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Parameter_Validation_and_Handling:chunk:2",
+    "content": "The main parameter declaration functions are exported from the root FastAPI module:\n- `Query()` - Query string parameters\n- `Path()` - URL path parameters\n- `Body()` - Request body content\n- `Form()` - HTML form data\n- `File()` - File uploads\n- `Header()` - HTTP headers\n- `Cookie()` - HTTP cookies\nSources:\n[fastapi/](.)\n[**init**](.)\n[.py:12-20](.)",
+    "metadata": {
+      "source": "fastapi\\Parameter_Validation_and_Handling.md",
+      "file_name": "Parameter_Validation_and_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 2,
+      "total_chunks": 7,
+      "char_count": 350,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.734639"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Parameter_Validation_and_Handling:chunk:3",
+    "content": "```\ngraph TD\n    HttpRequest[\"HTTP Request\"] --> ParameterExtraction[\"Parameter Extraction\"]\n    ParameterExtraction --> QueryParams[\"Query Parameters\"]\n    ParameterExtraction --> PathParams[\"Path Parameters\"] \n    ParameterExtraction --> RequestBody[\"Request Body\"]\n    ParameterExtraction --> FormData[\"Form Data\"]\n    ParameterExtraction --> Headers[\"Headers\"]\n    ParameterExtraction --> Cookies[\"Cookies\"]\n    \n    QueryParams --> QueryValidation[\"Query() Validation\"]\n    PathParams --> PathValidation[\"Path() Validation\"]\n    RequestBody --> BodyValidation[\"Pydantic Model Validation\"]\n    FormData --> FormValidation[\"Form() Validation\"]\n    Headers --> HeaderValidation[\"Header() Validation\"]\n    Cookies --> CookieValidation[\"Cookie() Validation\"]\n    \n    QueryValidation --> TypeConversion[\"Type Conversion\"]\n    PathValidation --> TypeConversion\n    BodyValidation --> TypeConversion\n    FormValidation --> TypeConversion\n    HeaderValidation --> TypeConversion\n    CookieValidation --> TypeConversion\n    \n    TypeConversion --> ValidationSuccess[\"Validation Success\"]\n    TypeConversion --> ValidationError[\"Validation Error\"]\n    \n    ValidationSuccess --> PathOperation[\"Path Operation Function\"]\n    ValidationError --> ErrorResponse[\"HTTP 422 Response\"]\n```\nSources:\n[docs/en/docs/tutorial/query-params-str-validations.md:1-493](.)\n,\n[docs/en/docs/tutorial/path-params-numeric-validations.md:1-165](.)",
+    "metadata": {
+      "source": "fastapi\\Parameter_Validation_and_Handling.md",
+      "file_name": "Parameter_Validation_and_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 3,
+      "total_chunks": 7,
+      "char_count": 1421,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.734644"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Parameter_Validation_and_Handling:chunk:4",
+    "content": "Query parameters are declared using the\n```\nQuery()\n```\nfunction with the\n```\nAnnotated\n```\ntype hint syntax. The system supports string validation, numeric constraints, and custom validation functions.",
+    "metadata": {
+      "source": "fastapi\\Parameter_Validation_and_Handling.md",
+      "file_name": "Parameter_Validation_and_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 4,
+      "total_chunks": 7,
+      "char_count": 202,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.734649"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Parameter_Validation_and_Handling:chunk:5",
+    "content": "Query parameters support various string validation rules:\n- `min_length` - Minimum string length\n- `max_length` - Maximum string length\n- `pattern` - Regular expression pattern matching\n- `alias` - Alternative parameter name for the URL\n```\nfrom typing import Annotated\nfrom fastapi import Query\n\n# Example usage patterns from the codebase\nq: Annotated[str | None, Query(max_length=50)] = None\nq: Annotated[str, Query(min_length=3, pattern=\"^fixedquery$\")]\n```\nSources:\n[docs/en/docs/tutorial/query-params-str-validations.md:88-97](.)\n,\n[docs/en/docs/tutorial/query-params-str-validations.md:188-222](.)",
+    "metadata": {
+      "source": "fastapi\\Parameter_Validation_and_Handling.md",
+      "file_name": "Parameter_Validation_and_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 5,
+      "total_chunks": 7,
+      "char_count": 603,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.734654"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:fastapi:Parameter_Validation_and_Handling:chunk:6",
+    "content": "The\n```\nQuery()\n```\nfunction supports receiving multiple values for the same parameter name, returning them as a Python\n```\nlist\n```\n:\n```\nq: Annotated[list[str] | None, Query()] = None\n```",
+    "metadata": {
+      "source": "fastapi\\Parameter_Validation_and_Handling.md",
+      "file_name": "Parameter_Validation_and_Handling.md",
+      "subfolder": "fastapi",
+      "chunk_index": 6,
+      "total_chunks": 7,
+      "char_count": 189,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:12:50.734658"
+    }
+  }
+]

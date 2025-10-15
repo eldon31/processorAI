@@ -1,0 +1,92 @@
+{
+  "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\functions_concurrency.md",
+  "title": "Managing concurrency",
+  "num_chunks": 3,
+  "total_chars": 1799,
+  "chunks": [
+    {
+      "index": 0,
+      "text": "On this page\n- [Managing concurrency](\\docs\\functions\\concurrency#managing-concurrency)\n- [Configuration](\\docs\\functions\\concurrency#configuration)\nReferences\n[TypeScript SDK](\\docs\\reference\\typescript)",
+      "char_count": 204,
+      "token_count": 51,
+      "metadata": {
+        "title": "Managing concurrency",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\functions_concurrency.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\functions_concurrency.md",
+        "file_name": "functions_concurrency.md",
+        "file_size": 1986,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "2680c0860659a56ef102a7e2d511ff019b2f815b935d28793973377b187fb73c",
+        "author": null,
+        "created_at": "2025-10-12T23:59:10.839438",
+        "modified_at": "2025-10-12T23:59:10.839438",
+        "page_count": null,
+        "word_count": 252,
+        "extracted_at": "2025-10-13T20:03:29.998004",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 51,
+        "has_context": true
+      }
+    },
+    {
+      "index": 1,
+      "text": "Managing concurrency\nLimit the number of concurrently running steps for your function with the\n[```\nconcurrency\n```](\\docs\\reference\\functions\\create#configuration)\nconfiguration options. Setting an optional\n```\nkey\n```\nparameter limits the concurrency for each unique value of the expression.\n[Read our concurrency guide for more information on concurrency, including how it works and any limits](\\docs\\guides\\concurrency)\n.\nSimple Multiple keys\nCopy Copied\n```\nexport default inngest .createFunction (\n{\nid : \"sync-contacts\" ,\nconcurrency : {\nlimit : 10 ,\n} ,\n}\n// ...\n);\n```\nSetting\n```\nconcurrency\n```\nlimits are very useful for:\n- Handling API rate limits - Limit concurrency to stay within the rate limit quotas that are allowed by a given third party API.\n- Limiting database operations or connections\n- Preventing one of your user's accounts from consuming too many resources (see `key` )\nAlternatively, if you want to limit the number of times that your function runs in a given period,\n[the](\\docs\\reference\\functions\\rate-limit)\n[```\nrateLimit\n```](\\docs\\reference\\functions\\rate-limit)\n[option](\\docs\\reference\\functions\\rate-limit)\nmay be better for your use case.",
+      "char_count": 1177,
+      "token_count": 275,
+      "metadata": {
+        "title": "Managing concurrency",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\functions_concurrency.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\functions_concurrency.md",
+        "file_name": "functions_concurrency.md",
+        "file_size": 1986,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "2680c0860659a56ef102a7e2d511ff019b2f815b935d28793973377b187fb73c",
+        "author": null,
+        "created_at": "2025-10-12T23:59:10.839438",
+        "modified_at": "2025-10-12T23:59:10.839438",
+        "page_count": null,
+        "word_count": 252,
+        "extracted_at": "2025-10-13T20:03:29.998004",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 275,
+        "has_context": true
+      }
+    },
+    {
+      "index": 2,
+      "text": "Managing concurrency\nConfiguration\n- Name `concurrency` `number` is a shorthand to set the `limit` property. Properties\nThe current concurrency option controls the number of concurrent\n*steps*\nthat can be running at any one time.\nBecause a single function run can contain multiple steps, it's possible that more functions than the concurrency limit are triggered, but only the set number of steps will ever be running.",
+      "char_count": 418,
+      "token_count": 84,
+      "metadata": {
+        "title": "Managing concurrency",
+        "source": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\functions_concurrency.md",
+        "chunk_method": "hybrid",
+        "file_path": "C:\\Users\\raze0\\Documents\\LLM_KNOWLEDGE_CREATOR\\RAG\\Docs\\inngest_overall\\functions_concurrency.md",
+        "file_name": "functions_concurrency.md",
+        "file_size": 1986,
+        "file_format": ".md",
+        "mime_type": "text/markdown",
+        "sha256_hash": "2680c0860659a56ef102a7e2d511ff019b2f815b935d28793973377b187fb73c",
+        "author": null,
+        "created_at": "2025-10-12T23:59:10.839438",
+        "modified_at": "2025-10-12T23:59:10.839438",
+        "page_count": null,
+        "word_count": 252,
+        "extracted_at": "2025-10-13T20:03:29.998004",
+        "processing_method": "markdown_docling",
+        "custom_metadata": {},
+        "total_chunks": 3,
+        "token_count": 84,
+        "has_context": true
+      }
+    }
+  ]
+}

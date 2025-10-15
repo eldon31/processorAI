@@ -1,0 +1,1332 @@
+[
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:0",
+    "content": "a\nWelcome to the Viator Partner Program! In this guide, we'll go through a variety of topics regarding how you can best use the Viator Partner API to display, promote and sell Viator's 300,000+ products on your own website or travel-booking system. For our partners who use the booking functionality we will also discuss how to interact with our booking systems via the Partner API to support your booking/checkout workflow.\nAll documentation pertaining to the Viator Partner API can be found here. If you have any questions about your integration, please reach out to affiliateapi@tripadvisor.com at any time.\nPlease note that which endpoints you are able to access depends on what kind of partner you are - merchant or affiliate (with basic, full, or booking access). Different endpoint access levels can be verified here. This guide includes information about the endpoint access for each partner type. For example, endpoints marked as below would not be accessible by Basicaccess Affiliate:\n⊗ Basic-access Affiliates\n✓ Full-access Affiliates\n✓ Merchants\nFurthermore, in a small number of cases an endpoint accessible to both partner types will behave differently between merchants and affiliates. We will mention these differences in the relevant sections.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 0,
+      "total_chunks": 95,
+      "char_count": 1260,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130180"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:1",
+    "content": "As the first implementation step , you will need to review the API documentation section 'Product content and availability endpoints' and decide which model for data management you wish to support.\nWe offer two models for data management:",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 1,
+      "total_chunks": 95,
+      "char_count": 238,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130220"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:2",
+    "content": "- data ingestion with modified-since endpoints: /products/modified-since for product content and /availability/schedules/modified-since for availability and pricing schedules ( at least hourly ).\n- The ingestion model of connecting to Viator's supply requires that the partner builds and maintains a local database of products and also requires that the partner makes regular calls to Viator to ensure that product and availability information is up to date.\n- This model allows an easy ingestion of all Viator product content and availability data into partner's database with the possibility to manage and filter products according to the business needs.\n- This model is ideal for partners that want a full-scale tours and activities integration and can manage large amounts of data.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 2,
+      "total_chunks": 95,
+      "char_count": 785,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130242"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:3",
+    "content": "- real-time search for products with the search endpoint (/products/search or /search/freetext) and getting product details with a single product content (/products/{product-code} and single availability (/availability/schedules/{product-code}) endpoints used in real-time to check the information for only one product selected by the customer from the search results.\n- The search model is an easier and faster way to connect to Viator's supply via an API integration. The amount of data returned in a search API request is less than what would be returned using the ingestion model, and\n- therefore there is no need to store any data. Partners can benefit from prebuilt search functionalities available in the Viator's search endpoints.\n- This model is ideal for partners that are looking for a fast integration and do not desire a full tours and activities integration.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 3,
+      "total_chunks": 95,
+      "char_count": 872,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130263"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:4",
+    "content": "The /bulk endpoints (/products/bulk and /availability/schedules/bulk) must not be used for ingestion or in real-time, they could be used only for some edge cases when you need to get details of a few products at the time. Please refer to our API documentation (here).\nBoth supported models are described in this article: Managing product and availability data .\nThe models described above refer to managing the product content and availability. In addition to that, it's necessary to comply with the requirements for endpoint usage applicable to auxiliary data such as locations, reviews, tags, etc. All auxiliary data must be cached and refreshed based on the frequency specified for each endpoint in the API documentation - section 'Update frequency' .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 4,
+      "total_chunks": 95,
+      "char_count": 754,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130284"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:5",
+    "content": "- Get details of all destinations\n- Gets all attractions",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 5,
+      "total_chunks": 95,
+      "char_count": 56,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130306"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:6",
+    "content": "- Ingest products & keep the product catalogue up to date\n- Get details of a single product in real-time\n- Pull details of selected products if needed",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 6,
+      "total_chunks": 95,
+      "char_count": 150,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130327"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:7",
+    "content": "- Pull product summaries based on search criteria",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 7,
+      "total_chunks": 95,
+      "char_count": 49,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130347"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:8",
+    "content": "- Get location details",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 8,
+      "total_chunks": 95,
+      "char_count": 22,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130367"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:9",
+    "content": "- Get tag details",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 9,
+      "total_chunks": 95,
+      "char_count": 17,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130387"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:10",
+    "content": "- Integrate similarity recommendations",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 10,
+      "total_chunks": 95,
+      "char_count": 38,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130407"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:11",
+    "content": "- Ingest availability and pricing\n- Get availability and pricing schedules for a single product in real-time\n- Pull schedules for multiple products when needed\n- Verify real-time availability and pricing",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 11,
+      "total_chunks": 95,
+      "char_count": 203,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130429"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:12",
+    "content": "- Request a booking hold\n- Collect payment\n- Facilitate fraud prevention\n- Confirm the booking\n- Share booking status updates",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 12,
+      "total_chunks": 95,
+      "char_count": 125,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130448"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:13",
+    "content": "- Get cancellation reasons\n- Get cancellation quotes\n- Cancel bookings",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 13,
+      "total_chunks": 95,
+      "char_count": 70,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130468"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:14",
+    "content": "- Map supplier cancellation reasons\n- Get supplier notifications\n- Acknowledge booking notifications received",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 14,
+      "total_chunks": 95,
+      "char_count": 109,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130490"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:15",
+    "content": "- Get exchange rates\n- Supported currencies",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 15,
+      "total_chunks": 95,
+      "char_count": 43,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130510"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:16",
+    "content": "- Get reviews",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 16,
+      "total_chunks": 95,
+      "char_count": 13,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130529"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:17",
+    "content": "- Get traveler photos",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 17,
+      "total_chunks": 95,
+      "char_count": 21,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130550"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:18",
+    "content": "- Get supplier details",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 18,
+      "total_chunks": 95,
+      "char_count": 22,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130571"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:19",
+    "content": "- Get booking questions",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 19,
+      "total_chunks": 95,
+      "char_count": 23,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130591"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:20",
+    "content": "- Retrieve all attractions\n- Get details of a single attraction",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 20,
+      "total_chunks": 95,
+      "char_count": 63,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130611"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:21",
+    "content": "- Product option title and description displayed\n- Language guides validated\n- Pickup / drop-off verified for product options\n- Finding meeting points",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 21,
+      "total_chunks": 95,
+      "char_count": 150,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130631"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:22",
+    "content": "- Fixed-cadence delta updates\n- Fixed-cadence full updates\n- On-demand updates",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 22,
+      "total_chunks": 95,
+      "char_count": 78,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130652"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:23",
+    "content": "All our products are categorized under a destination hierarchy. You will use this hierarchy to build your database and effectively catalogue our products.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 23,
+      "total_chunks": 95,
+      "char_count": 154,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130672"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:24",
+    "content": "- Every product in the Viator catalogue is categorized according to the destination/locale in which it operates. This endpoint returns a complete list of Viator destinations, including destination names and parent identifiers (for the hierarchy of destinations check the lookupId field) .\n- This endpoint is used to help define the destinations of products and attractions (i.e. primary and secondary) for the purpose of merchandising products. For example, Disneyland Paris's primary destination is Paris, even though the actual destination (secondary destination) is Marne-la-Vallee. Travelers are more likely to search for Paris when looking for Disneyland Paris than Marne-la-Valle.\n- This endpoint is used to provide navigation on your site, through drilldown lists, combo boxes, or breadcrumbs.\n- Fields returned in the response can be used to map a destination to an IATA code (airlines) or language.\n- Destination data must be cached . While destinations rarely change, we recommend refreshing the list of destinations weekly .\nYou can also create a catalogue of attractions and merchandize products based on the attraction they are linked to.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 24,
+      "total_chunks": 95,
+      "char_count": 1151,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130692"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:25",
+    "content": "- This endpoint returns all attractions within a destination (facilitates mapping destinations to attractions) and is used to help merchandize\n- products by attraction.\n- Attractions can be sorted by ALPHABETICAL, DEFAULT & REVIEW_AVG_RATING order.\n- Pagination rules apply to this endpoint: no more than 30 products can be requested in a single call ('count': 30). The first request should be done with 'start': 1, the second request must include the value of the start parameter for the next result you wish to see. For example, if the first request was done with 'start': 1 and 'count': 30, the second request will be done with 'start': 31 and 'count': 30, the third one with 'start': 61 and 'count': 30 etc.\n- Attraction details include: destination mapping, Viator attraction URL (Affiliate partners only), number of products + product codes, reviews, images, introduction, overview, details of admission type (free/not free), opening hours, full address.\n- When a product is linked to an attraction the relevant attractionId is returned for a product in the response to the product content endpoint. You can map products to attractions using the attractionId extracted from the product content response.\n- This is also useful for navigation as well as building out basic attractions pages .\n- With this endpoint you can get aggregated product and review count/rating for an attraction.\n- Attraction data must be cached and refreshed weekly .\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 25,
+      "total_chunks": 95,
+      "char_count": 1461,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130713"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:26",
+    "content": "There are three product content endpoints that are used to get product data. We highly recommend ingesting all product content into your database. By using a local database, you need only perform a single initial ingestion of data; then, only new and updated product content will be ingested. This will result in faster load times and will overall provide a better experience for travelers. If ingestion is not an option for you, you can request the details of a single product making a real-time call when the customer selects the product on your site.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 26,
+      "total_chunks": 95,
+      "char_count": 553,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130734"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:27",
+    "content": "Ingest over 300,000+ products quickly and efficiently\nUpdating product content with fewer, but more frequent requests provides travelers with accurate information\nOnly ingesting new or modified product information speeds up load times\nStructured data fields make it easier to break out key information and merchandise products",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 27,
+      "total_chunks": 95,
+      "char_count": 326,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130755"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:28",
+    "content": "- Performs an initial ingestion of all product data into a local database. You may filter out any products during the initial ingestion. You may filter out on your end any products based on the response to this endpoint.\n- For the initial ingestion of the product catalogue, the first request to /products/modified-since must include only the count parameter in the request body (value not higher than 500). This way you will start ingesting all Viator products from scratch. This is the only time when the cursor or the modified-since parameter should not be used. The nextCursor parameter returned in the response points to the next page of results and must be used the next call to /products/modified-since. This process must be repeated until the nextCursor is not returned in the response - this means that there are no more results.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 28,
+      "total_chunks": 95,
+      "char_count": 838,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130775"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:29",
+    "content": "- Used to ingest only new or updated product information, as well as to identify deactivated products. Products are considered updated when the supplier makes any changes to the product's details, excluding pricing and availability changes, which are retrieved from the availability schedule endpoint. This endpoint returns all product details (not only changes) for updated products and all details must be refreshed in your database accordingly.\n- We recommend polling this service every 15 minutes to look for updates and to avoid any discrepancies. Updates must be ingested at least hourly .\n- Method : Continuously poll all updates using the new nextCursor value until no more updates are left.\n- The modified-since parameter should not be used as the standard pagination method; rather, use the cursor parameter to ensure all product updates are captured during ingestion. The valid use case for modifiedsince parameter is to re-sync data if there was an issue on your side and you need to re-ingest updates from a specific time in the past, i.e. yesterday. In such cases you could re-start the job using the last crawled date as the modified-since date on first request and then continue ingesting updates with the cursor parameter. You should never use both the cursor and the modified-since parameters in the same request.\n- For pulling updates , remember to use the cursor parameter set to the value of the most recent nextCursor element returned by a request to the same endpoint. Then continue to make requests with the cursor parameter set to the value of the nextCursor element of the previous request, until a request again does not include a nextCursor value.\n- You need to track the last nextCursor you received as this will be used to update the product catalogue during the next ingestion.\n- You should never re-ingest the entire product catalogue unless you need to re-initialize your database.\nImportant : Only this endpoint can be used to ingest the product catalog. You can read more about supported models for managing the product and availability data in this article: Managing product and availability data .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 29,
+      "total_chunks": 95,
+      "char_count": 2134,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130795"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:30",
+    "content": "- Pulls info for a single product by providing the corresponding product code.\n- Used in real-time to get details of a single product when the customer selects a product from the search results returned with the search\n- endpoint (/products/search or /search/freetext).\n- The response can be cached for up to 1 hour but this endpoint must not be used to ingest content for all products.\n- This endpoint must not be used if you're already ingesting products with the /products/modified-since endpoint as both endpoints pull data from the same source. The /products/{product-code} endpoint doesn't return more accurate data but it's used in real-time to fetch product information when needed if the product details haven't been ingested into partner's database with the /products/modified-since endpoint.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 30,
+      "total_chunks": 95,
+      "char_count": 802,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130816"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:31",
+    "content": "- This endpoint pulls in product information for a specified list of products , up to 500 products per request.\n- Special use cases:\n1. Ingestion errors: in the case that products were not correctly ingested via the /products/modified-since endpoint or if for any other reason you need to need to fix some products on your end, you can use /products/bulk to reingest those products. This use case applies only to a situation when specific products with known product codes haven't been ingested correctly on your end, not to a situation when it's necessary to re-ingest product updates for all products from a specific date in the past - for that you must use the /products/modified-since endpoint.\n2. Ingestion of <10k products : this endpoint maybe used as part of a regular ingestion process only if you have a small curated product list (<10k) that you want to refresh on schedule. If this doesn't apply to your implementation and you need to ingest product content for many / all products, you must use the /products/modified-since endpoint for this purpose.\n3. Recommendations : using this endpoint to fetch details of a few products when generating similar product recommendations with the /products/recommendations endpoint - see section Enhancing product discovery.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 31,
+      "total_chunks": 95,
+      "char_count": 1274,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130835"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:32",
+    "content": "These endpoints return all product information, including, but not limited to:\n- Titles\n- Descriptions\n- Ticket types\n- Supplier photos*\n- Review ratings and counts\n- Meeting points\n- Traveler pick up details (if applicable)\n- Inclusions and exclusions\n- Cancellation policy\n- Additional information from the supplier\n- Booking confirmation settings (e.g. instant confirmation or on-request products)\n- Booking requirements (e.g. min or max travelers)\n- Booking questions\n- Itineraries\n- Product options\n- Supplier name\n*Viator also allows travelers to upload their own photos. Traveler photos will have to be ingested via /reviews/product.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 32,
+      "total_chunks": 95,
+      "char_count": 640,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130855"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:33",
+    "content": "- When product summaries are returned, they contain a small amount of crucial product information such as, but not limited to, title, short descriptions, images, pricing, and review ratings and counts.\n- You can effectively filter out products returned in the request by specifying search criteria , such as destination IDs, price range, and date range. You also have the option to filter by category using tag IDs and can filter by flags, such as free cancellation or skip-the-line tours.\n- The search functionalities help identify high-quality products using tags (applicable only to the /products/search endpoint; see the quality-related tags in this article: Viator tags, explained) or flags ('LIKELY_TO_SELL_OUT'\n- popular products that routinely sell out)\n- The /search/freetext endpoint allows an easy implementation of the search functionality based on the desired search term (supported search types: ATTRACTIONS, DESTINATIONS, PRODUCTS).\n- You will specify the format in which you want the response, such as the language and currency and will specify how the response will be sorted . You can apply the 'featured' ('DEFAULT') sort order from Viator to display featured products first in search results. Note: Tours, activities and experiences are ranked using exclusive Viator data that may include product quality, reviews, ratings, photos, popularity, user preferences, price, bookings made through Viator, and payments made by operators.\n- These endpoints are ideal for where short product summaries would be needed, such as on search cards on search results pages.\n- Pagination rules apply to these endpoints: No more than 50 products can be requested in a single call ('count': 50). The first request should be done\nwith 'start': 1, the second request must include the value of the start parameter for the next result you wish to see. For example, if the first request was done with 'start': 1 and 'count': 50, the second request will be done with 'start': 51 and 'count': 50, the third one with 'start': 101 and 'count': 50 etc.\nYou should paginate through the search results (using the start and the count paremeters) only when the customer wants to move to the next page with search results to see more products. First, you can retrieve and display maximum 50 products and if the customer wants to move to the next page with search results, another request to the search endpoint should be done to request additional products. You shouldn't pull automatically all products from each destination when the user initiates the search , this would be an incorrect usage of the endpoint and would result in long load times.\n- The search endpoints must not be used for ingestion , the /products/modified-since endpoint must be used for that purpose. These endpoints can be used only for real-time searches (results may be cached for up to 1 hour, anything above that would risk stale data).",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 33,
+      "total_chunks": 95,
+      "char_count": 2901,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130875"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:34",
+    "content": "- Location details returned in /locations/bulk include the name of the location, the street address, and the longitude/latitude coordinates of the location. The locations are not to be confused with destinations retrieved with the /destinations endpoint.\n- Locations details can be used to highlight pickup/drop off points or meeting point locations , to build itineraries , or even overlay locations on a map to help provide additional context to what a traveler can expect on the tour.\n- This endpoint can be used to provide pickup locations to travelers through a drop-down list. In addition to that, travelers can specify custom pickup info through a plain text field (when a custom pickup location is supported based on the value returned in the 'allowCustomTravelerPickup' field).\n- There is a lot of location data in the API and it doesn't change frequently. To avoid too many unnecessary requests to this service, location data must be cached and it should be refreshed monthly. Additionally, the /locations/bulk endpoint should be used on demand for any new location references returned in the product content response.\nExample of a structured itinerary with a map overlay",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 34,
+      "total_chunks": 95,
+      "char_count": 1181,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130895"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:35",
+    "content": "- Tags should be cached and refreshed weekly .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 35,
+      "total_chunks": 95,
+      "char_count": 46,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130916"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:36",
+    "content": "- Tag taxonomy allows an easy way to classify products into categories and subcategories.\n- Each tag can have one or more parents - identified by parentTagId in the API response. This way tags can be organized in a hierarchical way with main categories and subcategories.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 36,
+      "total_chunks": 95,
+      "char_count": 271,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130935"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:37",
+    "content": "- Filtering by tags is available as a pre-built solution in the /products/search endpoint to easily identify and display to customers products from relevant categories or products that meet the desired quality level. Tags are the easiest way to identify high-quality products that generate the highest sale. These tags are:\n```\ntagId 367652 - Top Product tagId 367653 - Low Supplier Cancellation tagId 367654 - Low Last Minute Supplier Cancellation tagId 21972 - Excellent Quality tagId 22143 - Best Conversion tagId 22083 - Likely To Sell Out tagId 11940 - Once in a Lifetime tagId 21074 - Unique experiences tagId 6226 - Best Value tagId 21971 - Viator Plus\n```",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 37,
+      "total_chunks": 95,
+      "char_count": 663,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130956"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:38",
+    "content": "- Tags can be used for product curation and to create custom marketing campaigns such as holiday offerings, to help your product and marketing\nteams maximise the possibilities coming from the API integration with Viator.\nRead more about tags in this article: Viator tags, explained.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 38,
+      "total_chunks": 95,
+      "char_count": 282,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130975"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:39",
+    "content": "- Use the /products/recommendations endpoint through the user journey on your platform to enhance product discovery by offering similar product recommendations .\n- Implement the recommendations flow correctly: call the /products/recommendations endpoint to get the product codes for simliar products. Then use the relevant product content endpoint to retrieve the product details as well as the /schedules endpoint to get availability and pricing if needed:\n- -Ingestion partners : Retrieve the product details from the data previously ingested with the /products/modified-since and /availability/schedules/modified-since endpoints.\n- -Non-ingestion partners: Make real-time calls to either the /products/{product-code} or /products/bulk endpoint for product content and the /availability/schedules/{product-code} or /availability/schedules/bulk endpoint for availability and pricing schedules. Note: If you need to retrieve details for more than 10 products at a time, use the /bulk endpoints. If certain product features are unsupported, and you are unable to sell specific products with those features (e.g., MANUAL\nconfirmation type), apply filtering to exclude these products based on the product content response.\n- Keep customers engaged by suggesting similar products, elevating products they may not have seen but would be interested in. This endpoint returns products that are considered similar to the requested product based on machine learning algorithms, considering attributes such as location, category, itinerary, price range and others.\n- Reduce churn by suggesting alternative products when customers first choice is unavailable.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 39,
+      "total_chunks": 95,
+      "char_count": 1648,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.130996"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:40",
+    "content": "- Algorithm-generated recommendations based on various customer and product metrics.\n- Increased sales opportunities through improved product discovery.\n- Dynamic recommendation types that can evolve to meet changing business needs.\n- Higher customer engagement.\n- Improved shopping experience.\n- Protection against revenue loss.\nPlease note: you need to be able to handle cases where no recommendations are available for a particular product.\nExample of how similar product recommendations could be implemented.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 40,
+      "total_chunks": 95,
+      "char_count": 512,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131016"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:41",
+    "content": "The Viator Partner API's schedules endpoints enable you to provide availability and pricing information in real-time. To improve transfer speeds and reduce the amount of data transferred, availability is communicated by providing the overall schedule season and specifying unavailable dates rather than available dates. Special pricing periods are also included allowing you to surface supplier promotions to customers.\nIngesting and updating availability schedules follows a similar process as ingesting and updating product information. If ingestion is not an option for you, you can request the schedules of a single product making a real-time call when the customer selects the product on your site.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 41,
+      "total_chunks": 95,
+      "char_count": 703,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131036"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:42",
+    "content": "↑ Back to top\nReal time availability checks ensure accuracy and create a seamless checkout\nOnly ingesting new or modified availability schedules speed up load times\nSchedules can be used to display future availability\nStructured data allows you to easily build a variety of display and filtering options\nIngest availability and pricing",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 42,
+      "total_chunks": 95,
+      "char_count": 335,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131056"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:43",
+    "content": "- Similar to using the /products/modified-since endpoint, you'll use the /availability/schedules/modified-since endpoint to get availability for all products . Getting everything at once and updating only new or modified availability schedules will speed up ingestion and ensure availability is not stale.\n- You should only ingest schedules for products that are active and supported on your platform (filtering must be done on your end). Therefore, schedules should be ingested after product content is ingested.\n- For the initial ingestion of availability and pricing schedules, the first request to /availability/schedules/modified-since must include only the count parameter in the request body (value not higher than 500). This way you will start ingesting schedules for all Viator products from scratch. This is the only time when the cursor or the modified-since parameter should not be used. The nextCursor parameter returned in the response points to the next page of results and must be used the next call to /availability/schedules/modified-since. This process must be repeated until the nextCursor is not returned in the response - this means that there are no more results.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 43,
+      "total_chunks": 95,
+      "char_count": 1186,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131077"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:44",
+    "content": "- We recommend polling this service every 15 minutes to look for updates and to avoid any discrepancies. It's essential to conduct these checks at least every hour to ensure that your travelers see the most up-to-date pricing and availability. A product's availability is considered modified if a supplier makes changes to pricing or availability.\n- Method : Continuously poll all updates using the new nextCursor value until no more updates are left. The modified-since parameter should not be used as the standard pagination method; rather, use the cursor parameter to ensure all schedule updates are captured during ingestion.\nThe valid use case for modified-since parameter is to re-sync data if there was an issue on your side and you need to re-ingest updates from a specific time in the past, i.e. yesterday. In such cases you could re-start the job using the last crawled date as the modified-since date on the first request and then continue ingesting updates with the cursor parameter. You should never use both the cursor and the modified-since parameters in the same request.\n- For pulling updates , remember to use the cursor parameter set to the value of the most recent nextCursor element returned by a request to the same endpoint. Then continue to make requests with the cursor parameter set to the value of the nextCursor element of the previous request, until a request again does not include a nextCursor value.\n- You need to track the last nextCursor you received as this will be used to update the product catalogue during the next ingestion.\n- You should never re-ingest all schedules in full unless you need to reinitialize your database.\nImportant : Only this endpoint can be used to ingest the availability and pricing schedules. You can read more about supported models for managing the product and availability data in this article: Managing product and availability data .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 44,
+      "total_chunks": 95,
+      "char_count": 1901,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131098"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:45",
+    "content": "- This endpoint returns full availability and pricing information for a single product .\n- This endpoint can be used in conjunction with /products/{product-code to pull availability and pricing for a single product when the customer selects",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 45,
+      "total_chunks": 95,
+      "char_count": 240,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131119"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:46",
+    "content": "- The response can be cached for up to 1 hour but this endpoint must not be used to ingest schedules for all products.\n- This endpoint must not be used if you're already ingesting schedules with the /availability/schedules/modified-since endpoint as both endpoints pull data from the same source. The /availability/schedules/{productcode} endpoint doesn't return more accurate data but it's used in realtime to fetch availability and pricing when needed if the schedules haven't been ingested into partner's database with the /availability/schedules/modified-since endpoint.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 46,
+      "total_chunks": 95,
+      "char_count": 574,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131156"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:47",
+    "content": "- This endpoint pulls availability and pricing for a list of products , up to 500 products per request.\n- Special use cases : :\n1. Ingestion errors : in the case that a product schedules were not correctly ingested via the /availability/schedules/modified-since endpoint or if for any other reason you need to need to fix some products on your end, you can use /availability/schedules/bulk to reingest those schedules. This use case applies only to a situation when schedules for specific products with known product codes haven't been ingested correctly on your end, not to a situation when it's necessary to re-ingest schedule updates for all products from a specific date in the past - for that you must use the /availability/schedules/modified-since endpoint.\n2. Ingestion of <10k products: this endpoint could be used on a regular basis only if you have a small curated product list (<10k) that you want to refresh on schedule. If this doesn't apply to your implementation and you need to ingest schedules for many / all products, you must use the /availability/schedules/modified-since endpoint for this purpose.\n3. Recommendations : using this endpoint to fetch details of a few products when generating similar product recommendations with the /products/recommendations endpoint - see section Enhancing product discovery.\nImportant: The /schedules endpoints return the rates in the supplier's currency . You will have to convert the rates to the user's currency either using the /exchange-rates endpoint or your own conversion rates.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 47,
+      "total_chunks": 95,
+      "char_count": 1541,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131179"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:48",
+    "content": "- This endpoint enables a real-time check and calculation of pricing and availability and should be used throughout the booking path. For example, this endpoint can be used to ensure accuracy when the traveler is starting the checkout process.\n- This should not be called until a user inputs dates and passenger mix .\n- In case of pricing differences between the previously quoted price and the new price from the /availability/check response, the new price must be applied to the booking (this shouldn't trigger the booking flow to be canceled, instead the new price should be communicated).\n- This endpoint would be used before a booking is made to verify the product is available on the desired date for the desired passenger mix (based on the Viator age bands). Before a booking hold can be requested, you'll need to use this endpoint to check that it's still available and make sure the pricing is correct.\n- This endpoint should not be called after requesting the hold . When there is a valid availability hold for the booking the response to the /availability/check endpoint could return no availability due to a valid\n- hold. This endpoint could be used again in case the existing hold expires and the booking hasn't been made yet however in that case it would be best to make a new hold right away (up to 3 times).\n- If booking hold is not supported in your implementation , it's essential to call the /availability/check endpoint again in the booking flow, right before submitting the booking request, to double-check the price and availability (even if this check was done already at an earlier stage). Availability and pricing may change at any time, for example while the customer is providing all details for the booking, that's why this information must be verified again before making a booking.\n- Full pricing information, including extra charges paid in destination , is returned in the response to this endpoint.\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 48,
+      "total_chunks": 95,
+      "char_count": 1945,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131199"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:49",
+    "content": "A series of booking endpoints enables you to build booking/checkout user flows that allow travelers to add experiences to shopping carts, provide pickup info, add special requirements (like dietary restrictions), and hold their booking to guarantee availability and pricing.\nFor Full + Booking affiliates : please see here for more info on how to use our payment solutions to create a booking/checkout experience.\nIn general, to give your travelers the ability to book a product, you must do the following:",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 49,
+      "total_chunks": 95,
+      "char_count": 506,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131222"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:50",
+    "content": "- Using traveler inputs of tour date, tour time, and passenger mix, you will perform a real-time check before the traveler is able to add to a shopping cart and/or before placing the booking.\n- Follow the rules applicable to the /availability/check endpoint in the previous section.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 50,
+      "total_chunks": 95,
+      "char_count": 282,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131242"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:51",
+    "content": "- Requests the creation of a booking hold - a guarantee that either the price or availability (or both) of the product will be retained until a booking request is made using the /bookings/cart/book or /bookings/book endpoint.\n- Although booking holds are an optional feature, we recommend using this functionality . This feature gives travelers flexibility to continue to shop without worrying about any products becoming unavailable.\n- Availability holds may not be granted, but pricing holds will always be granted and is sufficient to confirm bookings.\n- The response confirms the price held . In case of discrepancy between the held price and the price previously returned in the /availability/check response, the held price from the /hold endpoint applies.\n- Full pricing information, including extra charges paid in destination , is returned in the response to these endpoints.\n- Do not call this service just because the traveler picked a date and passenger mix. Only call this service if a user takes high-intent actions , like adding to a cart or during checkout.\n- This endpoint should not be called immediately prior to booking to check availability - as for this purpose the /availability/check endpoint should be used (not all products support availability hold therefore availability cannot be verified with the /hold endpoints); it should be called when the customer is moving to checkout or about to provide payment details, to hold availability and pricing for a few minutes.\n- Timestamps returned for the availability and pricing hold must be verified and a new hold should be done in case the first hold expired and the booking hasn't been made yet (we recommend not exceeding 3 holds). There are two timestamps - for availability and for pricing. If the\n- availability hold expires and the product becomes unavailable before the booking is confirmed, the booking will fail. However if the pricing hold expires and the price changes but availability doesn't change, the booking will be confirmed for the new price (that could be much higher).\n- In case the booking hold is not supported , it's essential to call the /availability/check endpoint again in the booking flow, right before submitting the booking request, to double-check the price and availability (even if this check was done already at an earlier stage).",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 51,
+      "total_chunks": 95,
+      "char_count": 2337,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131262"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:52",
+    "content": "This step applies only to Affiliate API partners with booking access who use the API payments solution or the iframe - see the step-by-step guide. Merchant partners use their own solutions for payment collection.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 52,
+      "total_chunks": 95,
+      "char_count": 212,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131281"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:53",
+    "content": "/v1/checkoutsessions/{sessionToken}/paymentaccounts\n- Use the paymentDataSubmissionUrl from the /bookings/cart/hold response to submit customer's card details for payment.\n- Make sure that customer's card information is collected in a secure way following the PCI compliance requirements .\n- Provide full card information in the request to the /paymentaccounts endpoint, including the number, cvv, expiry details, cardholder's full name and billing address. Failure to privde any of this information will result in a payment rejection.\n- Implement the Content Security Policy on your site following the requirements from our guide to facilitate fraud detection.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 53,
+      "total_chunks": 95,
+      "char_count": 661,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131301"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:54",
+    "content": "- Use the paymentSessionToken from the /bookings/cart/hold response to initialize the iframe and call the form submission logic to process the\npayment details . Use the paymentToken generated in the iframe to confirm the booking .\n- Make sure that customer's card information is collected in a secure way following the PCI compliance requirements .\n- Provide full card information in the request to the /paymentaccounts endpoint, including the number, cvv, expiry details, cardholder's full name and billing address. Failure to privde any of this information will result in a payment rejection.\n- Implement the Content Security Policy on your site following the requirements from our guide to facilitate fraud detection.\nSee Affiliate Payments | Viator Partner API guide for more details.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 54,
+      "total_chunks": 95,
+      "char_count": 788,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131318"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:55",
+    "content": "This step applies only to Affiliate API partners with booking access who use the API payments solution or the iframe - see the step-by-step guide.\nThe Viator Javascript library must be imported into your payment details page using the following URL:\nhttps://checkout-assets.payments.tamg.cloud/stable/v2/payment.js\nIf using a build tool, for example if you are using webpack to create your pages, and you can import NPM packages then you can use this option to load the library:\nhttps://checkout-assets.payments.tamg.cloud/payment-module-v2.0.4.tgz\nDevice fingerprinting information must be collected and passed to Viator to facilitate fraud prevention . These data points about the device, connection, and location are then analyzed to recognize trusted customers and reduce the likelihood of fraudulent bookings.\nNote: Not providing this information will put your transactions at risk of rejection by Viator's fraud prevention tools.\nIn addition to fraud prevention measures from the Viator's Javascript library, affiliate API partners with booking access should use additional fields ( FraudPreventionDetails ) available in the API for fraud prevention. If you work with agencies, agents, or sell through different channels, you should have a way to identify transactions coming from different sources. For\nthat we have the following fields in the additionalBookingDetails schema in the /bookings/cart/book request in the API:\n- subChannelId\n- agencyId\n- agentId\nWhen it comes to identifying high risk transactions, in some cases it matters who will receive the voucher post booking. For this reason, we also ask you to share this information using the voucherDeliveryType field (possible values: EMAIL_TO_CUSTOMER, EMAIL_TO_AGENT, EMAIL_TO_CUSTOMER_AND_AGENT).\nLast but not least, if you have a membership program in place it would be useful to collect the information on when the customer making the booking has joined your membership program. You can send the date when the customer joined using the customerMemberSince field.\nAll these fields are available under additionalBookingDetails.FraudPreventionDetails in the /bookings/cart/book, allowing the relevant details to be passed along with the booking request and facilitating the fraud prevention process on the Viator side.\nNote: If a transaction initiated by a specific user is flagged as potentially fraudulent and you do not include unique identifiers for that user, such as the agentId, our fraud prevention tools will implement heightened security measures across your entire account. This may lead to an increase in failed transactions due to fraud concerns. Conversely, if you provide a unique identifier like the agentId, these measures will only affect future transactions made by that user, resulting in fewer booking failures at the account level. Therefore, we strongly recommend utilizing the fraudPreventionDetails when applicable. Though all these steps will facilitate fraud prevention, this does not guarantee that no transactions will be blocked as fraud prevention, it will only improve the process.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 55,
+      "total_chunks": 95,
+      "char_count": 3080,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131336"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:56",
+    "content": "Affiliates\n✓ Merchants",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 56,
+      "total_chunks": 95,
+      "char_count": 22,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131355"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:57",
+    "content": "- Confirms/finalizes the held booking using the /bookings/cart/book or /bookings/book endpoint.\n- All relevant booking information will need to be provided in the request (e.g. booking questions).\n- The bookingRef from the /hold endpoint must be provided in the /book request in order to confirm the booking from the hold , otherwise a new booking will be made (with a risk of a price change).\n- The booking status from the book response must be verified before confirming the booking to the customer.\n- Viator voucher from the response to the booking endpoint must be shared with customers (custom vouchers are not supported as they won't be recognized by tour operators).\nAffiliate partners with booking access must apply secure voucher redemption :\n- Verify the value returned for the isVoucherRestrictionRequired field in the /bookings/cart/book response for every cart item. This field has value true when the transaction is identified as potentially fraudulent and false when the transaction is deemed legitimate.\n- For any potentially fraudulent transactions ('isVoucherRestrictionRequired' : true) take the relevant steps to share the voucher securely via email instead of displaying it on the booking confirmation page.\nImportant : Only the following combination of endpoints is allowed:\n- /bookings/cart/hold + /bookings/cart/book\n- /bookings/hold + /bookings/book\nWe highly recommend using the/cart endpoints (/bookings/cart/hold + /bookings/cart/book) as they support multiple items .\nAffiliate partners with full + booking access are required to use the /cart endpoints.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 57,
+      "total_chunks": 95,
+      "char_count": 1583,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131374"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:58",
+    "content": "- Requests the status of an existing booking. Statuses can be either: confirmed, rejected, cancelled, pending, in progress, on hold, or failed.\n- This endpoint should be used for periodic checks of the booking status when the/book response returns a pending status (manual confirmation type products) - we recommend hourly checks of the booking status. It's important to keep customers up to date on the status of their bookings.\n- This endpoint should not be used to verify the booking status of all bookings (especially if the response to the booking endpoint hasn't been returned yet). The booking endpoint (/bookings/book or /bookings/cart/book) returns the booking status.\n- Supplier cancellations should not be pulled with this endpoint but with the /bookings/modified-since endpoint (the process to automate supplier cancellations is described in this article: Automating supplier cancellations in V.2 Partner API ).\n- This endpoint must be called to check the booking status whenever the booking endpoint returns an error or the response times out , or for any other reason it's not clear if the booking has been confirmed (it must be called prior to re-booking).\n- This endpoint is also useful when reconciling your finances to account for any cancelled bookings where a refund was processed.\n- This endpoint is required in order to support manual confirmation products .\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 58,
+      "total_chunks": 95,
+      "char_count": 1394,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131393"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:59",
+    "content": "Merchant API partners: All cancellations (except those requested after the date of travel) must be performed via the API, the implementation of the cancellation API worflow is required . Should you need to cancel a booking after the travel date, please contact Viator Partner Support.\nAffiliate API partners with booking access: The cancellation API workflow can be implemented by the partner although it's not mandatory . Based on the contractual agreement Viator is the merchant of record and customers can cancel bookings by contacting Viator customer support using the contact details displayed on vouchers.\nLearn more about cancellation policies and processes here: All you need to know about cancellations .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 59,
+      "total_chunks": 95,
+      "char_count": 713,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131412"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:60",
+    "content": "- In order to successfully cancel a booking, a traveler must select one of our pre-set cancellation reasons . This endpoint pulls in the acceptable cancellation reasons. You can take these cancellation reasons and provide them to travelers during the cancellation process.\n- Customer cancellation reasons can be obtained by providing the value 'CUSTOMER' in the type query parameter in the request to this endpoint. When type is not specified, it defaults to 'CUSTOMER'.\n- Recommended: as the acceptable reasons for cancellation may be altered at any point, we recommend retrieving an up-to-date list from this endpoint monthly .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 60,
+      "total_chunks": 95,
+      "char_count": 629,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131431"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:61",
+    "content": "- To see if a booking is eligible to be cancelled, make a call to the API using the booking reference number (bookingRef). Note: It's not enough to display the cancellation policy wording as it doesn't guarantee that travelers will understand the amount that will be refunded, i.e. they may not calculate correctly the time left to the start time based on the supplier's time zone. That's why it's important to double-check the refund amount using this endpoint to ensure 100% accuracy.\n- If the booking can be cancelled you will be returned a quote and can proceed with cancellation of the booking using the /bookings/{bookingreference}/cancel endpoint.\n- Important: The 'CANCELLABLE' status doesn't mean that the booking is refundable, make sure to check the refundAmount and refundPercentage fields.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 61,
+      "total_chunks": 95,
+      "char_count": 802,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131450"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:62",
+    "content": "- If the /bookings/{booking-reference}/cancel-quote endpoint identifies the booking as 'CANCELLABLE' and the customer accepts the refund amount, you can process the cancellation using /bookings/{bookingreference}/cancel.\n- Make sure that the cancellation has been processed successfully before communicating it to the customer ('status': 'ACCEPTED').",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 62,
+      "total_chunks": 95,
+      "char_count": 350,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131469"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:63",
+    "content": "Traditionally API partners were relying on emails sent by Viator in order to inform their customers about cancelled bookings. Now you can opt out from the cancellation emails and automate the process for supplier cancellations using API endpoints.\nThe process to automate supplier cancellations is described in this article:\nAutomating supplier cancellations in V.2 Partner API .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 63,
+      "total_chunks": 95,
+      "char_count": 379,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131489"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:64",
+    "content": "- When cancelling a booking, suppliers must select one of our pre-set cancellation reasons .\n- This endpoint returns all supplier-initiated cancellation reasons when the query parameter type is set to 'SUPPLIER'.\n- Retrieve the supplier cancellation reasons provided by Viator and map them to the cancellation reasons available in your system. You can use this information to communicate cancellations to customers.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 64,
+      "total_chunks": 95,
+      "char_count": 415,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131508"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:65",
+    "content": "- This endpoint provides all booking-event notifications relevant to the partner (currently only booking cancellations). Currently these event types",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 65,
+      "total_chunks": 95,
+      "char_count": 148,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131529"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:66",
+    "content": "- 'CANCELLATION' - the booking was  canceled by the supplier\n- 'CUSTOMER_CANCELLATION' - the booking was cancelled by the customer ( Note : This applies only to bookings done by affiliate partners with booking access where Viator acts as a merchant of record and the customer can contact Viator support to request the cancellation. Merchant partners must process customer cancellations on their end and therefore shouldn't expect this event type as cancellations actioned via /bookings/{bookingreference}/cancel endpoint will not be returned. Only if a booking is manually cancelled by the Viator support team as customer cancellation upon merchant partner's request (due to unique circumstances), the cancellation will be returned as a customer cancellation).\n- The flow is the same as in case of other /modified-since endpoints paginating with the cursor parameter to pull all notifications , with an option to request the data from the point in time indicated in the modifiedsince parameter when needed (instead of using the cursor parameter).\n- The acknowledgeBy timestamp returned in the response indicates by when this event notification must be acknowledged using the /bookings/modified-since/acknowledge endpoint.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 66,
+      "total_chunks": 95,
+      "char_count": 1221,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131548"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:67",
+    "content": "- Used to acknowledge receipt of booking event notifications returned by the /bookings/modified-since endpoint\n- When acknowledged, the email notification for the relevant booking will not be sent , otherwise an email notification will be sent to the relevant email address (for booking cancellations) provided in the Partner Dashboard.\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 67,
+      "total_chunks": 95,
+      "char_count": 350,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131568"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:68",
+    "content": "- All our products are priced in the supplier's currency and will need to be converted to the end user. Using the /exchange-rates endpoint you can pull the exchange rates for conversions between specified currencies.\n- Exchange rates must be cached and refreshed as indicated in the expiry timestamp .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 68,
+      "total_chunks": 95,
+      "char_count": 301,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131586"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:69",
+    "content": "Merchant API partners: While we support many currencies, payments for bookings can only be made using the following four currencies:\n- GBP (British Pound)\n- EUR (Euros)\n- USD (US Dollars)\n- AUD (Australian dollars)\n- CAD (Canadian dollars)\nWhile you can still price products in any of the supported currencies, you will be invoiced in your choice of the currencies above.\nNote: each booking is invoiced in the currency provided in the booking request. If you make bookings in multiple currencies, you will receive separate invoices for each currency.\nAffiliate API partners with booking access: The following currencies are supported for bookings: USD, EUR, GBP, AUD, CAD, CHF, DKK, FJD, HKD, JPY, NOK, NZD, SEK, SGD, THB, ZAR, INR, BRL, TWD, MXN, CLP, IDR, ILS, KRW, PHP, PLN, TRY.\nYou will receive commission payments in the currency selected for payouts in your Partner Dashboard.\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 69,
+      "total_chunks": 95,
+      "char_count": 897,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131606"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:70",
+    "content": "- This endpoint retrieves traveler reviews, supplier responses, review photos and all other necessary attributes in one request.\n- Reviews are retrieved on an individual product basis .\n- 'Helpful votes' left by other travelers help provide relevance to customers\n- You can retrieve up to 500 reviews per product in one request. Our research indicates that there are diminishing returns after the 100th review. However if you wish to pull all reviews for the product, use the pagination method with the start and count parameters.\n- You can filter reviews by rating, by a single language, and can filter out machine-translated reviews. Machine translated reviews will always be sorted after reviews in the primary language. You can also filter by review provider (Viator, Tripadvisor).\n- You can sort reviews by one of the following: by highest rating, most recent, or most helpful. This sort is applied within the chosen languages.\n- Reviews must be cached and refreshed weekly , as well as on-demand when you see that the product content endpoint returns a different review count than saved in your database for the product.\n- Review content is protected proprietary information ; therefore, you may not allow review content to be indexed by search engines. See the details of Viator non-index policy here.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 70,
+      "total_chunks": 95,
+      "char_count": 1308,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131624"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:71",
+    "content": "Product ratings and rating counts are returned by the /products/{productcode}, /products/bulk, and products/modified-since endpoints. Details of attributes included can be found in the API specs.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 71,
+      "total_chunks": 95,
+      "char_count": 195,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131643"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:72",
+    "content": "In case you are displaying Viator or Tripadvisor reviews (or review rating) from the API, please make sure that the following rules are followed:\n- all reviews are displayed for a product with the correct review rating instead of selective display of reviews with the highest rating;\n- the provider of the reviews (Viator/Tripadvisor) is indicated (for example by including the phrase 'collected by Viator and Tripadvisor')\n- all Viator/Tripadvisor reviews are rendered non-indexable by search engines.\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 72,
+      "total_chunks": 95,
+      "char_count": 516,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131662"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:73",
+    "content": "- Traveler photos are photos that travelers can upload when submitting their reviews . These photos are Unlike supplier photos, travelers photos are not ingested through any of the /products endpoints.\n- Including traveler photos have their benefits. Traveler photos help capture the experience from a traveler's point of view. We only require suppliers to upload a minimum of 4 photos when creating their listing and traveler photos can augment listings with just the minimum amount of photos.\n- Including traveler photos is recommended for an 'Excellent' build to our API, as we know that including traveler photos generally improves conversion .\nNote: supplier photos are already ingested through our product ingestion endpoints.\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 73,
+      "total_chunks": 95,
+      "char_count": 746,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131681"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:74",
+    "content": "- Product content endpoints return the supplier name and reference. Full information about the supplier (name, contact details) can be retrieved with the /suppliers/search/product-codes endpoint per product (with a limit of 500 products per request).\n- Viator collects and shares contact information about suppliers with type 'type': 'BUSINESS', in case of suppliers with 'type': 'INDIVIDUAL' the supplier's information is limited to name.\n- Note: Partners acting as a marketplace - i.e. where there is a transaction occurring on the partner site - should be displaying all of the requisite information for suppliers, including the statement whereby the supplier has certified that they will comply with EU law. On Viator.com - we surface that information during checkout, where the traveller can click to get additional details about the supplier to find their details.\n- Supplier details should be cached , we recommend a weekly refresh of this data.\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 74,
+      "total_chunks": 95,
+      "char_count": 966,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131700"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:75",
+    "content": "- Product Product content endpoints return the booking question ids for questions applicable to an individual product . Additional information about all booking questions available in the API can be retrieved with the /products/booking-questions endpoint.\n- This endpoint returns all relevant data that explains how to categorize booking questions and what type of responses is expected (based on type, group, maxLength, unit fields), as well as whether the answer to the question is required or not (required field with options is MANDATORY, CONDITIONAL and OPTIONAL).\n- Labels provided in the response for each question can be used for the front-end display to the customer (i.e. 'label': 'Traveler height in feet or centimeters (required for safety reasons)').\n- It's important to differentiate between booking questions that must be asked per-person ('group': 'PER_TRAVELER') and booking questions applicable on the booking level ('group': 'PER_BOOKING'). Pickup-related questions, i.e. 'PICKUP_POINT' must be answered only once per booking whereas questions such as 'WEIGHT' or 'DATE_OF_BIRTH' must be answered separately for each individual traveler (multiple input fields are needed instead of collecting answers for all travelers in one input field).\n- Booking questions related to arrival and departure details must be validated correctly to avoid booking failures . The API documentation includes a table with the logic for conditional booking questions that must be hardcoded into your implementation (see Conditional booking questions). Please check this article for a step-by-step guide on how to implement the logic correctly: Implementing Booking Questions .\n- The response from this endpoint must be cached , we recommend refreshing it monthly .\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 75,
+      "total_chunks": 95,
+      "char_count": 1775,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131719"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:76",
+    "content": "These endpoints make it possible for API partners to create pages dedicated to an attraction - e.g. a page that just promotes tours of the Colosseum. A single attraction could have multiple tour options or multiple tour operators and by building an attraction page, you can present all options to your audience.\nThese endpoints can also be used to display attractions on search results pages (SRPs) and on destination pages.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 76,
+      "total_chunks": 95,
+      "char_count": 424,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131737"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:77",
+    "content": "- This endpoint returns all attractions within a destination (facilitates mapping destinations to attractions) and is used to help merchandize products by attraction.\n- Attractions can be sorted by ALPHABETICAL, DEFAULT & REVIEW_AVG_RATING order.\n- Pagination rules apply to this endpoint: no more than 30 products can be requested in a single call ('count': 30). The first request should be done with 'start': 1, the second request must include the value of the start parameter for the next result you wish to see. For example, if the first request was done with 'start': 1 and 'count': 30, the second request will be done with 'start': 31 and 'count': 30, the third one with 'start': 61 and 'count': 30 etc.\n- Attraction details include: destination mapping, Viator attraction URL (Affiliate partners only), number of products + product codes, reviews, images, introduction, overview, details of admission type (free/not free), opening hours, full address.\n- When a product is linked to an attraction the relevant attractionId is returned for a product in the response to the product content endpoint. You can map products to attractions using the attractionId extracted from the product content response.\n- This is also useful for navigation as well as building out basic attractions pages .\n- With this endpoint you can get aggregated product and review count/rating for an attraction.\n- Attraction data must be cached and refreshed weekly .",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 77,
+      "total_chunks": 95,
+      "char_count": 1445,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131757"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:78",
+    "content": "- This endpoint is used by partners who can't ingest attraction details with the /attractions/search endpoint but instead need to make real-time calls to get the details of a single attraction (using the attractionId extracted from the product content response), or when it's necessary to get details of a new attraction .\n- Attraction details include: destination mapping, Viator attraction URL (Affiliate partners only), number of products + product codes, reviews, images, introduction, overview, details of admission type (free/not free), opening hours, full address.\n- Attraction data must be cached and refreshed weekly .\n↑ Back to top",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 78,
+      "total_chunks": 95,
+      "char_count": 641,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131776"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:79",
+    "content": "Any particular product may consist of a number of variants, each of which is referred to as a 'product option'. Each product option has an individual setup and there are specific data fields that must be verified correctly on the product option level.\nPlease refer to our API documentation: Product options.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 79,
+      "total_chunks": 95,
+      "char_count": 307,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131794"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:80",
+    "content": "Product option title and description must be always displayed to customers for each product option. These fields include essential information about the individual product option and indicate what services are provided for that product option.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 80,
+      "total_chunks": 95,
+      "char_count": 243,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131814"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:81",
+    "content": "Language guides must be validated on the product option level. Suppliers set up language guides on the product option level and they are returned separately for each product option in the API response.\nSee a sample response for product 16168P10:\nEach product option can have different language guides and it's important to display this information to customers for each product option based on productOptions.languageGuides in order for them to select one. The guide type must be always displayed as well (audio, written, guide).",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 81,
+      "total_chunks": 95,
+      "char_count": 529,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131833"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:82",
+    "content": "Pickup / drop-off must be validated on the product option level. A product could have two different product options - one product option with pickup and another product option without pickup. The front-end and the back-end implementation in both cases would be different.\nWhen the value of logistics.travelerPickup.pickupOptionType in the product content response is 'PICKUP_AND_MEET_AT_START_POINT', it means that the product includes both 'hotel pickup' and 'meet at the departure point' variants in its product options; e.g., one product option may be for hotel pickup while another is for meeting at the start/departure point.\nTo determine which product options offer what, it is necessary to inspect each product option's details in the productOptions[] array in the product content response.\n- If pickup is included for a product option, the phrase 'Pickup included' will be present in the productOptions[].description field. When booking a product option with pickup included you must collect a pickup point from the user that corresponds to one of the entries in the logistics.travelerPickup.locations[] array in the product content response.\nFront-end: All booking questions related to arrival/departure must be displayed as normal to allow customers to select the desired arrival/departure mode and provide all relevant information to the supplier before travel.\nBack-end: All answers provided by the customer must be captured and submitted in the booking request following the logic for conditional booking questions from the table in the API documentation.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 82,
+      "total_chunks": 95,
+      "char_count": 1568,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131852"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:83",
+    "content": "- If the productOptions[].description field does not contain the phrase 'Pickup included' , this indicates that this product option does not include pickup and should be considered to follow a 'MEET_AT_DEPARTURE_POINT' arrangement.\nFront-end: In case of product options without pickup, you shouldn't ask arrival or departure-related questions at checkout (but you will still need to answer the questions returned in the API using values hardcoded into your implementation). If you wish, you can display at checkout the meeting point location(s) for informational purposes (not collecting answers) but not the pickup locations and no questions related to arrival/departure should be displayed in that case. The option to contact the supplier later (CONTACT_SUPPLIER_LATER) doesn't apply to this scenario either and should not be present as it applies only to product options with pickup.\nBack-end: In the answer to the PICKUP_POINT question, you will need to send the location reference MEET_AT_DEPARTURE_POINT (returned under travelerPickup.locations). In case the product returns the TRANSFER_ARRIVAL_MODE or TRANSFER_DEPARTURE_MODE questions, these must be answered with OTHER.\nYou can use these instant confirmation type products for testing: 9025P51, 62450P1.\nThis article includes a step-by-step guide on how to validate pickup and apply conditional booking questions correctly: Implementing Booking Questions.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 83,
+      "total_chunks": 95,
+      "char_count": 1415,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131871"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:84",
+    "content": "Meeting point locations may be specified by the supplier on the product option level. When that's the case, the product option description will include information about the meeting point applicable to each product option.\nFor example, product 131843P24 has two meeting point locations under logistics.start:\nExample response for product 131843P24 with multiple meeting points\nHowever they don't apply to all product options. Instead, each product option comes with a different meeting point as specified in the productOption.description:\nResponse for product 131843P24 with product option descriptions\nWhen booking a product/product option with the meeting point, you won't be asked to provide the meeting point location selected by the customer in the booking request.\nHowever it's recommended to display the meeting point locations on product pages so that customers are aware of the available options. Most importantly, you will need to make sure that the product option description returned in the API response is clearly visible as it provides guidelines about the meeting point for each product option.\nWhen a product returns the PICKUP_POINT question, in order to book the product option without pickup, or allow the customer to meet at the meeting point instead of selecting the pickup location (for a product option with pickup), you will need\nto answer the PICKUP_POINT question with a special location reference: MEET_AT_DEPARTURE_POINT.\nIn case customers contact you to confirm the meeting point location post booking, you can refer to the meeting point location displayed on their Viator voucher .\nIn case of product 131843P24, the voucher for a booking made for product option TG1 ('CAPRI FROM NAPLES') will include the meeting point location set up by the supplier for the selected product option:",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 84,
+      "total_chunks": 95,
+      "char_count": 1813,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131891"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:85",
+    "content": "Bar Picnic\nMolo Beverello\nVia Acton\nPorto di Napoli, 80133 Napoli NA,\nMeet your guide in main port of Naples; Molo Beverello; outside the Snack Bar Picnic the\nSTART TIME\n8.OOAM\nEND POINTS\nThis activity ends back at the meeting point:",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 85,
+      "total_chunks": 95,
+      "char_count": 233,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131910"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:86",
+    "content": "To ensure that the load on our systems is not excessive, we ask that you develop your API implementation in accordance with our endpointspecific usage rules. If you have a use case which would violate a rule, you must first seek approval from our API Onboarding Team.\nPlease refer to our API documentation: Update frequency.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 86,
+      "total_chunks": 95,
+      "char_count": 324,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131929"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:87",
+    "content": "Italy",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 87,
+      "total_chunks": 95,
+      "char_count": 5,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131950"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:88",
+    "content": "You must adhere to the following update frequency guidelines. More frequent updates will place an excessive burden on our systems and may result in your integration being shut off.\nSee section on Rate Limiting for more information.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 88,
+      "total_chunks": 95,
+      "char_count": 231,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131970"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:89",
+    "content": "To ensure your systems reflect any removals of or changes to existing auxiliary data, we require you to retrieve full updates from these endpoints as follows:\nFixed cadences for polling content ingestion endpoints",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 89,
+      "total_chunks": 95,
+      "char_count": 213,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.131989"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:90",
+    "content": "When ingesting product content, if you encounter an unknown reference (e.g., a new location reference, booking question, tag, or destination ID), or if you need to perform a currency conversion and the last exchange rate you retrieved has expired, or if any other condition outlined below is met that requires retrieving additional data, you must call the relevant endpoint to resolve the new reference immediately or just after completing the product content update.\nFixed cadences for polling content ingestion endpoints",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 90,
+      "total_chunks": 95,
+      "char_count": 522,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.132007"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:91",
+    "content": "Make sure to check:",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 91,
+      "total_chunks": 95,
+      "char_count": 19,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.132027"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:92",
+    "content": "- Access to endpoints\n- Update frequency\n- Product content and availability endpoints\n2. Additional guides from our Partner Resource Center\n- Managing product and availability data\n- Front-end guide\n- Viator API Certification\n- Viator API certification: back-end checks",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 92,
+      "total_chunks": 95,
+      "char_count": 269,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.132047"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:93",
+    "content": "Technical Guide\nFront-End Guide\nViator Tags\nGlossary\nImplementing Age Bands\nCancellation Policies\nViator API Certification\nViator API Certification - back-end checks\nImplementing Traveler Photos\nGolden Path | Basic Access Affiliate Partners\nAffiliate Attribution: How It Works",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 93,
+      "total_chunks": 95,
+      "char_count": 276,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.132068"
+    }
+  },
+  {
+    "chunk_id": "viator_api:Technical Guide - Viator Partner API - Viator Partner Resource Center:chunk:94",
+    "content": "Managing Product & Availability Data\nCalculating Product Pricing\nImplementing Booking Questions\nAPI Amendments Workflow\nAutomating Supplier Cancellations\nBooking reporting guide\nHelp center\nPrivacy & Cookies Statement\nAbout Viator\nTerms & Conditions\n© 1997-2025 Viator, Inc.",
+    "metadata": {
+      "source": "output\\viator_api\\converted\\Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "file_name": "Technical Guide - Viator Partner API - Viator Partner Resource Center.md",
+      "chunk_index": 94,
+      "total_chunks": 95,
+      "char_count": 274,
+      "collection": "viator_api",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T06:00:29.132086"
+    }
+  }
+]

@@ -1,0 +1,542 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:0",
+    "content": "This document explains the internal architecture of the FastMCP server framework, including its core components, managers, function introspection system, and transport integration. FastMCP provides a high-level, decorator-based interface for building MCP servers that automatically handles schema generation, validation, and protocol compliance.\nFor information about using FastMCP decorators and APIs, see\n[Tool Management](#2.2)\nand\n[Resource & Prompt Management](#2.3)\n. For details about the underlying protocol implementation, see\n[Low-Level Server Architecture](#6.1)\n.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 36,
+      "char_count": 575,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808884"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:1",
+    "content": "FastMCP implements a layered architecture that wraps the low-level MCP server with higher-level abstractions and automatic introspection capabilities.\n```\ngraph TB\n    subgraph \"FastMCP Framework Layer\"\n        FastMCP[\"FastMCP<br/>Main Server Class\"]\n        ToolManager[\"ToolManager<br/>Tool Registration & Execution\"]\n        ResourceManager[\"ResourceManager<br/>Resource & Template Management\"]\n        PromptManager[\"PromptManager<br/>Prompt Management\"]\n        FuncMetadata[\"func_metadata<br/>Function Introspection\"]\n        Context[\"Context<br/>Request Context Injection\"]\n    end\n    \n    subgraph \"Protocol Layer\"\n        MCPServer[\"MCPServer<br/>Low-level Protocol Handler\"]\n        ServerSession[\"ServerSession<br/>Client Session Management\"]\n    end\n    \n    subgraph \"Transport Layer\"\n        StdioTransport[\"stdio_server<br/>Standard I/O\"]\n        SSETransport[\"SseServerTransport<br/>Server-Sent Events\"]\n        StreamableHTTP[\"StreamableHTTPSessionManager<br/>HTTP Sessions\"]\n    end\n    \n    subgraph \"Function Processing\"\n        ArgModelBase[\"ArgModelBase<br/>Pydantic Input Models\"]\n        OutputValidation[\"Output Schema Validation<br/>Structured Output\"]\n        ContentConversion[\"_convert_to_content<br/>Result Conversion\"]\n    end\n    \n    %% Core relationships\n    FastMCP --> ToolManager\n    FastMCP --> ResourceManager\n    FastMCP --> PromptManager\n    FastMCP --> MCPServer\n    \n    ToolManager --> FuncMetadata\n    ResourceManager --> FuncMetadata\n    PromptManager --> FuncMetadata\n    \n    FuncMetadata --> ArgModelBase\n    FuncMetadata --> OutputValidation\n    FuncMetadata --> ContentConversion\n    \n    FastMCP --> Context\n    Context -.-> ServerSession\n    \n    %% Protocol integration\n    MCPServer --> ServerSession\n    \n    %% Transport integration\n    FastMCP -.-> StdioTransport\n    FastMCP -.-> SSETransport\n    FastMCP -.-> StreamableHTTP\n    \n    MCPServer -.-> StdioTransport\n    MCPServer -.-> SSETransport\n    MCPServer -.-> StreamableHTTP\n```\n**Sources:**\n[src/mcp/server/fastmcp/server.py:122-206](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:62-67](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 36,
+      "char_count": 2116,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808900"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:2",
+    "content": "The\n```\nFastMCP\n```\nclass serves as the primary entry point and orchestrator for the entire server framework. It manages settings, coordinates managers, and provides the decorator interface.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 36,
+      "char_count": 190,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808906"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:3",
+    "content": "The\n```\nFastMCP\n```\nclass initializes and coordinates several key subsystems:\n- **Settings Management** : Uses `Settings` class with environment variable support (prefix `FASTMCP_` )\n- **Manager Coordination** : Initializes `ToolManager` , `ResourceManager` , and `PromptManager`\n- **Protocol Integration** : Wraps the low-level `MCPServer` with enhanced functionality\n- **Transport Apps** : Generates transport-specific applications (stdio, SSE, StreamableHTTP)\n```\ngraph LR\n    subgraph \"FastMCP.__init__\"\n        Settings[\"Settings<br/>Configuration Management\"]\n        MCPServerWrap[\"MCPServer Wrapper<br/>Low-level Protocol\"]\n        ManagerInit[\"Manager Initialization<br/>Tool/Resource/Prompt\"]\n        AuthConfig[\"Authentication Setup<br/>OAuth Integration\"]\n        HandlerSetup[\"Protocol Handler Setup<br/>MCP Method Bindings\"]\n    end\n    \n    Settings --> MCPServerWrap\n    MCPServerWrap --> ManagerInit\n    ManagerInit --> AuthConfig\n    AuthConfig --> HandlerSetup\n    \n    HandlerSetup --> list_tools\n    HandlerSetup --> call_tool\n    HandlerSetup --> list_resources\n    HandlerSetup --> read_resource\n    HandlerSetup --> list_prompts\n    HandlerSetup --> get_prompt\n```\n**Sources:**\n[src/mcp/server/fastmcp/server.py:152-209](.)\n,\n[src/mcp/server/fastmcp/server.py:268-280](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 36,
+      "char_count": 1295,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808912"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:4",
+    "content": "FastMCP provides three primary decorators that automatically handle function registration and introspection:\n```\n@tool()\n```\n```\nToolManager\n```\n```\n@resource()\n```\n```\nResourceManager\n```\n```\n@prompt()\n```\n```\nPromptManager\n```\n, Manager = . , Purpose = \nEach decorator uses the same underlying pattern: function introspection → manager registration → protocol handler binding.\n**Sources:**\n[src/mcp/server/fastmcp/server.py:393-451](.)\n,\n[src/mcp/server/fastmcp/server.py:479-578](.)\n,\n[src/mcp/server/fastmcp/server.py:588-641](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 36,
+      "char_count": 533,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808918"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:5",
+    "content": "The manager subsystem handles registration, validation, and execution of user-defined functions through a consistent interface pattern.\n```\ngraph TB\n    subgraph \"Manager Pattern\"\n        Registration[\"Function Registration<br/>add_tool/add_resource/add_prompt\"]\n        Introspection[\"Function Introspection<br/>func_metadata()\"]\n        Storage[\"Internal Storage<br/>_tools/_resources/_prompts\"]\n        Execution[\"Function Execution<br/>call_tool/get_resource/get_prompt\"]\n    end\n    \n    subgraph \"ToolManager\"\n        ToolStorage[\"_tools: dict[str, Tool]\"]\n        ToolValidation[\"Input/Output Validation\"]\n        ToolExecution[\"Tool Execution with Context\"]\n    end\n    \n    subgraph \"ResourceManager\"\n        ResourceStorage[\"_resources: dict[str, Resource]\"]\n        TemplateStorage[\"_templates: dict[str, ResourceTemplate]\"]\n        ResourceResolution[\"URI to Resource Resolution\"]\n    end\n    \n    subgraph \"PromptManager\"\n        PromptStorage[\"_prompts: dict[str, Prompt]\"]\n        PromptValidation[\"Argument Validation\"]\n        PromptExecution[\"Message Generation\"]\n    end\n    \n    Registration --> Introspection\n    Introspection --> Storage\n    Storage --> Execution\n    \n    Registration -.-> ToolStorage\n    Registration -.-> ResourceStorage\n    Registration -.-> PromptStorage\n```\n**Sources:**\n[src/mcp/server/fastmcp/tools.py](.)\n,\n[src/mcp/server/fastmcp/resources.py](.)\n,\n[src/mcp/server/fastmcp/prompts.py](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 36,
+      "char_count": 1436,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808924"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:6",
+    "content": "All managers follow a consistent registration pattern:\n1. **Function Analysis** : Extract signature, docstring, and type annotations\n2. **Schema Generation** : Create Pydantic models for inputs and outputs\n3. **Metadata Creation** : Build `Tool` , `Resource` , or `Prompt` objects\n4. **Storage** : Register in manager's internal dictionary\n5. **Validation** : Check for duplicates and conflicts\n**Sources:**\n[src/mcp/server/fastmcp/utilities/func_metadata.py:166-284](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 36,
+      "char_count": 470,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808930"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:7",
+    "content": "The function introspection system (\n```\nfunc_metadata\n```\n) is the core of FastMCP's automatic schema generation and validation capabilities.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 36,
+      "char_count": 141,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808935"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:8",
+    "content": "```\ngraph LR\n    subgraph \"FuncMetadata Structure\"\n        ArgModel[\"arg_model<br/>ArgModelBase subclass\"]\n        OutputSchema[\"output_schema<br/>JSON Schema dict\"]\n        OutputModel[\"output_model<br/>Pydantic Model\"]\n        WrapOutput[\"wrap_output<br/>Result Wrapping Flag\"]\n    end\n    \n    subgraph \"Input Processing\"\n        PreParse[\"pre_parse_json<br/>JSON String Handling\"]\n        Validation[\"model_validate<br/>Pydantic Validation\"]\n        Injection[\"Context Injection<br/>arguments_to_pass_directly\"]\n    end\n    \n    subgraph \"Output Processing\"\n        ResultConvert[\"convert_result<br/>Result Conversion\"]\n        ContentConvert[\"_convert_to_content<br/>ContentBlock Generation\"]\n        StructuredOut[\"Structured Output<br/>Schema Validation\"]\n    end\n    \n    ArgModel --> PreParse\n    PreParse --> Validation\n    Validation --> Injection\n    \n    OutputModel --> ResultConvert\n    ResultConvert --> ContentConvert\n    ResultConvert --> StructuredOut\n```\n**Sources:**\n[src/mcp/server/fastmcp/utilities/func_metadata.py:62-120](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 36,
+      "char_count": 1049,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808941"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:9",
+    "content": "FastMCP automatically determines whether a function should have structured output based on its return type annotation:\n```\nBaseModel\n```\n```\nstr\n```\n,\n```\nint\n```\n```\n{\"result\": value}\n```\n```\ndict[str, T]\n```\n```\nlist[T]\n```\n,\n```\nUnion\n```\n```\n{\"result\": value}\n```\n, Output Handling = . , Wrapping = \n**Sources:**\n[src/mcp/server/fastmcp/utilities/func_metadata.py:287-371](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 36,
+      "char_count": 379,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808947"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:10",
+    "content": "FastMCP provides automatic context injection that gives functions access to request-specific information and MCP capabilities.\n```\ngraph TB\n    subgraph \"Context Object\"\n        RequestContext[\"request_context<br/>RequestContext[ServerSession]\"]\n        FastMCPRef[\"fastmcp<br/>FastMCP Instance\"]\n        ContextMethods[\"info/debug/error<br/>Logging Methods\"]\n        ProgressMethods[\"report_progress<br/>Progress Reporting\"]\n        ResourceMethods[\"read_resource<br/>Resource Access\"]\n    end\n    \n    subgraph \"Context Detection\"\n        ParamAnalysis[\"find_context_parameter<br/>Parameter Analysis\"]\n        TypeCheck[\"Context Type Annotation<br/>Detection\"]\n        Injection[\"Automatic Injection<br/>During Function Call\"]\n    end\n    \n    subgraph \"Context Usage\"\n        UserFunction[\"@tool/@resource/@prompt<br/>User Functions\"]\n        ContextParam[\"ctx: Context<br/>Parameter\"]\n        MCPCapabilities[\"MCP Protocol Access<br/>via Context\"]\n    end\n    \n    ParamAnalysis --> TypeCheck\n    TypeCheck --> Injection\n    Injection --> RequestContext\n    \n    ContextParam --> UserFunction\n    UserFunction --> MCPCapabilities\n    MCPCapabilities -.-> ContextMethods\n    MCPCapabilities -.-> ProgressMethods\n    MCPCapabilities -.-> ResourceMethods\n```\n**Sources:**\n[src/mcp/server/fastmcp/utilities/context_injection.py](.)\n,\n[src/mcp/shared/context.py](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 36,
+      "char_count": 1364,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808953"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:11",
+    "content": "FastMCP integrates with multiple transport protocols by generating transport-specific ASGI applications that wrap the core MCP server functionality.\n```\ngraph TB\n    subgraph \"Transport Applications\"\n        StdioApp[\"run_stdio_async<br/>Direct Process Communication\"]\n        SSEApp[\"sse_app<br/>Starlette ASGI Application\"]\n        StreamableApp[\"streamable_http_app<br/>Session-based HTTP\"]\n    end\n    \n    subgraph \"Transport Components\"\n        StdioServer[\"stdio_server<br/>Stream Handler\"]\n        SseTransport[\"SseServerTransport<br/>SSE Protocol Handler\"]\n        SessionManager[\"StreamableHTTPSessionManager<br/>Session Management\"]\n    end\n    \n    subgraph \"Protocol Handlers\"\n        MCPServerCore[\"MCPServer.run<br/>Core Protocol Loop\"]\n        RequestHandling[\"MCP Request Processing<br/>JSON-RPC over Transport\"]\n        ResponseHandling[\"MCP Response Generation<br/>Protocol Compliance\"]\n    end\n    \n    StdioApp --> StdioServer\n    SSEApp --> SseTransport\n    StreamableApp --> SessionManager\n    \n    StdioServer --> MCPServerCore\n    SseTransport --> MCPServerCore\n    SessionManager --> MCPServerCore\n    \n    MCPServerCore --> RequestHandling\n    RequestHandling --> ResponseHandling\n```\n**Sources:**\n[src/mcp/server/fastmcp/server.py:687-725](.)\n,\n[src/mcp/server/fastmcp/server.py:752-884](.)\n,\n[src/mcp/server/fastmcp/server.py:885-984](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 36,
+      "char_count": 1366,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808959"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:12",
+    "content": "Each transport type requires different ASGI application structure:\n1. **stdio** : Direct async function for process communication\n2. **SSE** : Starlette app with GET/POST endpoints and optional authentication\n3. **StreamableHTTP** : Session-managed app with resumable connections\nThe\n```\nFastMCP\n```\nclass generates these applications on-demand, configuring middleware, authentication, and routing based on server settings.\n**Sources:**\n[src/mcp/server/fastmcp/server.py:752-883](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 36,
+      "char_count": 482,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808964"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:13",
+    "content": "The following diagram shows how requests flow through the FastMCP architecture from transport to function execution:\n```\nsequenceDiagram\n    participant Transport as \"Transport Layer\"\n    participant MCPServer as \"MCPServer\"\n    participant FastMCP as \"FastMCP\"\n    participant Manager as \"Manager\"\n    participant FuncMeta as \"func_metadata\"\n    participant UserFunc as \"User Function\"\n    \n    Transport->>MCPServer: \"JSON-RPC Request\"\n    MCPServer->>FastMCP: \"call_tool/read_resource/get_prompt\"\n    FastMCP->>Manager: \"call_tool/get_resource/get_prompt\"\n    Manager->>FuncMeta: \"call_fn_with_arg_validation\"\n    \n    FuncMeta->>FuncMeta: \"pre_parse_json\"\n    FuncMeta->>FuncMeta: \"model_validate (ArgModel)\"\n    FuncMeta->>UserFunc: \"Function Call + Context Injection\"\n    UserFunc->>FuncMeta: \"Return Value\"\n    \n    FuncMeta->>FuncMeta: \"convert_result\"\n    FuncMeta->>Manager: \"ContentBlock[] + Structured Output\"\n    Manager->>FastMCP: \"Tool/Resource/Prompt Result\"\n    FastMCP->>MCPServer: \"MCP Response Object\"\n    MCPServer->>Transport: \"JSON-RPC Response\"\n```\n**Sources:**\n[src/mcp/server/fastmcp/server.py:308-312](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:68-89](.)\nThis architecture enables FastMCP to provide a high-level, decorator-based interface while maintaining full compatibility with the MCP protocol and supporting multiple transport mechanisms.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 13,
+      "total_chunks": 36,
+      "char_count": 1384,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808970"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:14",
+    "content": "FastMCP's tool management system enables developers to register Python functions as MCP tools using the\n```\n@tool\n```\ndecorator and execute them through the\n```\nToolManager\n```\n. The system automatically handles argument validation, context injection, and structured output generation.\nThe tool management system consists of three main components: the\n```\nToolManager\n```\nfor centralized tool registration and execution, the\n```\nTool\n```\nclass for wrapping functions with metadata, and the\n```\nFuncMetadata\n```\nsystem for function introspection and validation.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 14,
+      "total_chunks": 36,
+      "char_count": 560,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808976"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:15",
+    "content": "Tools are registered using the\n```\n@tool\n```\ndecorator, which automatically converts Python functions into MCP tools. The decorator analyzes function signatures, creates validation schemas, and registers the tool with the\n```\nToolManager\n```\n.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 15,
+      "total_chunks": 36,
+      "char_count": 243,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808982"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:16",
+    "content": "```\nflowchart TD\n    decorator[\"@app.tool\"] --> add_tool[\"ToolManager.add_tool()\"]\n    add_tool --> Tool_from_function[\"Tool.from_function()\"]\n    \n    Tool_from_function --> func_metadata_call[\"func_metadata()\"]\n    Tool_from_function --> context_detection[\"find_context_parameter()\"]\n    \n    func_metadata_call --> FuncMetadata[\"FuncMetadata\"]\n    context_detection --> context_kwarg[\"context_kwarg\"]\n    \n    FuncMetadata --> arg_model[\"ArgModelBase\"]\n    FuncMetadata --> output_schema[\"output_schema\"]\n    FuncMetadata --> parameters[\"JSON Schema\"]\n    \n    arg_model --> Tool[\"Tool instance\"]\n    output_schema --> Tool\n    parameters --> Tool\n    context_kwarg --> Tool\n    \n    Tool --> registration[\"Store in ToolManager._tools\"]\n```\nSources:\n[src/mcp/server/fastmcp/tools/tool_manager.py:45-71](.)\n,\n[src/mcp/server/fastmcp/tools/base.py:42-84](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 16,
+      "total_chunks": 36,
+      "char_count": 858,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808987"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:17",
+    "content": "The\n```\nfunc_metadata()\n```\nfunction performs deep introspection of Python functions to extract type information and create validation models.\n```\nflowchart TD\n    PythonFunc[\"Python Function\"] --> func_metadata[\"func_metadata()\"]\n    func_metadata --> FuncMetadata[\"FuncMetadata\"]\n    \n    FuncMetadata --> arg_model[\"arg_model: ArgModelBase\"]\n    FuncMetadata --> output_schema[\"output_schema: dict | None\"]\n    FuncMetadata --> output_model[\"output_model: BaseModel | None\"]\n    FuncMetadata --> wrap_output[\"wrap_output: bool\"]\n    \n    arg_model --> call_fn_with_arg_validation[\"call_fn_with_arg_validation()\"]\n    output_schema --> convert_result[\"convert_result()\"]\n```\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:166-207](.)\nThe\n```\nfunc_metadata()\n```\nfunction performs deep introspection of Python functions to create a\n```\nFuncMetadata\n```\nobject containing:\n- **arg_model** : A Pydantic model representing function arguments with validation\n- **output_schema** : JSON schema for structured output (if enabled)\n- **output_model** : Pydantic model for return type validation\n- **wrap_output** : Whether to wrap primitive returns in `{\"result\": value}`",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 17,
+      "total_chunks": 36,
+      "char_count": 1177,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808993"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:18",
+    "content": "The\n```\nFuncMetadata.call_fn_with_arg_validation()\n```\nmethod processes raw arguments through validation and type conversion before function execution.\n```\nflowchart LR\n    RawArgs[\"Raw Arguments\\n{\\\"key\\\": \\\"value\\\"}\"] --> pre_parse_json[\"pre_parse_json()\"]\n    pre_parse_json --> ParsedArgs[\"Parsed Arguments\\n{\\\"key\\\": parsed_value}\"]\n    ParsedArgs --> model_validate[\"arg_model.model_validate()\"]\n    model_validate --> ValidatedModel[\"ArgModelBase instance\"]\n    ValidatedModel --> model_dump_one_level[\"model_dump_one_level()\"]\n    model_dump_one_level --> FunctionKwargs[\"Function kwargs\\nready for execution\"]\n```\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:68-89](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:121-159](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:44-55](.)\n**Argument Processing Features:**\n```\npre_parse_json()\n```\n```\n\"[1,2,3]\"\n```\n→\n```\n[1,2,3]\n```\n```\narg_model.model_validate()\n```\n```\nstr\n```\nparameter rejects\n```\nint\n```\n```\nmodel_dump_one_level()\n```\n```\nField()\n```\n```\nBaseModel\n```\n,\n```\nTypedDict\n```\nJSON Pre-parsing, Implementation = . JSON Pre-parsing, Purpose = . JSON Pre-parsing, Example = \n**JSON Pre-parsing Logic:**\nThe\n```\npre_parse_json()\n```\nmethod handles cases where MCP clients send complex data as JSON strings instead of native types:\n```\nflowchart TD\n    input_data[\"Input data\"] --> check_value{\"Value is string AND\\nfield type is not str?\"}\n    check_value -->|No| keep_original[\"Keep original value\"]\n    check_value -->|Yes| try_json_parse[\"json.loads(value)\"]\n    try_json_parse --> parse_success{\"Parse successful?\"}\n    parse_success -->|No| keep_original\n    parse_success -->|Yes| check_primitive{\"Result is primitive\\n(str, int, float)?\"}\n    check_primitive -->|Yes| keep_original[\"Keep original string\"]\n    check_primitive -->|No| use_parsed[\"Use parsed object\"]\n```\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:121-159](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 18,
+      "total_chunks": 36,
+      "char_count": 1946,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.808998"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:19",
+    "content": "Tools are registered through the\n```\nTool\n```\nclass and the\n```\n@mcp.tool\n```\ndecorator, which provides a high-level interface for function-to-tool conversion.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 19,
+      "total_chunks": 36,
+      "char_count": 159,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809005"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:20",
+    "content": "The\n```\nTool\n```\nclass encapsulates all information needed to execute a function as an MCP tool, including metadata, validation models, and execution logic.\n```\nclassDiagram\n    class ToolManager {\n        +_tools: dict[str, Tool]\n        +warn_on_duplicate_tools: bool\n        +add_tool(fn) Tool\n        +get_tool(name) Tool\n        +list_tools() list[Tool]\n        +call_tool(name, args) Any\n    }\n    \n    class Tool {\n        +fn: Callable\n        +name: str\n        +title: str | None\n        +description: str\n        +parameters: dict\n        +fn_metadata: FuncMetadata\n        +is_async: bool\n        +context_kwarg: str | None\n        +annotations: ToolAnnotations\n        +from_function() Tool\n        +run(arguments, context) Any\n    }\n    \n    class FuncMetadata {\n        +arg_model: type[ArgModelBase]\n        +output_schema: dict | None\n        +output_model: type[BaseModel] | None\n        +wrap_output: bool\n        +call_fn_with_arg_validation()\n        +convert_result()\n        +pre_parse_json()\n    }\n    \n    class ArgModelBase {\n        +model_dump_one_level() dict\n        +model_config: ConfigDict\n    }\n    \n    ToolManager --> Tool : manages\n    Tool --> FuncMetadata : contains\n    FuncMetadata --> ArgModelBase : creates\n```\nSources:\n[src/mcp/server/fastmcp/tools/tool_manager.py:19-35](.)\n,\n[src/mcp/server/fastmcp/tools/base.py:22-39](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:62-66](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 20,
+      "total_chunks": 36,
+      "char_count": 1431,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809010"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:21",
+    "content": "The\n```\nTool.from_function()\n```\nmethod creates a\n```\nTool\n```\ninstance from a Python function by extracting metadata and creating validation schemas.\n```\nflowchart TD\n    fn[\"Python Function\"] --> from_function[\"Tool.from_function()\"]\n    from_function --> extract_name[\"Extract function name\"]\n    from_function --> extract_doc[\"Extract docstring\"]\n    from_function --> is_async_check[\"_is_async_callable()\"]\n    from_function --> find_context[\"find_context_parameter()\"]\n    from_function --> func_metadata_call[\"func_metadata()\"]\n    \n    extract_name --> func_name[\"name: str\"]\n    extract_doc --> func_doc[\"description: str\"]\n    is_async_check --> is_async[\"is_async: bool\"]\n    find_context --> context_kwarg[\"context_kwarg: str | None\"]\n    func_metadata_call --> func_arg_metadata[\"FuncMetadata\"]\n    \n    func_arg_metadata --> parameters[\"parameters: dict\"]\n    \n    func_name --> Tool_instance[\"Tool()\"]\n    func_doc --> Tool_instance\n    is_async --> Tool_instance\n    context_kwarg --> Tool_instance\n    func_arg_metadata --> Tool_instance\n    parameters --> Tool_instance\n```\nSources:\n[src/mcp/server/fastmcp/tools/base.py:42-84](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 21,
+      "total_chunks": 36,
+      "char_count": 1148,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809016"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:22",
+    "content": "The system automatically detects\n```\nContext\n```\nparameters in function signatures and excludes them from the tool schema while injecting them during execution.\n**Context Detection in find_context_parameter():**\n```\nflowchart TD\n    function_signature[\"Function Signature\"] --> find_context_parameter[\"find_context_parameter()\"]\n    find_context_parameter --> scan_params[\"Scan parameters\"]\n    scan_params --> check_annotation[\"Check param.annotation\"]\n    check_annotation --> is_context_type{\"Type is Context?\"}\n    is_context_type -->|Yes| return_param_name[\"return param.name\"]\n    is_context_type -->|No| continue_scan[\"Continue scanning\"]\n    continue_scan --> next_param[\"Next parameter\"]\n    next_param --> check_annotation\n    return_param_name --> context_kwarg[\"context_kwarg: str\"]\n```\n**Context Injection During Execution:**\n```\nflowchart TD\n    tool_run[\"Tool.run()\"] --> has_context_kwarg{\"self.context_kwarg is not None?\"}\n    has_context_kwarg -->|Yes| create_context_dict[\"{self.context_kwarg: context}\"]\n    has_context_kwarg -->|No| no_context_args[\"arguments_to_pass_directly = None\"]\n    create_context_dict --> call_with_context[\"call_fn_with_arg_validation(..., arguments_to_pass_directly)\"]\n    no_context_args --> call_with_context\n    call_with_context --> function_call[\"fn(**validated_args, **context_args)\"]\n```\nThe context parameter is excluded from the\n```\nfunc_metadata()\n```\ncall via the\n```\nskip_names\n```\nparameter and injected separately during execution.\nSources:\n[src/mcp/server/fastmcp/tools/base.py:63-69](.)\n,\n[src/mcp/server/fastmcp/tools/base.py:94-99](.)\n,\n[src/mcp/server/fastmcp/utilities/context_injection.py](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 22,
+      "total_chunks": 36,
+      "char_count": 1661,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809021"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:23",
+    "content": "Tool execution involves argument validation, context injection, and result conversion.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 23,
+      "total_chunks": 36,
+      "char_count": 86,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809026"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:24",
+    "content": "```\nsequenceDiagram\n    participant Client as \"MCP Client\"\n    participant ToolManager as \"ToolManager\"\n    participant Tool as \"Tool\"\n    participant FuncMetadata as \"FuncMetadata\"\n    participant ArgModelBase as \"ArgModelBase\"\n    participant Function as \"Python Function\"\n    \n    Client->>ToolManager: call_tool(\"sum\", {\"a\": 1, \"b\": 2})\n    ToolManager->>ToolManager: get_tool(\"sum\")\n    ToolManager->>Tool: run(arguments, context)\n    Tool->>FuncMetadata: call_fn_with_arg_validation()\n    \n    FuncMetadata->>FuncMetadata: pre_parse_json(arguments)\n    FuncMetadata->>ArgModelBase: model_validate(parsed_args)\n    ArgModelBase-->>FuncMetadata: validated_model\n    FuncMetadata->>ArgModelBase: model_dump_one_level()\n    ArgModelBase-->>FuncMetadata: function_kwargs\n    FuncMetadata->>Function: fn(**function_kwargs, **context_args)\n    Function-->>FuncMetadata: result\n    \n    alt convert_result=True\n        FuncMetadata->>FuncMetadata: convert_result(result)\n        FuncMetadata-->>Tool: (unstructured_content, structured_content)\n    else\n        FuncMetadata-->>Tool: result\n    end\n    \n    Tool-->>ToolManager: result\n    ToolManager-->>Client: result\n```\nSources:\n[src/mcp/server/fastmcp/tools/tool_manager.py:73-85](.)\n,\n[src/mcp/server/fastmcp/tools/base.py:86-106](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:68-89](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 24,
+      "total_chunks": 36,
+      "char_count": 1349,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809032"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:25",
+    "content": "Tool execution wraps exceptions in\n```\nToolError\n```\nfor consistent error reporting:\n```\ntry:\n    result = await self.fn_metadata.call_fn_with_arg_validation(\n        self.fn,\n        self.is_async,\n        arguments,\n        {self.context_kwarg: context} if self.context_kwarg is not None else None,\n    )\n    \n    if convert_result:\n        result = self.fn_metadata.convert_result(result)\n    \n    return result\nexcept Exception as e:\n    raise ToolError(f\"Error executing tool {self.name}: {e}\") from e\n```\nSources:\n[src/mcp/server/fastmcp/tools/base.py:97-110](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 25,
+      "total_chunks": 36,
+      "char_count": 568,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809040"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:26",
+    "content": "The\n```\nToolManager\n```\nclass provides centralized registration, retrieval, and execution of tools. It maintains a registry of\n```\nTool\n```\ninstances and handles tool lifecycle management.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 26,
+      "total_chunks": 36,
+      "char_count": 188,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809046"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:27",
+    "content": "```\nflowchart TD\n    ToolManager[\"ToolManager\"] --> _tools[\"_tools: dict[str, Tool]\"]\n    ToolManager --> warn_on_duplicate_tools[\"warn_on_duplicate_tools: bool\"]\n    \n    add_tool[\"add_tool()\"] --> Tool_from_function[\"Tool.from_function()\"]\n    Tool_from_function --> check_existing[\"Check existing tool\"]\n    check_existing --> warn_duplicate[\"Warn if duplicate\"]\n    check_existing --> store_tool[\"_tools[tool.name] = tool\"]\n    \n    get_tool[\"get_tool(name)\"] --> lookup[\"_tools.get(name)\"]\n    list_tools[\"list_tools()\"] --> values[\"list(_tools.values())\"]\n    call_tool[\"call_tool(name, args)\"] --> get_tool\n    get_tool --> tool_run[\"tool.run(args, context)\"]\n```\nSources:\n[src/mcp/server/fastmcp/tools/tool_manager.py:19-35](.)\n,\n[src/mcp/server/fastmcp/tools/tool_manager.py:45-85](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 27,
+      "total_chunks": 36,
+      "char_count": 793,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809052"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:28",
+    "content": "```\nadd_tool()\n```\n```\nfn\n```\n,\n```\nname\n```\n,\n```\ntitle\n```\n,\n```\ndescription\n```\n,\n```\nannotations\n```\n,\n```\nicons\n```\n,\n```\nstructured_output\n```\n```\nTool\n```\n```\nget_tool()\n```\n```\nname: str\n```\n```\nTool \\| None\n```\n```\nlist_tools()\n```\n```\nlist[Tool]\n```\n```\ncall_tool()\n```\n```\nname\n```\n,\n```\narguments\n```\n,\n```\ncontext\n```\n,\n```\nconvert_result\n```\n```\nAny\n```\n, Purpose = . , Parameters = . , Return Type = \nSources:\n[src/mcp/server/fastmcp/tools/tool_manager.py:37-85](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 28,
+      "total_chunks": 36,
+      "char_count": 480,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809058"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:29",
+    "content": "```\nsequenceDiagram\n    participant Dev as \"Developer\"\n    participant Decorator as \"@tool decorator\"\n    participant ToolManager as \"ToolManager\"\n    participant Tool as \"Tool\"\n    participant FuncMetadata as \"FuncMetadata\"\n    \n    Dev->>Decorator: @app.tool def my_tool(x: int)\n    Decorator->>ToolManager: add_tool(my_tool)\n    ToolManager->>Tool: Tool.from_function(my_tool)\n    Tool->>FuncMetadata: func_metadata(my_tool)\n    FuncMetadata-->>Tool: metadata with ArgModelBase\n    Tool-->>ToolManager: Tool instance\n    ToolManager->>ToolManager: _tools[\"my_tool\"] = tool\n    ToolManager-->>Decorator: Tool instance\n```\nSources:\n[src/mcp/server/fastmcp/tools/tool_manager.py:45-71](.)\n,\n[src/mcp/server/fastmcp/tools/base.py:42-84](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 29,
+      "total_chunks": 36,
+      "char_count": 738,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809063"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:30",
+    "content": "Tools can return structured output with automatic schema generation and validation.",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 30,
+      "total_chunks": 36,
+      "char_count": 83,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809069"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:31",
+    "content": "```\nflowchart TD\n    ReturnType[\"Function Return Type\"] --> BaseModel[\"BaseModel\"]\n    ReturnType --> Primitive[\"Primitive Types\\n(str, int, float, bool)\"]\n    ReturnType --> Generic[\"Generic Types\\n(list, dict, Union)\"]\n    ReturnType --> TypedDict[\"TypedDict\"]\n    ReturnType --> Dataclass[\"@dataclass\"]\n    ReturnType --> RegularClass[\"Regular Class\\nwith annotations\"]\n    \n    BaseModel --> DirectUse[\"Use directly as schema\"]\n    Primitive --> Wrapped[\"Wrap in {\\\"result\\\": value}\"]\n    Generic --> Wrapped\n    TypedDict --> Convert[\"Convert to Pydantic model\"]\n    Dataclass --> Convert\n    RegularClass --> Convert\n    \n    DirectUse --> Schema[\"JSON Schema\"]\n    Wrapped --> Schema\n    Convert --> Schema\n```\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:287-371](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:425-449](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 31,
+      "total_chunks": 36,
+      "char_count": 854,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809074"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:32",
+    "content": "The\n```\nconvert_result()\n```\nmethod handles both unstructured and structured output:\n**Dual Output Generation:**\n```\nflowchart TD\n    result[\"Function Result\"] --> convert_to_content[\"_convert_to_content(result)\"]\n    convert_to_content --> unstructured[\"Unstructured Content\\n(TextContent, etc.)\"]\n    \n    result --> has_schema{\"output_schema exists?\"}\n    has_schema -->|No| return_unstructured[\"Return unstructured only\"]\n    has_schema -->|Yes| check_wrap{\"wrap_output?\"}\n    \n    check_wrap -->|Yes| wrap_result[\"result = {'result': result}\"]\n    check_wrap -->|No| use_direct[\"Use result directly\"]\n    \n    wrap_result --> validate[\"output_model.model_validate()\"]\n    use_direct --> validate\n    validate --> dump[\"model_dump(mode='json', by_alias=True)\"]\n    dump --> structured[\"Structured Content\\n(dict)\"]\n    \n    unstructured --> tuple_result[\"(unstructured, structured)\"]\n    structured --> tuple_result\n```\n**Content Conversion Logic:**\n- **Unstructured** : Converts results to `ContentBlock` sequences (text, image, audio)\n- **Structured** : Validates against output schema and serializes to JSON-compatible dict\n- **Return** : Tuple of both formats for backwards compatibility\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:91-119](.)\n,\n[src/mcp/server/fastmcp/utilities/func_metadata.py:489-524](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 32,
+      "total_chunks": 36,
+      "char_count": 1331,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809079"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:33",
+    "content": "The system handles conflicts with Pydantic\n```\nBaseModel\n```\nmethods by using aliases:\n```\ndef tool(model_dump: str, validate: bool) -> str:\n    # Parameters conflict with BaseModel methods\n    # System automatically creates aliases\n```\n**Alias Resolution Process:**\n```\nflowchart TD\n    param_name[\"Parameter Name\"] --> check_conflict{\"hasattr(BaseModel, name) &&\\ncallable(getattr(BaseModel, name))?\"}\n    check_conflict -->|No| use_direct[\"Use parameter name directly\"]\n    check_conflict -->|Yes| create_alias[\"Create alias mapping\"]\n    \n    create_alias --> set_aliases[\"field_info.alias = param_name\\nfield_info.validation_alias = param_name\\nfield_info.serialization_alias = param_name\"]\n    set_aliases --> internal_name[\"internal_name = f'field_{param_name}'\"]\n    internal_name --> store_internal[\"Store with internal name in model\"]\n    \n    use_direct --> store_direct[\"Store with original name\"]\n```\nThis prevents Pydantic warnings about shadowing parent attributes while maintaining the original parameter names in the external API.\nSources:\n[src/mcp/server/fastmcp/utilities/func_metadata.py:240-252](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 33,
+      "total_chunks": 36,
+      "char_count": 1119,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809085"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:34",
+    "content": "Both sync and async functions are supported with automatic detection:\n```\ndef _is_async_callable(obj: Any) -> bool:\n    while isinstance(obj, functools.partial):\n        obj = obj.func\n    \n    return inspect.iscoroutinefunction(obj) or (\n        callable(obj) and inspect.iscoroutinefunction(getattr(obj, \"__call__\", None))\n    )\n```\nSources:\n[src/mcp/server/fastmcp/tools/base.py:113-119](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 34,
+      "total_chunks": 36,
+      "char_count": 393,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809090"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:FastMCP_Server_Architecture:chunk:35",
+    "content": "Tools support optional metadata through\n```\nToolAnnotations\n```\n:\n- `title` : Human-readable title\n- `readOnlyHint` : Indicates read-only operations\n- `openWorldHint` : Indicates open-world assumptions\nSources:\n[src/mcp/server/fastmcp/tools/base.py:34](.)",
+    "metadata": {
+      "source": "python-sdk\\FastMCP_Server_Architecture.md",
+      "file_name": "FastMCP_Server_Architecture.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 35,
+      "total_chunks": 36,
+      "char_count": 255,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:17.809096"
+    }
+  }
+]

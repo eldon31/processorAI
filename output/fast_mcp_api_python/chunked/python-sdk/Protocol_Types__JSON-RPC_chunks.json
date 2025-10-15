@@ -1,0 +1,782 @@
+[
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:0",
+    "content": "This document covers the core protocol type definitions and JSON-RPC message handling that form the foundation of the Model Context Protocol (MCP) Python SDK. It explains the type system defined in\n```\nmcp.types\n```\n, JSON-RPC message structure, and how these types enable protocol compliance and message validation.\nFor information about session management and bidirectional communication patterns, see\n[Session Management](#4.2)\n. For transport-level message handling, see\n[Transport Layer](#5)\n.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 0,
+      "total_chunks": 52,
+      "char_count": 498,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024786"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:1",
+    "content": "The MCP protocol is built on JSON-RPC 2.0, with all communication following JSON-RPC message patterns. The SDK defines base message types that all protocol messages inherit from.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 1,
+      "total_chunks": 52,
+      "char_count": 178,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024802"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:2",
+    "content": "```\ngraph TB\n    subgraph \"JSON-RPC Message Types\"\n        JSONRPCRequest[\"JSONRPCRequest<br/>id, method, params\"]\n        JSONRPCNotification[\"JSONRPCNotification<br/>method, params\"]\n        JSONRPCResponse[\"JSONRPCResponse<br/>id, result\"]\n        JSONRPCError[\"JSONRPCError<br/>id, error\"]\n        JSONRPCMessage[\"JSONRPCMessage<br/>Union of all message types\"]\n    end\n    \n    subgraph \"Base Protocol Types\"\n        Request[\"Request[RequestParamsT, MethodT]<br/>Generic request base\"]\n        Notification[\"Notification[NotificationParamsT, MethodT]<br/>Generic notification base\"]\n        Result[\"Result<br/>Base response type\"]\n        ErrorData[\"ErrorData<br/>code, message, data\"]\n    end\n    \n    subgraph \"Protocol Parameters\"\n        RequestParams[\"RequestParams<br/>_meta field\"]\n        NotificationParams[\"NotificationParams<br/>_meta field\"]\n        PaginatedRequestParams[\"PaginatedRequestParams<br/>cursor field\"]\n    end\n    \n    JSONRPCRequest --> Request\n    JSONRPCNotification --> Notification\n    JSONRPCResponse --> Result\n    JSONRPCError --> ErrorData\n    \n    Request --> RequestParams\n    Notification --> NotificationParams\n    PaginatedRequestParams --> RequestParams\n    \n    JSONRPCMessage --> JSONRPCRequest\n    JSONRPCMessage --> JSONRPCNotification\n    JSONRPCMessage --> JSONRPCResponse\n    JSONRPCMessage --> JSONRPCError\n```\n**Sources:**\n[src/mcp/types.py:124-192](.)\nThe\n```\nJSONRPCMessage\n```\nunion type allows the system to handle any valid JSON-RPC message, while the generic\n```\nRequest\n```\nand\n```\nNotification\n```\nbase classes provide type-safe parameter handling for specific MCP protocol messages.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 2,
+      "total_chunks": 52,
+      "char_count": 1646,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024809"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:3",
+    "content": "All MCP messages support a\n```\n_meta\n```\nfield for protocol-level metadata, including progress tokens for long-running operations:\n```\nRequestParams.Meta.progressToken\n```\n```\nProgressToken\n```\n```\nResult.meta\n```\n```\ndict[str, Any]\n```\n```\nNotificationParams.Meta\n```\n```\nBaseModel\n```\n, Type = . , Purpose = \n**Sources:**\n[src/mcp/types.py:43-75](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 3,
+      "total_chunks": 52,
+      "char_count": 351,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024814"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:4",
+    "content": "The MCP protocol defines specific message types for each capability, organized into client requests, server requests, and bidirectional notifications.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 4,
+      "total_chunks": 52,
+      "char_count": 150,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024821"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:5",
+    "content": "```\ngraph TB\n    subgraph \"Client to Server Requests\"\n        InitializeRequest[\"InitializeRequest<br/>initialize\"]\n        ListToolsRequest[\"ListToolsRequest<br/>tools/list\"]\n        CallToolRequest[\"CallToolRequest<br/>tools/call\"]\n        ListResourcesRequest[\"ListResourcesRequest<br/>resources/list\"]\n        ReadResourceRequest[\"ReadResourceRequest<br/>resources/read\"]\n        ListPromptsRequest[\"ListPromptsRequest<br/>prompts/list\"]\n        GetPromptRequest[\"GetPromptRequest<br/>prompts/get\"]\n        CompleteRequest[\"CompleteRequest<br/>completion/complete\"]\n        SetLevelRequest[\"SetLevelRequest<br/>logging/setLevel\"]\n        PingRequest[\"PingRequest<br/>ping\"]\n    end\n    \n    subgraph \"Server to Client Requests\"\n        CreateMessageRequest[\"CreateMessageRequest<br/>sampling/createMessage\"]\n        ListRootsRequest[\"ListRootsRequest<br/>roots/list\"]\n        ElicitRequest[\"ElicitRequest<br/>elicitation/create\"]\n    end\n    \n    subgraph \"Bidirectional Notifications\"\n        ProgressNotification[\"ProgressNotification<br/>notifications/progress\"]\n        CancelledNotification[\"CancelledNotification<br/>notifications/cancelled\"]\n        LoggingMessageNotification[\"LoggingMessageNotification<br/>notifications/message\"]\n        InitializedNotification[\"InitializedNotification<br/>notifications/initialized\"]\n    end\n    \n    subgraph \"Server Notifications\"\n        ResourceUpdatedNotification[\"ResourceUpdatedNotification<br/>notifications/resources/updated\"]\n        ResourceListChangedNotification[\"ResourceListChangedNotification<br/>notifications/resources/list_changed\"]\n        ToolListChangedNotification[\"ToolListChangedNotification<br/>notifications/tools/list_changed\"]\n        PromptListChangedNotification[\"PromptListChangedNotification<br/>notifications/prompts/list_changed\"]\n        RootsListChangedNotification[\"RootsListChangedNotification<br/>notifications/roots/list_changed\"]\n    end\n```\n**Sources:**\n[src/mcp/types.py:248-1349](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 5,
+      "total_chunks": 52,
+      "char_count": 1976,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024828"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:6",
+    "content": "The protocol defines entity types that represent the primary MCP capabilities:\n```\ngraph TB\n    subgraph \"Entity Definitions\"\n        Tool[\"Tool<br/>name, description, inputSchema, outputSchema\"]\n        Resource[\"Resource<br/>uri, name, description, mimeType\"]\n        ResourceTemplate[\"ResourceTemplate<br/>uriTemplate, name, description\"]\n        Prompt[\"Prompt<br/>name, description, arguments\"]\n        Root[\"Root<br/>uri, name\"]\n    end\n    \n    subgraph \"Supporting Types\"\n        PromptArgument[\"PromptArgument<br/>name, description, required\"]\n        ToolAnnotations[\"ToolAnnotations<br/>title, readOnlyHint, destructiveHint\"]\n        Icon[\"Icon<br/>src, mimeType, sizes\"]\n        Annotations[\"Annotations<br/>audience, priority\"]\n    end\n    \n    subgraph \"Content Types\"\n        TextContent[\"TextContent<br/>type: 'text', text\"]\n        ImageContent[\"ImageContent<br/>type: 'image', data, mimeType\"]\n        AudioContent[\"AudioContent<br/>type: 'audio', data, mimeType\"]\n        EmbeddedResource[\"EmbeddedResource<br/>type: 'resource', resource\"]\n        ResourceLink[\"ResourceLink<br/>type: 'resource_link'\"]\n    end\n    \n    Tool --> ToolAnnotations\n    Tool --> Icon\n    Resource --> Icon\n    Resource --> Annotations\n    Prompt --> PromptArgument\n    Prompt --> Icon\n    \n    ContentBlock[\"ContentBlock<br/>Union of content types\"] --> TextContent\n    ContentBlock --> ImageContent\n    ContentBlock --> AudioContent\n    ContentBlock --> EmbeddedResource\n    ContentBlock --> ResourceLink\n```\n**Sources:**\n[src/mcp/types.py:425-890](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 6,
+      "total_chunks": 52,
+      "char_count": 1550,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024833"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:7",
+    "content": "MCP follows specific request/response and notification patterns that define how clients and servers communicate.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 7,
+      "total_chunks": 52,
+      "char_count": 112,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024839"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:8",
+    "content": "```\nsequenceDiagram\n    participant Client as \"Client<br/>(ClientSession)\"\n    participant Transport as \"Transport Layer\"\n    participant Server as \"Server<br/>(request_handlers)\"\n    \n    Note over Client,Server: Standard Request/Response\n    Client->>Transport: JSONRPCRequest\n    Transport->>Server: Request[params, method]\n    Server->>Server: Handler processes request\n    Server->>Transport: ServerResult[response]\n    Transport->>Client: JSONRPCResponse\n    \n    Note over Client,Server: Error Handling\n    Client->>Transport: JSONRPCRequest\n    Transport->>Server: Request[params, method]\n    Server->>Server: Handler throws exception\n    Server->>Transport: ErrorData[code, message]\n    Transport->>Client: JSONRPCError\n    \n    Note over Client,Server: Progress Notifications\n    Client->>Transport: Request with progressToken\n    Transport->>Server: Request[meta.progressToken]\n    Server->>Transport: ProgressNotification\n    Transport->>Client: Notification (out-of-band)\n    Server->>Transport: ServerResult[response]\n    Transport->>Client: JSONRPCResponse\n```\n**Sources:**\n[src/mcp/server/lowlevel/server.py:598-714](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 8,
+      "total_chunks": 52,
+      "char_count": 1135,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024844"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:9",
+    "content": "The low-level server processes messages through a type-safe dispatch system:\n```\ngraph TB\n    subgraph \"Message Reception\"\n        IncomingMessage[\"SessionMessage | Exception\"]\n        MessageDispatch[\"_handle_message\"]\n    end\n    \n    subgraph \"Request Processing\"\n        RequestResponder[\"RequestResponder[ClientRequest, ServerResult]\"]\n        RequestContext[\"RequestContext<br/>request_id, session, lifespan_context\"]\n        RequestHandler[\"request_handlers[type(req)]\"]\n    end\n    \n    subgraph \"Notification Processing\"\n        ClientNotification[\"ClientNotification\"]\n        NotificationHandler[\"notification_handlers[type(notify)]\"]\n    end\n    \n    subgraph \"Response Generation\"\n        ServerResult[\"ServerResult[response]\"]\n        ErrorData[\"ErrorData[code, message]\"]\n        ResponseSend[\"responder.respond()\"]\n    end\n    \n    IncomingMessage --> MessageDispatch\n    MessageDispatch --> RequestResponder\n    MessageDispatch --> ClientNotification\n    \n    RequestResponder --> RequestContext\n    RequestContext --> RequestHandler\n    RequestHandler --> ServerResult\n    RequestHandler --> ErrorData\n    \n    ClientNotification --> NotificationHandler\n    \n    ServerResult --> ResponseSend\n    ErrorData --> ResponseSend\n```\n**Sources:**\n[src/mcp/server/lowlevel/server.py:637-714](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 9,
+      "total_chunks": 52,
+      "char_count": 1305,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024850"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:10",
+    "content": "The MCP type system ensures protocol compliance through Pydantic model validation and structured message handling.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 10,
+      "total_chunks": 52,
+      "char_count": 114,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024856"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:11",
+    "content": "The SDK supports protocol versioning with negotiation between client and server:\n```\nLATEST_PROTOCOL_VERSION\n```\n```\n\"2025-06-18\"\n```\n```\nDEFAULT_NEGOTIATED_VERSION\n```\n```\n\"2025-03-26\"\n```\n, Value = . , Purpose = \n**Sources:**\n[src/mcp/types.py:26-34](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 11,
+      "total_chunks": 52,
+      "char_count": 255,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024862"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:12",
+    "content": "Protocol messages use Pydantic\n```\nRootModel\n```\nunions for type-safe message routing:\n```\ngraph TB\n    subgraph \"Message Union Types\"\n        ClientRequest[\"ClientRequest<br/>Union of all client→server requests\"]\n        ClientNotification[\"ClientNotification<br/>Union of client notifications\"]\n        ServerRequest[\"ServerRequest<br/>Union of server→client requests\"]\n        ServerNotification[\"ServerNotification<br/>Union of server notifications\"]\n        ServerResult[\"ServerResult<br/>Union of all response types\"]\n        ClientResult[\"ClientResult<br/>Union of client response types\"]\n    end\n    \n    subgraph \"Specific Message Types\"\n        ListToolsRequest --> ClientRequest\n        CallToolRequest --> ClientRequest\n        InitializedNotification --> ClientNotification\n        CreateMessageRequest --> ServerRequest\n        LoggingMessageNotification --> ServerNotification\n        CallToolResult --> ServerResult\n        ElicitResult --> ClientResult\n    end\n    \n    subgraph \"Runtime Dispatch\"\n        MessageType[\"type(message)\"]\n        HandlerLookup[\"handlers[message_type]\"]\n        TypeSafeCall[\"handler(typed_params)\"]\n    end\n    \n    ClientRequest --> MessageType\n    MessageType --> HandlerLookup\n    HandlerLookup --> TypeSafeCall\n```\n**Sources:**\n[src/mcp/types.py:1248-1349](.)\n,\n[src/mcp/server/lowlevel/server.py:152-156](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 12,
+      "total_chunks": 52,
+      "char_count": 1359,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024868"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:13",
+    "content": "The protocol supports structured output validation for tools using JSON Schema:\n```\ngraph TB\n    subgraph \"Tool Definition\"\n        ToolDef[\"Tool<br/>inputSchema, outputSchema\"]\n        InputSchema[\"inputSchema: dict[str, Any]<br/>JSON Schema for parameters\"]\n        OutputSchema[\"outputSchema: dict[str, Any]<br/>JSON Schema for results\"]\n    end\n    \n    subgraph \"Runtime Validation\"\n        InputValidation[\"jsonschema.validate(arguments, inputSchema)\"]\n        ToolExecution[\"await func(name, arguments)\"]\n        OutputValidation[\"jsonschema.validate(structured_content, outputSchema)\"]\n    end\n    \n    subgraph \"Result Types\"\n        UnstructuredContent[\"list[ContentBlock]<br/>Human-readable content\"]\n        StructuredContent[\"dict[str, Any]<br/>Machine-readable data\"]\n        CallToolResult[\"CallToolResult<br/>content, structuredContent\"]\n    end\n    \n    ToolDef --> InputSchema\n    ToolDef --> OutputSchema\n    \n    InputSchema --> InputValidation\n    InputValidation --> ToolExecution\n    ToolExecution --> OutputValidation\n    OutputSchema --> OutputValidation\n    \n    ToolExecution --> UnstructuredContent\n    ToolExecution --> StructuredContent\n    UnstructuredContent --> CallToolResult\n    StructuredContent --> CallToolResult\n```\n**Sources:**\n[src/mcp/server/lowlevel/server.py:488-542](.)\nThe type system ensures that all protocol messages are validated against their schemas, enabling reliable communication and early error detection. This foundation supports the higher-level abstractions in FastMCP and client sessions while maintaining strict protocol compliance.\n**Sources:**\n[src/mcp/types.py:1-1349](.)\n,\n[src/mcp/server/lowlevel/server.py:465-547](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 13,
+      "total_chunks": 52,
+      "char_count": 1684,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024873"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:14",
+    "content": "Session management in the MCP Python SDK provides the foundational infrastructure for maintaining communication state between clients and servers. This system handles message correlation, request/response tracking, protocol initialization, and connection lifecycle management. For specific client-side session usage, see\n[ClientSession Core](#3.1)\n. For protocol message types and JSON-RPC implementation details, see\n[Protocol Types & JSON-RPC](#4.1)\n.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 14,
+      "total_chunks": 52,
+      "char_count": 453,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024879"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:15",
+    "content": "The\n```\nBaseSession\n```\nclass forms the core of MCP's session management system, providing message correlation, stream management, and request/response tracking for both client and server implementations.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 15,
+      "total_chunks": 52,
+      "char_count": 204,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024884"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:16",
+    "content": "```\ngraph TB\n    subgraph \"BaseSession Message Flow\"\n        IncomingStream[\"Incoming Message Stream<br/>MemoryObjectReceiveStream\"]\n        OutgoingStream[\"Outgoing Message Stream<br/>MemoryObjectSendStream\"]\n        \n        subgraph \"Request Tracking\"\n            InFlight[\"_in_flight<br/>Dict[RequestId, ResponseStream]\"]\n            ResponseStreams[\"_response_streams<br/>Dict[RequestId, Stream]\"]\n        end\n        \n        subgraph \"Message Processing\"\n            SendRequest[\"send_request()\"]\n            ReceiveLoop[\"_receive_loop()\"]\n            HandleResponse[\"_handle_response()\"]\n        end\n        \n        subgraph \"Correlation Logic\"\n            RequestId[\"Request ID Generation\"]\n            ResponseMatch[\"Response Matching\"]\n            StreamCleanup[\"Stream Cleanup\"]\n        end\n    end\n    \n    IncomingStream --> ReceiveLoop\n    ReceiveLoop --> HandleResponse\n    HandleResponse --> ResponseMatch\n    ResponseMatch --> InFlight\n    \n    SendRequest --> RequestId\n    SendRequest --> OutgoingStream\n    RequestId --> InFlight\n    InFlight --> ResponseStreams\n    \n    ResponseMatch --> StreamCleanup\n    StreamCleanup --> ResponseStreams\n```\nThe BaseSession maintains request correlation through a sophisticated tracking system that maps request IDs to response streams, ensuring that responses are delivered to the correct waiting coroutines even in highly concurrent scenarios.\nSources:\n[src/mcp/shared/session.py](.)\n,\n[tests/shared/test_session.py:36-46](.)\n,\n[tests/client/test_resource_cleanup.py:12-61](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 16,
+      "total_chunks": 52,
+      "char_count": 1538,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024890"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:17",
+    "content": "BaseSession manages memory object streams for bidirectional communication, with automatic cleanup to prevent resource leaks:\n```\ngraph LR\n    subgraph \"Stream Lifecycle\"\n        StreamCreate[\"Stream Creation<br/>create_memory_object_stream\"]\n        StreamAssign[\"Stream Assignment<br/>_response_streams[id]\"]\n        RequestSend[\"Request Transmission\"]\n        ResponseWait[\"await response\"]\n        StreamCleanup[\"Stream Cleanup<br/>del _response_streams[id]\"]\n        ErrorCleanup[\"Exception Cleanup<br/>finally block\"]\n    end\n    \n    StreamCreate --> StreamAssign\n    StreamAssign --> RequestSend\n    RequestSend --> ResponseWait\n    ResponseWait --> StreamCleanup\n    RequestSend --> ErrorCleanup\n    ErrorCleanup --> StreamCleanup\n```\nThe session ensures proper stream cleanup even when exceptions occur during request transmission, preventing memory leaks in long-running connections.\nSources:\n[tests/client/test_resource_cleanup.py:13-56](.)\n,\n[src/mcp/shared/session.py](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 17,
+      "total_chunks": 52,
+      "char_count": 984,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024895"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:18",
+    "content": "The\n```\nServerSession\n```\nclass extends BaseSession to provide server-specific functionality, including initialization state management, client capability checking, and various notification methods.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 18,
+      "total_chunks": 52,
+      "char_count": 198,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024901"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:19",
+    "content": "```\nstateDiagram-v2\n    [*] --> NotInitialized\n    NotInitialized --> Initializing: InitializeRequest\n    Initializing --> Initialized: InitializedNotification\n    NotInitialized --> [*]: stateless=True\n    \n    state \"Request Handling\" as ReqHandle {\n        Ping: PingRequest (allowed anytime)\n        Blocked: Other requests blocked\n        Normal: Normal request processing\n    }\n    \n    NotInitialized --> Ping\n    Initializing --> Ping\n    Initialized --> Normal\n    NotInitialized --> Blocked\n    Initializing --> Blocked\n```\nThe ServerSession enforces a strict initialization protocol where most requests are blocked until the initialization handshake completes, with ping requests being the only exception.\nSources:\n[src/mcp/server/session.py:58-62](.)\n,\n[src/mcp/server/session.py:167-179](.)\n,\n[tests/server/test_session.py:219-283](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 19,
+      "total_chunks": 52,
+      "char_count": 847,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024906"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:20",
+    "content": "ServerSession provides a comprehensive capability checking system that allows servers to adapt their behavior based on client capabilities:\n```\nroots\n```\n```\ncheck_client_capability()\n```\n```\nsampling\n```\n```\ncheck_client_capability()\n```\n```\nelicitation\n```\n```\ncheck_client_capability()\n```\n```\nexperimental\n```\n```\ncheck_client_capability()\n```\n, Check Method = . , Purpose = \n```\ngraph TB\n    subgraph \"Capability Checking Flow\"\n        ClientParams[\"client_params<br/>InitializeRequestParams\"]\n        CapabilityCheck[\"check_client_capability()\"]\n        \n        subgraph \"Capability Types\"\n            Roots[\"roots.listChanged\"]\n            Sampling[\"sampling support\"]\n            Elicitation[\"elicitation support\"] \n            Experimental[\"experimental[key] = value\"]\n        end\n        \n        subgraph \"Server Logic\"\n            AdaptBehavior[\"Adapt Server Behavior\"]\n            FallbackLogic[\"Fallback Implementation\"]\n        end\n    end\n    \n    ClientParams --> CapabilityCheck\n    CapabilityCheck --> Roots\n    CapabilityCheck --> Sampling\n    CapabilityCheck --> Elicitation\n    CapabilityCheck --> Experimental\n    \n    Roots --> AdaptBehavior\n    Sampling --> AdaptBehavior\n    Elicitation --> AdaptBehavior\n    Experimental --> AdaptBehavior\n    \n    CapabilityCheck --> FallbackLogic\n```\nSources:\n[src/mcp/server/session.py:105-136](.)\n,\n[src/mcp/server/session.py:8-34](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 20,
+      "total_chunks": 52,
+      "char_count": 1399,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024912"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:21",
+    "content": "ServerSession provides specialized methods for different types of server-to-client communication:",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 21,
+      "total_chunks": 52,
+      "char_count": 97,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024917"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:22",
+    "content": "```\nsend_log_message()\n```\n```\nLoggingMessageNotification\n```\n```\nsend_resource_updated()\n```\n```\nResourceUpdatedNotification\n```\n```\nsend_progress_notification()\n```\n```\nProgressNotification\n```\n```\nsend_resource_list_changed()\n```\n```\nResourceListChangedNotification\n```\n```\nsend_tool_list_changed()\n```\n```\nToolListChangedNotification\n```\n```\nsend_prompt_list_changed()\n```\n```\nPromptListChangedNotification\n```\n, Purpose = . , Message Type = ",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 22,
+      "total_chunks": 52,
+      "char_count": 446,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024923"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:23",
+    "content": "ServerSession can also send requests to clients for advanced capabilities:\n```\ncreate_message()\n```\n```\nCreateMessageResult\n```\n```\nlist_roots()\n```\n```\nListRootsResult\n```\n```\nelicit()\n```\n```\nElicitResult\n```\n```\nsend_ping()\n```\n```\nEmptyResult\n```\n, Purpose = . , Result Type = \nSources:\n[src/mcp/server/session.py:181-323](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 23,
+      "total_chunks": 52,
+      "char_count": 329,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024929"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:24",
+    "content": "The session management system provides robust cancellation and error handling capabilities:\n```\ngraph TB\n    subgraph \"Cancellation Flow\"\n        RequestStart[\"Request Started<br/>Task Group\"]\n        CancelSent[\"CancelledNotification<br/>sent by client\"]\n        RequestCancel[\"Request Cancellation<br/>anyio.CancelledError\"]\n        McpError[\"McpError('Request cancelled')\"]\n        ServerContinue[\"Server Continues<br/>Processing New Requests\"]\n    end\n    \n    subgraph \"Connection Error Flow\"\n        ConnectionLoss[\"Connection Closed\"]\n        PendingRequests[\"Pending Requests\"]\n        ConnectionError[\"McpError('Connection closed')\"]\n        StreamCleanup[\"Stream Cleanup\"]\n    end\n    \n    RequestStart --> CancelSent\n    CancelSent --> RequestCancel\n    RequestCancel --> McpError\n    McpError --> ServerContinue\n    \n    ConnectionLoss --> PendingRequests\n    PendingRequests --> ConnectionError\n    ConnectionError --> StreamCleanup\n```\nThe cancellation system ensures that servers remain functional after request cancellations and that pending requests are properly cleaned up when connections are lost.\nSources:\n[tests/shared/test_session.py:48-123](.)\n,\n[tests/server/test_cancel_handling.py:25-111](.)\n,\n[tests/shared/test_session.py:125-171](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 24,
+      "total_chunks": 52,
+      "char_count": 1262,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024934"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:25",
+    "content": "ServerSession integrates closely with the broader MCP server framework:\n```\ngraph TB\n    subgraph \"Server Integration\"\n        InitOptions[\"InitializationOptions<br/>server_name, capabilities\"]\n        ServerSession[\"ServerSession<br/>Protocol Communication\"]\n        LowLevelServer[\"mcp.server.lowlevel.Server<br/>Request Handlers\"]\n        FastMCP[\"FastMCP<br/>High-level Framework\"]\n        \n        subgraph \"Message Flow\"\n            IncomingMessages[\"incoming_messages<br/>Property\"]\n            RequestHandlers[\"Request Handlers<br/>@server.call_tool()\"]\n            ResponseSend[\"Response Transmission\"]\n        end\n    end\n    \n    InitOptions --> ServerSession\n    ServerSession --> IncomingMessages\n    IncomingMessages --> LowLevelServer\n    LowLevelServer --> RequestHandlers\n    RequestHandlers --> ResponseSend\n    ResponseSend --> ServerSession\n    \n    LowLevelServer --> FastMCP\n    FastMCP --> LowLevelServer\n```\nServerSession serves as the communication bridge between the protocol layer and application logic, handling the low-level details of message transmission while providing a clean interface for server implementations.\nSources:\n[src/mcp/server/session.py:83-100](.)\n,\n[src/mcp/server/models.py:13-18](.)\n,\n[tests/server/test_session.py:32-81](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 25,
+      "total_chunks": 52,
+      "char_count": 1274,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024939"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:26",
+    "content": "This document covers the MCP SDK's context and progress reporting systems, which enable request-scoped data access and bidirectional progress communication between clients and servers. These systems provide the foundation for tracking long-running operations and maintaining request state throughout the MCP protocol lifecycle.\nFor information about session management and message correlation, see\n[Session Management](#4.2)\n. For details about protocol message types, see\n[Protocol Types & JSON-RPC](#4.1)\n.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 26,
+      "total_chunks": 52,
+      "char_count": 508,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024945"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:27",
+    "content": "The request context system provides a structured way to access request-scoped information including session references, metadata, and lifecycle context. The\n```\nRequestContext\n```\nclass serves as the primary interface for accessing this information within request handlers.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 27,
+      "total_chunks": 52,
+      "char_count": 273,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024950"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:28",
+    "content": "```\ngraph TB\n    subgraph \"Request Context System\"\n        RC[RequestContext]\n        Meta[types.RequestParams.Meta]\n        Session[\"BaseSession[Any, Any, Any, Any, Any]\"]\n        LifespanCtx[lifespan_context]\n    end\n    \n    subgraph \"Session Integration\"\n        ServerSession[ServerSession]\n        ClientSession[ClientSession]\n        BaseSession[BaseSession]\n    end\n    \n    subgraph \"Request Metadata\"\n        ProgressToken[progressToken]\n        RequestId[request_id]\n        OtherMeta[other_metadata]\n    end\n    \n    RC --> Meta\n    RC --> Session\n    RC --> LifespanCtx\n    RC --> RequestId\n    \n    Session --> BaseSession\n    BaseSession --> ServerSession\n    BaseSession --> ClientSession\n    \n    Meta --> ProgressToken\n    Meta --> OtherMeta\n    \n    ServerSession --> \"send_progress_notification()\"\n    ClientSession --> \"send_progress_notification()\"\n```\nThe\n```\nRequestContext\n```\nprovides access to:\n- **request_id** : Unique identifier for the current request\n- **session** : Reference to the active session for sending notifications\n- **meta** : Request metadata including progress tokens\n- **lifespan_context** : Application lifecycle context\nSources:\n[tests/shared/test_progress_notifications.py:276-281](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 28,
+      "total_chunks": 52,
+      "char_count": 1233,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024956"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:29",
+    "content": "Progress notifications enable both clients and servers to report the status of long-running operations. The system uses progress tokens to correlate notifications with specific requests and supports both absolute and incremental progress reporting.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 29,
+      "total_chunks": 52,
+      "char_count": 248,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024961"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:30",
+    "content": "```\nProgressNotification\n```\n```\nprogressToken\n```\n```\nprogress\n```\n```\ntotal\n```\n```\nmessage\n```\n, Description = . , Usage = ",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 30,
+      "total_chunks": 52,
+      "char_count": 126,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024967"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:31",
+    "content": "```\ngraph LR\n    subgraph \"Client Side\"\n        Client[ClientSession]\n        ClientHandler[handle_client_message]\n        ClientProgress[client_progress_updates]\n    end\n    \n    subgraph \"Server Side\"\n        Server[ServerSession]\n        ServerHandler[handle_progress]\n        ServerProgress[server_progress_updates]\n    end\n    \n    subgraph \"Progress Messages\"\n        ProgressMsg[ProgressNotification]\n        Token[progressToken]\n        Value[progress_value]\n        Total[total_value]\n        Message[status_message]\n    end\n    \n    Client -->|\"send_progress_notification()\"| ProgressMsg\n    ProgressMsg --> Server\n    Server --> ServerHandler\n    ServerHandler --> ServerProgress\n    \n    Server -->|\"send_progress_notification()\"| ProgressMsg\n    ProgressMsg --> Client\n    Client --> ClientHandler\n    ClientHandler --> ClientProgress\n    \n    ProgressMsg --> Token\n    ProgressMsg --> Value\n    ProgressMsg --> Total\n    ProgressMsg --> Message\n```\nBoth clients and servers can send progress notifications using the\n```\nsend_progress_notification()\n```\nmethod available on their respective session classes. Progress tokens passed in request metadata enable correlation between requests and their associated progress updates.\nSources:\n[tests/shared/test_progress_notifications.py:98-119](.)\n,\n[tests/shared/test_progress_notifications.py:168-187](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 31,
+      "total_chunks": 52,
+      "char_count": 1362,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024973"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:32",
+    "content": "The SDK provides a convenient context manager for sending progress notifications that automatically handles progress token extraction and incremental progress tracking.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 32,
+      "total_chunks": 52,
+      "char_count": 168,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024979"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:33",
+    "content": "```\ngraph TB\n    subgraph \"Progress Context Manager\"\n        ProgressMgr[\"progress(context, total=100)\"]\n        ProgressCtx[Progress Context]\n        ProgressMethod[\"p.progress(amount, message)\"]\n    end\n    \n    subgraph \"Context Integration\"\n        RequestCtx[RequestContext]\n        SessionRef[session]\n        MetaData[meta.progressToken]\n    end\n    \n    subgraph \"Automatic Tracking\"\n        CurrentProgress[current_progress]\n        TotalValue[total_value]\n        Incremental[incremental_updates]\n    end\n    \n    ProgressMgr --> ProgressCtx\n    ProgressCtx --> ProgressMethod\n    \n    RequestCtx --> SessionRef\n    RequestCtx --> MetaData\n    ProgressMgr --> RequestCtx\n    \n    ProgressMethod --> CurrentProgress\n    ProgressMethod --> TotalValue\n    ProgressMethod --> Incremental\n    \n    ProgressMethod -->|\"session.send_progress_notification()\"| \"Notification Sent\"\n```\nThe progress context manager:\n- Extracts progress tokens from request context automatically\n- Maintains running total of incremental progress updates\n- Provides simple `progress(amount, message)` interface\n- Handles session communication transparently\nSources:\n[tests/shared/test_progress_notifications.py:287-292](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 33,
+      "total_chunks": 52,
+      "char_count": 1203,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024985"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:34",
+    "content": "Progress reporting is deeply integrated with the session layer, where both\n```\nClientSession\n```\nand\n```\nServerSession\n```\nprovide\n```\nsend_progress_notification()\n```\nmethods for sending progress updates.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 34,
+      "total_chunks": 52,
+      "char_count": 205,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024990"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:35",
+    "content": "```\ngraph TB\n    subgraph \"BaseSession Methods\"\n        SendProgress[\"send_progress_notification()\"]\n        ProgressToken[progress_token]\n        ProgressValue[progress]\n        ProgressTotal[total]\n        ProgressMessage[message]\n    end\n    \n    subgraph \"Session Implementations\"\n        ClientSession[ClientSession]\n        ServerSession[ServerSession]\n        BaseSessionClass[BaseSession]\n    end\n    \n    subgraph \"Progress Handlers\"\n        ClientHandler[\"@server.progress_notification()\"]\n        ServerHandler[handle_client_message]\n        ProgressNotif[ProgressNotification]\n    end\n    \n    BaseSessionClass --> ClientSession\n    BaseSessionClass --> ServerSession\n    \n    SendProgress --> ProgressToken\n    SendProgress --> ProgressValue\n    SendProgress --> ProgressTotal\n    SendProgress --> ProgressMessage\n    \n    ClientSession --> SendProgress\n    ServerSession --> SendProgress\n    \n    SendProgress --> ProgressNotif\n    ProgressNotif --> ClientHandler\n    ProgressNotif --> ServerHandler\n```",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 35,
+      "total_chunks": 52,
+      "char_count": 1017,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.024996"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:36",
+    "content": "Servers register progress notification handlers using decorators:\n```\n@server.progress_notification()\nasync def handle_progress(\n    progress_token: str | int,\n    progress: float,\n    total: float | None,\n    message: str | None,\n):\n    # Handle incoming progress updates from clients\n```\nClients handle progress notifications through message handlers that receive\n```\nProgressNotification\n```\nmessages and extract the relevant progress information.\nSources:\n[tests/shared/test_progress_notifications.py:57-71](.)\n,\n[tests/shared/test_progress_notifications.py:128-144](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 36,
+      "total_chunks": 52,
+      "char_count": 573,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025001"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:37",
+    "content": "Progress tokens are typically passed as part of request metadata using the\n```\n_meta\n```\nfield in request parameters. This enables correlation between tool calls, resource reads, or other operations and their associated progress updates.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 37,
+      "total_chunks": 52,
+      "char_count": 237,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025007"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:38",
+    "content": "```\ngraph TB\n    subgraph \"Request Structure\"\n        RequestParams[Request Parameters]\n        MetaField[\"_meta\"]\n        ProgressTokenField[progressToken]\n        OtherFields[other_parameters]\n    end\n    \n    subgraph \"Context Creation\"\n        RequestCtx[RequestContext]\n        MetaObj[types.RequestParams.Meta]\n        SessionRef[session]\n        RequestId[request_id]\n    end\n    \n    subgraph \"Progress Flow\"\n        TokenExtraction[Token Extraction]\n        ProgressManager[Progress Manager]\n        Notifications[Progress Notifications]\n    end\n    \n    RequestParams --> MetaField\n    RequestParams --> OtherFields\n    MetaField --> ProgressTokenField\n    \n    RequestCtx --> MetaObj\n    RequestCtx --> SessionRef\n    RequestCtx --> RequestId\n    MetaObj --> ProgressTokenField\n    \n    TokenExtraction --> ProgressTokenField\n    TokenExtraction --> ProgressManager\n    ProgressManager --> Notifications\n```\nThe metadata integration enables:\n- Automatic progress token propagation from requests to handlers\n- Correlation of progress updates with specific operations\n- Support for multiple concurrent operations with distinct progress tokens\nSources:\n[tests/shared/test_progress_notifications.py:89-96](.)\n,\n[tests/shared/test_progress_notifications.py:275-281](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 38,
+      "total_chunks": 52,
+      "char_count": 1274,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025012"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:39",
+    "content": "The transport layer provides the foundational communication mechanisms that enable MCP clients and servers to exchange JSON-RPC messages. This layer abstracts away the underlying network protocols and provides consistent interfaces for different communication patterns including HTTP-based streaming, WebSockets, and process-based communication.\nFor detailed protocol message handling, see\n[Protocol & Message System](#4)\n. For client-side transport usage, see\n[Client Transports](#3.2)\n. For server-side transport security, see\n[Transport Security](#5.5)\n.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 39,
+      "total_chunks": 52,
+      "char_count": 557,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025017"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:40",
+    "content": "The MCP SDK supports multiple transport mechanisms, each optimized for different deployment scenarios and communication patterns:\n```\ngraph TB\n    subgraph \"Client Transports\"\n        SHTTPC[\"streamablehttp_client<br/>HTTP + SSE Streams\"]\n        SSEC[\"sse_client<br/>SSE Events Only\"]\n        StdioC[\"stdio_client<br/>Process Communication\"]\n        WSC[\"websocket_client<br/>Full Duplex\"]\n    end\n    \n    subgraph \"Server Transports\"\n        SHTTPS[\"StreamableHTTPServerTransport<br/>Session Management + Resumability\"]\n        SSES[\"SseServerTransport<br/>Real-time Streaming\"]\n        StdioS[\"stdio_server<br/>stdin/stdout\"]\n        WSS[\"websocket_server<br/>ASGI Compatible\"]\n    end\n    \n    subgraph \"Network Protocols\"\n        HTTP[\"HTTP/1.1<br/>POST Requests\"]\n        SSE[\"Server-Sent Events<br/>Real-time Streaming\"]\n        WS[\"WebSocket<br/>RFC 6455\"]\n        STDIO[\"Standard I/O<br/>Process Pipes\"]\n    end\n    \n    subgraph \"Security Layer\"\n        TSecMiddleware[\"TransportSecurityMiddleware<br/>DNS Rebinding Protection\"]\n        TSecSettings[\"TransportSecuritySettings<br/>allowed_hosts, allowed_origins\"]\n    end\n    \n    subgraph \"Session Management\"\n        SessionMgr[\"StreamableHTTPSessionManager<br/>Multi-session Coordination\"]\n        EventStore[\"EventStore Interface<br/>Message Resumability\"]\n    end\n    \n    SHTTPC --> HTTP\n    SHTTPC --> SSE\n    SSEC --> SSE\n    StdioC --> STDIO\n    WSC --> WS\n    \n    SHTTPS --> HTTP\n    SHTTPS --> SSE\n    SSES --> SSE\n    StdioS --> STDIO\n    WSS --> WS\n    \n    SHTTPS --> SessionMgr\n    SHTTPS --> EventStore\n    SHTTPS --> TSecMiddleware\n    SSES --> TSecMiddleware\n    TSecMiddleware --> TSecSettings\n```\n**Sources:**\n[src/mcp/server/streamable_http.py:122-902](.)\n,\n[src/mcp/server/sse.py:64-250](.)\n,\n[src/mcp/server/transport_security.py](.)\n,\n[tests/shared/test_streamable_http.py:1-1600](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 40,
+      "total_chunks": 52,
+      "char_count": 1869,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025023"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:41",
+    "content": "StreamableHTTP, Primary Use Case = Production web deployment. StreamableHTTP, Features = Session management, resumability, stateful/stateless modes. StreamableHTTP, Implementation = StreamableHTTPServerTransport. SSE, Primary Use Case = Real-time notifications. SSE, Features = Lightweight streaming, ASGI integration. SSE, Implementation = SseServerTransport. STDIO, Primary Use Case = Local development, CLI tools. STDIO, Features = Process spawning, simple setup. STDIO, Implementation = stdio_server/client. WebSocket, Primary Use Case = Interactive applications. WebSocket, Features = Full-duplex, low latency. WebSocket, Implementation = websocket_server/client",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 41,
+      "total_chunks": 52,
+      "char_count": 667,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025028"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:42",
+    "content": "The server-side transports share common patterns but implement different communication mechanisms:",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 42,
+      "total_chunks": 52,
+      "char_count": 98,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025034"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:43",
+    "content": "```\ngraph TB\n    subgraph \"SseServerTransport\"\n        SSET[\"SseServerTransport\"]\n        ConnectSSE[\"connect_sse()\"]\n        HandlePost[\"handle_post_message()\"]\n        EndpointVal[\"Endpoint Validation\"]\n        SessionDict[\"_read_stream_writers: dict[UUID, MemoryObjectSendStream]\"]\n        \n        SSET --> ConnectSSE\n        SSET --> HandlePost\n        SSET --> EndpointVal\n        SSET --> SessionDict\n    end\n    \n    subgraph \"ASGI Integration\"\n        Scope[\"ASGI Scope\"]\n        Receive[\"ASGI Receive\"] \n        Send[\"ASGI Send\"]\n        StReq[\"Starlette Request\"]\n        StResp[\"Starlette Response\"]\n        \n        Scope --> StReq\n        Receive --> StReq\n        Send --> StResp\n    end\n    \n    subgraph \"Session Management\"\n        UUID4[\"uuid4()\"]\n        SessionID[\"session_id\"]\n        MemStreams[\"MemoryObjectReceiveStream[SessionMessage | Exception]\"]\n        WriteStreams[\"MemoryObjectSendStream[SessionMessage]\"]\n        \n        UUID4 --> SessionID\n        SessionID --> MemStreams\n        SessionID --> WriteStreams\n    end\n    \n    subgraph \"Security Layer\"\n        TSec[\"TransportSecurityMiddleware\"]\n        TSettings[\"TransportSecuritySettings\"]\n        ReqVal[\"Request Validation\"]\n        \n        TSec --> TSettings\n        TSec --> ReqVal\n    end\n    \n    ConnectSSE --> Scope\n    ConnectSSE --> Receive\n    ConnectSSE --> Send\n    HandlePost --> StReq\n    HandlePost --> StResp\n    \n    SSET --> TSec\n    ConnectSSE --> UUID4\n    HandlePost --> SessionDict\n    \n    ConnectSSE --> MemStreams\n    ConnectSSE --> WriteStreams\n```\n**Sources:**\n[src/mcp/server/sse.py:64-250](.)\n,\n[tests/shared/test_sse.py:83-104](.)\nThe\n```\nSseServerTransport\n```\nclass provides two ASGI applications:\n- `connect_sse()` : Handles GET requests to establish SSE streams\n- `handle_post_message()` : Handles POST requests containing client messages\nKey implementation details:\n- Endpoint validation prevents full URLs, requiring relative paths like `/messages/`\n- Session management using UUID4 for unique session identification\n- Request context propagation through `ServerMessageMetadata`\n- DNS rebinding protection via `TransportSecurityMiddleware`",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 43,
+      "total_chunks": 52,
+      "char_count": 2164,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025039"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:44",
+    "content": "Client transports provide consistent async context manager interfaces:\n```\ngraph TB\n    subgraph \"Client Transport Pattern\"\n        ClientFunc[\"transport_client(url)\"]\n        ContextMgr[\"AsyncContextManager\"]\n        Streams[\"Tuple[ReadStream, WriteStream, ...]\"]\n        \n        ClientFunc --> ContextMgr\n        ContextMgr --> Streams\n    end\n    \n    subgraph \"Specific Implementations\"\n        StreamableHTTP[\"streamablehttp_client\"]\n        SSE[\"sse_client\"]\n        Stdio[\"stdio_client\"]\n        WebSocket[\"websocket_client\"]\n    end\n    \n    subgraph \"ClientSession Integration\"\n        CS[\"ClientSession\"]\n        ReadStream[\"MemoryObjectReceiveStream\"]\n        WriteStream[\"MemoryObjectSendStream\"]\n        \n        CS --> ReadStream\n        CS --> WriteStream\n    end\n    \n    StreamableHTTP --> Streams\n    SSE --> Streams\n    Stdio --> Streams\n    WebSocket --> Streams\n    \n    Streams --> ReadStream\n    Streams --> WriteStream\n```\n**Sources:**\n[src/mcp/client/streamable_http.py](.)\n,\n[src/mcp/client/sse.py](.)\n,\n[src/mcp/client/stdio.py](.)\n,\n[src/mcp/client/websocket.py](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 44,
+      "total_chunks": 52,
+      "char_count": 1094,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025045"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:45",
+    "content": "All transports follow a common message flow pattern using anyio memory streams, with SSE implementing a specific dual-channel approach:",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 45,
+      "total_chunks": 52,
+      "char_count": 135,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025051"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:46",
+    "content": "```\ngraph LR\n    subgraph \"Client Side\"\n        ClientSession[\"ClientSession\"]\n        ClientWrite[\"MemoryObjectSendStream[SessionMessage]\"]\n        ClientRead[\"MemoryObjectReceiveStream[SessionMessage]\"]\n        \n        ClientSession --> ClientWrite\n        ClientRead --> ClientSession\n    end\n    \n    subgraph \"Transport Layer\"\n        TransportClient[\"sse_client / stdio_client / etc\"]\n        Network[\"Network Protocol<br/>(HTTP+SSE/STDIO/WS)\"]\n        TransportServer[\"SseServerTransport / stdio_server\"]\n        \n        ClientWrite --> TransportClient\n        TransportClient --> Network\n        Network --> TransportServer\n        TransportServer --> ServerRead\n    end\n    \n    subgraph \"Server Side\"\n        ServerRead[\"MemoryObjectReceiveStream[SessionMessage | Exception]\"]\n        ServerWrite[\"MemoryObjectSendStream[SessionMessage]\"]\n        ServerSession[\"Server.run()\"]\n        \n        ServerRead --> ServerSession\n        ServerSession --> ServerWrite\n    end\n    \n    ServerWrite --> TransportServer\n    TransportServer --> Network\n    Network --> TransportClient\n    TransportClient --> ClientRead\n```",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 46,
+      "total_chunks": 52,
+      "char_count": 1124,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025056"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:47",
+    "content": "```\ngraph TB\n    subgraph \"SSE Client\"\n        SSEClient[\"sse_client\"]\n        HTTPGet[\"HTTP GET /sse\"]\n        HTTPPost[\"HTTP POST /messages/?session_id=uuid\"]\n    end\n    \n    subgraph \"SSE Server Transport\"\n        ConnectSSE[\"connect_sse()\"]\n        HandlePost[\"handle_post_message()\"]\n        SessionDict[\"_read_stream_writers[uuid]\"]\n        SSEWriter[\"sse_writer() task\"]\n        EventSource[\"EventSourceResponse\"]\n    end\n    \n    subgraph \"Server Application\"\n        ServerRun[\"Server.run()\"]\n        ReadStream[\"MemoryObjectReceiveStream\"]\n        WriteStream[\"MemoryObjectSendStream\"]\n    end\n    \n    HTTPGet --> ConnectSSE\n    ConnectSSE --> SessionDict\n    ConnectSSE --> SSEWriter\n    SSEWriter --> EventSource\n    EventSource --> SSEClient\n    \n    HTTPPost --> HandlePost\n    HandlePost --> SessionDict\n    SessionDict --> ReadStream\n    ReadStream --> ServerRun\n    ServerRun --> WriteStream\n    WriteStream --> SSEWriter\n```\n**Sources:**\n[src/mcp/server/sse.py:121-250](.)\n,\n[src/mcp/client/sse.py](.)\n,\n[tests/shared/test_sse.py:183-214](.)\nThe SSE transport uses a unique dual-channel approach:\n- **GET channel** : Establishes SSE stream for server-to-client messages\n- **POST channel** : Handles client-to-server messages with session correlation\n- **Session correlation** : UUID-based session matching between channels\n- **Request context** : Each POST request includes full request context via `ServerMessageMetadata`",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 47,
+      "total_chunks": 52,
+      "char_count": 1442,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025061"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:48",
+    "content": "All HTTP-based transports implement comprehensive security measures including endpoint validation and DNS rebinding protection:",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 48,
+      "total_chunks": 52,
+      "char_count": 127,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025067"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:49",
+    "content": "```\ngraph TB\n    subgraph \"Request Processing\"\n        Request[\"Incoming Request\"]\n        EndpointVal[\"Endpoint Validation\"]\n        SecurityMW[\"TransportSecurityMiddleware\"]\n        HostCheck[\"Host Header Validation\"] \n        OriginCheck[\"Origin Header Validation\"]\n        Allow[\"Allow Request\"]\n        Reject[\"Reject with 400/403\"]\n        \n        Request --> EndpointVal\n        EndpointVal --> SecurityMW\n        SecurityMW --> HostCheck\n        SecurityMW --> OriginCheck\n        HostCheck --> Allow\n        HostCheck --> Reject\n        OriginCheck --> Allow\n        OriginCheck --> Reject\n    end\n    \n    subgraph \"SSE Endpoint Validation\"\n        EndpointInput[\"endpoint: str\"]\n        RelativeCheck[\"Relative Path Check\"]\n        URLCheck[\"No '://' or '//' or '?' or '#'\"]\n        SlashNorm[\"Ensure starts with '/'\"]\n        ValidEndpoint[\"Valid endpoint\"]\n        \n        EndpointInput --> RelativeCheck\n        RelativeCheck --> URLCheck\n        URLCheck --> SlashNorm\n        SlashNorm --> ValidEndpoint\n    end\n    \n    subgraph \"Security Settings\"\n        TSecSettings[\"TransportSecuritySettings\"]\n        AllowedHosts[\"allowed_hosts: list[str]\"]\n        AllowedOrigins[\"allowed_origins: list[str]\"]\n        \n        TSecSettings --> AllowedHosts\n        TSecSettings --> AllowedOrigins\n        SecurityMW --> TSecSettings\n    end\n    \n    EndpointVal --> RelativeCheck\n```\n**Sources:**\n[src/mcp/server/sse.py:106-119](.)\n,\n[src/mcp/server/transport_security.py](.)\n,\n[tests/shared/test_sse.py:488-513](.)",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 49,
+      "total_chunks": 52,
+      "char_count": 1525,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025072"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:50",
+    "content": "The\n```\nSseServerTransport\n```\nenforces strict endpoint validation to prevent security vulnerabilities:\n- **Relative Path Requirement** : Endpoints must be relative paths (e.g., `/messages/` ) not full URLs\n- **URL Component Rejection** : Rejects endpoints containing `://` , `//` , `?` , or `#`\n- **Path Normalization** : Automatically adds leading `/` if missing\n- **Security Rationale** : Prevents cross-origin requests and ensures clients connect to the same origin\n```\n# Valid endpoints\nSseServerTransport(\"/messages/\")      # ✓ Valid\nSseServerTransport(\"messages/\")       # ✓ Normalized to \"/messages/\"\nSseServerTransport(\"/\")              # ✓ Valid\n\n# Invalid endpoints (raise ValueError)\nSseServerTransport(\"http://example.com/messages/\")  # ✗ Full URL\nSseServerTransport(\"//example.com/messages/\")       # ✗ Protocol-relative URL  \nSseServerTransport(\"/messages/?param=value\")        # ✗ Query parameters\n```",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 50,
+      "total_chunks": 52,
+      "char_count": 917,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025078"
+    }
+  },
+  {
+    "chunk_id": "fast_mcp_api_python:python-sdk:Protocol_Types__JSON-RPC:chunk:51",
+    "content": "Choose the appropriate transport based on your deployment requirements:\n- **StreamableHTTP** : Best for production web applications requiring session persistence and resumability\n- **SSE** : Ideal for lightweight real-time updates with simple setup\n- **STDIO** : Perfect for local development, CLI tools, and process-based architectures\n- **WebSocket** : Optimal for interactive applications requiring low-latency bidirectional communication\nEach transport is covered in detail in the following sections:\n[StreamableHTTP Transport](#5.1)\n,\n[SSE Transport](#5.2)\n,\n[STDIO Transport](#5.3)\n,\n[WebSocket Transport](#5.4)\n, and\n[Transport Security](#5.5)\n.",
+    "metadata": {
+      "source": "python-sdk\\Protocol_Types__JSON-RPC.md",
+      "file_name": "Protocol_Types__JSON-RPC.md",
+      "subfolder": "python-sdk",
+      "chunk_index": 51,
+      "total_chunks": 52,
+      "char_count": 652,
+      "collection": "fast_mcp_api_python",
+      "processing_method": "hybrid_chunker",
+      "timestamp": "2025-10-15T07:13:26.025083"
+    }
+  }
+]
