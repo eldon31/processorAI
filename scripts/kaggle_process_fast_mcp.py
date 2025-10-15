@@ -50,8 +50,8 @@ COLLECTION_NAME = "create_fast_mcp_with_api"
 USE_MODEL_PARALLEL = True  # Enable model parallelism for 2 GPUs
 
 # Paths
-INPUT_DIR = Path("output/fast_mcp_and_api/chunked")
-OUTPUT_DIR = Path("output/fast_mcp_and_api/embeddings")
+INPUT_DIR = Path("output/fast_mcp_api_python/chunked")
+OUTPUT_DIR = Path("output/fast_mcp_api_python/embeddings")
 
 def setup_directories():
     """Create output directories if they don't exist"""
