@@ -19,7 +19,7 @@ NOTE: All embeddings are saved directly to /kaggle/working/
 
 # --- CELL 2: Run Processing ---
 """
-!python scripts/kaggle_process_viator.py
+!python scripts/kaggle_process_viator.py!python scripts/kaggle_process_viator.py
 """
 
 # Output: /kaggle/working/viator_api_embeddings.jsonl (appears in Output tab)
