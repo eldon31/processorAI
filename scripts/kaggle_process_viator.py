@@ -363,11 +363,13 @@ def main():
         convert_documents()
         chunk_documents()
         embed_chunks()
-        upload_to_qdrant()
+        # upload_to_qdrant()  # Disabled - will upload locally later
         
         duration = (datetime.now() - start_time).total_seconds()
         print(f"\n{'='*60}")
         print(f"✓ PIPELINE COMPLETED in {duration/60:.1f} minutes")
+        print(f"✓ Embeddings saved to: {EMBEDDINGS_DIR}")
+        print(f"  Download and upload to Qdrant locally")
         print(f"{'='*60}\n")
         
     except Exception as e:

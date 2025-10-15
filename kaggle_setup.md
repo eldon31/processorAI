@@ -19,8 +19,14 @@
 ## Step 3: Install Dependencies
 
 ```python
+# Fix numpy/sklearn compatibility first
+!pip install -q numpy==1.24.3
+
 # Install required packages
-!pip install -q docling docling-core transformers sentence-transformers qdrant-client torch
+!pip install -q docling docling-core transformers sentence-transformers torch
+
+# Optional: Only if uploading to Qdrant from Kaggle
+# !pip install -q qdrant-client
 ```
 
 ## Step 4: Verify GPU Setup
@@ -40,6 +46,7 @@ print(f"Total GPU memory: {torch.cuda.get_device_properties(0).total_memory / 1e
 ### For Viator API Documentation:
 ```python
 # Process Viator docs with GPU acceleration
+# Stops at embeddings - upload to Qdrant locally later
 !python scripts/kaggle_process_viator.py
 ```
 
@@ -51,14 +58,23 @@ print(f"Total GPU memory: {torch.cuda.get_device_properties(0).total_memory / 1e
 
 ## Step 6: Download Results
 
-After processing completes, download the output files:
+After processing completes, download the embeddings:
 
 ```python
-# Create a zip file of all outputs
-!zip -r outputs.zip output/
+# Create a zip file of embeddings and chunks
+!zip -r viator_embeddings.zip output/viator_api/embeddings/ output/viator_api/chunked/
+!zip -r fastmcp_chunks.zip output/fast_mcp_api_python/chunked/
 
-# The file will be available in Kaggle's Output tab
-# Download it from there
+# Download from Kaggle's Output tab:
+# - viator_embeddings.zip (contains embeddings + chunks)
+# - fastmcp_chunks.zip (contains chunks only)
+```
+
+Then upload to Qdrant locally:
+
+```python
+# After downloading to your local machine, upload to Qdrant
+# Use your existing upload scripts locally
 ```
 
 ## Important Notes
