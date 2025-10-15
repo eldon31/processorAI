@@ -1,6 +1,6 @@
 """
 Kaggle-optimized Fast Docs Processing Pipeline
-For GPU T4 x2 with nomic-ai/nomic-embed-code
+For GPU T4 x2 with nomic-ai/nomic-embed-code (model parallelism)
 
 This script processes all Fast* framework documentation:
 Collection name: fast_docs
@@ -23,6 +23,9 @@ import os
 
 # Prevent transformers from attempting to load TensorFlow
 os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
+os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
+# Enable PyTorch memory optimization
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 os.environ.setdefault("HF_HUB_DISABLE_TELEMETRY", "1")
 
 import json
@@ -285,65 +288,46 @@ def embed_chunks(chunks: List[dict]) -> List[dict]:
     all_embeddings = []
     
     if USE_MODEL_PARALLEL and num_gpus >= 2:
-        print("\n🚀 Loading model with data parallelism (both GPUs process batches)...")
-        
-        # Load model on GPU 0
-        print("   Loading on GPU 0...")
-        model_gpu0 = AutoModel.from_pretrained(
-            EMBEDDING_MODEL,
-            torch_dtype=torch.float16,
-            trust_remote_code=True
-        ).to('cuda:0')
-        model_gpu0.eval()
-        
-        # Load model on GPU 1
-        print("   Loading on GPU 1...")
-        model_gpu1 = AutoModel.from_pretrained(
-            EMBEDDING_MODEL,
-            torch_dtype=torch.float16,
-            trust_remote_code=True
-        ).to('cuda:1')
-        model_gpu1.eval()
+        print("\n🚀 Loading model with OPTIMIZED model parallelism...")
+        print("   Strategy: Layers distributed across GPUs")
+        print("   Memory limits: GPU0=13GB, GPU1=13GB")
         
         tokenizer = AutoTokenizer.from_pretrained(EMBEDDING_MODEL, trust_remote_code=True)
         
-        print(f"✓ Model loaded on BOTH GPUs (data parallelism)")
-        print(f"✓ GPU 0: {torch.cuda.get_device_name(0)}")
-        print(f"✓ GPU 1: {torch.cuda.get_device_name(1)}")
+        # Load model with automatic device mapping (model parallelism)
+        model = AutoModel.from_pretrained(
+            EMBEDDING_MODEL,
+            torch_dtype=torch.float16,
+            trust_remote_code=True,
+            device_map="auto",  # Splits layers across GPUs
+            low_cpu_mem_usage=True,
+            max_memory={0: "13GB", 1: "13GB"}
+        )
+        model.eval()
         
-        def encode_batch_dual_gpu(texts: List[str]) -> np.ndarray:
-            """Encode using both GPUs by splitting the batch"""
-            mid = len(texts) // 2
-            texts_gpu0 = texts[:mid] if mid > 0 else texts
-            texts_gpu1 = texts[mid:] if mid > 0 else []
-            
-            # Process on GPU 0
-            encoded_0 = tokenizer(texts_gpu0, padding=True, truncation=True, max_length=8192, return_tensors='pt').to('cuda:0')
+        print(f"✓ Model loaded with optimized model parallelism")
+        print(f"✓ Available GPUs: {num_gpus}")
+        
+        def encode_batch(texts: List[str]) -> np.ndarray:
+            """Encode using model parallelism (model automatically distributes across GPUs)"""
             with torch.no_grad():
-                output_0 = model_gpu0(**encoded_0)
-            mask_0 = encoded_0['attention_mask']
-            tokens_0 = output_0[0]
-            mask_expanded_0 = mask_0.unsqueeze(-1).expand(tokens_0.size()).float()
-            embeddings_0 = torch.sum(tokens_0 * mask_expanded_0, 1) / torch.clamp(mask_expanded_0.sum(1), min=1e-9)
-            embeddings_0 = torch.nn.functional.normalize(embeddings_0, p=2, dim=1).cpu().numpy()
-            
-            # Process on GPU 1 if we have texts
-            if texts_gpu1:
-                encoded_1 = tokenizer(texts_gpu1, padding=True, truncation=True, max_length=8192, return_tensors='pt').to('cuda:1')
-                with torch.no_grad():
-                    output_1 = model_gpu1(**encoded_1)
-                mask_1 = encoded_1['attention_mask']
-                tokens_1 = output_1[0]
-                mask_expanded_1 = mask_1.unsqueeze(-1).expand(tokens_1.size()).float()
-                embeddings_1 = torch.sum(tokens_1 * mask_expanded_1, 1) / torch.clamp(mask_expanded_1.sum(1), min=1e-9)
-                embeddings_1 = torch.nn.functional.normalize(embeddings_1, p=2, dim=1).cpu().numpy()
+                encoded = tokenizer(texts, padding=True, truncation=True, max_length=8192, return_tensors='pt')
                 
-                # Combine results
-                return np.vstack([embeddings_0, embeddings_1])
-            
-            return embeddings_0
-        
-        encode_batch = encode_batch_dual_gpu
+                # Move to model's device (it handles distribution)
+                if hasattr(model, 'device'):
+                    encoded = {k: v.to(model.device) for k, v in encoded.items()}
+                
+                output = model(**encoded)
+                mask = encoded['attention_mask']
+                tokens = output[0]
+                mask_expanded = mask.unsqueeze(-1).expand(tokens.size()).float()
+                embeddings = torch.sum(tokens * mask_expanded, 1) / torch.clamp(mask_expanded.sum(1), min=1e-9)
+                embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1).cpu().numpy()
+                
+                # Cleanup
+                del encoded, output, mask, tokens, mask_expanded
+                
+            return embeddings
         
     else:
         print("\n🚀 Loading model with SentenceTransformer...")
@@ -374,6 +358,13 @@ def embed_chunks(chunks: List[dict]) -> List[dict]:
                 "metadata": chunk.get('metadata', {})
             }
             all_embeddings.append(embedding_data)
+        
+        # Cleanup
+        del embeddings
+        
+        # Aggressive cache clearing every 5 batches
+        if i % (BATCH_SIZE * 5) == 0 and torch.cuda.is_available():
+            torch.cuda.empty_cache()
         
         processed = min(i + BATCH_SIZE, total_chunks)
         elapsed = (datetime.now() - start_time).total_seconds()
